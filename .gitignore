@@ -1,0 +1,7 @@
+*.o
+core.f
+parse
+raw
+\#*\#
+.\#*
+code.bin
