@@ -1,10 +1,12 @@
 /* Decode one word and paste it to the buffer at target - the buffer
  * grows down (!) 
  *
- * Structure of the word: 28bits word, 4 bits mask
+ * Structure of the word: 29bits word, 3 bits mask
  *
- * 28 bits contains letters in shannon coding (4, 5 or 7 bits per letter)
+ * 29 bits contains letters in shannon coding (4, 5 or 7 bits per letter)
  */
+#define MASK 7
+
 #define MAGIC_FOUR(magic, flag)	magic>>(8*sizeflag);
 
 unsigned const char letter_queue[]=
@@ -12,9 +14,11 @@ unsigned const char letter_queue[]=
 
 extern char * iobuff;
 
+
+
 unsigned int sh_decode (unsigned int word)
 {
-  word &=-16;
+  word &=-8;
   while (word>0){
     unsigned char sizeflag = (word >> 30);
     unsigned char size = MAGIC_FOUR(0x07050404, sizeflag);
@@ -44,7 +48,7 @@ unsigned int* sh_encode(unsigned int*buffer)
 {
   unsigned char letter;
   unsigned int word=0;
-  unsigned int shift=4;
+  unsigned int shift=3;
   while ((letter=*iobuff++)> ' '){
     unsigned int size_code=letter_size_code[letter-' '];
     int size=(4+(size_code >> 6));

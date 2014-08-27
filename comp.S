@@ -43,7 +43,7 @@ find_loop:      /* top of stack - word; stack - address */
         movl 4(TOP), TOP
         xor 4(%ebx), %eax
         lea 4(%ebx), %ebx
-        andl $-0x10, TOP
+        andl $-0x8, TOP
         je found                # (0 ptr-to-word word)
         call pop
 find:                           # (vocabulary word)
@@ -140,7 +140,7 @@ main_loop_nocheck:                      # (thrash top ...)
 	add $512, Areg
 1:	
         push_stack                      # Get its type
-        and $0xf, TOP
+        and $0x7, TOP
         jmp *call_types(,TOP, 4)        # (thrash opcode top ...)
 
 .section .rodata
@@ -166,7 +166,7 @@ define_word:
         mov %esi, (%edx)        # update vocabulary
         call do_words_comma
         # word to define
-        and $-0x10, TOP
+        and $-0x8, TOP
         call do_words_comma
         push_stack
         mov regs+4, TOP # where to store
@@ -361,17 +361,12 @@ iobuff:
 	.data
 
 forth: .int .+4
-	.int .+16, 0xc0cf6000, (find), 0
-	.int .+16, 0xa5165f80, (compile_call), 0
-	.int .+16, 0xc47f8000, (compile_int_op), 0
 	.int .+16, 0xfc000000, (do_comma), 0
 	.int .+16, 0xfd200000, (do_comma_char), 0
 	.int .+16, 0x87e96000, (do_comma_char_shift), 0
 	.int .+16, 0x818c9620, (macros_now), 0
 	.int .+16, 0x192c4580, (nrmacros_now), 0
 	.int .+16, 0x48ab6000, (sh_decode), 0
-	.int .+16, 0x866a5800, (print_iobuff), 0
-	.int .+16, 0xc143c800, (do_hold), 0
 	.int .+16, 0xc8427600, (forth_now), 0
 	.int .+16, 0x14c26000, (over), 0
 	.int .+16, 0xf7f14000, (a_at_plus), 0

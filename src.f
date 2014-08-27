@@ -1,25 +1,18 @@
 % ( Main application )
-: bootw [ 2 +blk ] ;
-: numbers [ 4 +blk ] ;
-: view [ 6 +blk ] ;
-bootw load
+: numbers [ 2 +blk ] ;
+: view [ 4 +blk ] ;
 numbers load
-a@+ voc ffind cfa save view load
-8 pg 9 pg 10 pg 0 bye
+: . bl nrh flush ;
+view load
+0 pg 2 pg 4 pg 6 pg 8 pg
+a@+ drop ffind cfa save 0 bye
 % ( load numbers and do basic test )
-% ( bootstrap words )
-: ! nip ecx! !ecx
-: drop nip eax! ;
-: c! nip ecx! !cl drop ; 
-% ( Bootstrap words are needed for saved code to run )
-
 % ( Print numbers )
-: hold  [ 5 reg ] @ 1- dup [ 5 reg ] ! c! ;
 : digit 10 / dup ldedx #x30 + hold ;
 : hdigit dup #xf and 10 cmp -if 7 + then #x30 + hold 4 lsr ;
 : nrh hdigit jne nrh drop ; 
-: uu digit [ testeax ] jne uu drop ;
-: nr [ testeax ] -if uu ; ] then - uu 45 hold ;
+: uu digit testeax jne uu drop ;
+: nr testeax -if uu ; ] then - uu 45 hold ;
 : bl 32 hold ; : cr 10 hold ;
 %
 : digit ( n-n ) hold last digit; keep nr/10
@@ -46,11 +39,11 @@ a@+ voc ffind cfa save view load
     h, ( yellow number ) ] 4 ash nr yellow bl ; cr
     h, ( green word ) ] name green ; cr
     h, ( red word ) ] name red cr ; cr
-    h, ( blue word ) 0 reg ] find cfa exec [ cr
+    h, ( blue word ) 0 reg ] find cfa !esi drop *esi [ cr
     h, ( white word ) ] name black ; cr
     h, ( blue number ) ] 4 ash nrh blue bl ; cr
     h, ( yellow word ) ] name yellow ;
-  : .code dup 15 and dispatch ; ( o- )
+  : .code tagidx [ nop ] +l vexec ;
 ...
 % ( comment block xxv )
 % ( print code blocks )
