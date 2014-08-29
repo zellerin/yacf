@@ -6,10 +6,10 @@ yacf: raw
 clean:
 	rm -f *.o raw yacf parse
 
-raw: parse x86.f compiler.f src.f
-	cat x86.f compiler.f src.f |./parse > raw
+raw: parse x86.fth compiler.fth src.fth
+	cat x86.fth compiler.fth src.fth |./parse > raw
 
-recompile: x86.f c/parse recompile.f
+recompile: x86.fth c/parse recompile.f
 	cat x86.f recompile.f | ./c/parse  > recompile	
 
 CFL=-fomit-frame-pointer -Os -g
