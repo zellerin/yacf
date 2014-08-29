@@ -47,6 +47,7 @@ nrmacros
       #x045b8b 3c, #x80cd 2c, ;
 : /xor/ #x44333 3c, ;
 : /+/ #x044303 3c, ;
+: da@+ #x78b 2c, #x47f8d 3c, ;
 : *esi #xe6ff 2c, ;
 : eax 0 ; : ecx 1 ; : ebx 3 ;
 : reg! 11 shl #x038b +l 2c, ;
@@ -68,14 +69,18 @@ nrmacros
 : 1- decx %eax ( slightly more effective than -1 + ) ;
 % ( Basic words )
 forth
-
-: drop nip eax reg! ;
 : reg /reg/ ;
-: c! nip ecx reg! !cl drop ;
-: ! nip ecx reg! !ecx drop ;
 : dup dup ;
+: drop nip eax reg! ;
 : 2dup over over ;
 : 2drop nip drop ;
+: c! nip ecx reg! !cl drop ;
+: ! nip ecx reg! !ecx drop ;
+
+: + /+/ nip ;
+: @ @ ;
+: - - ;
+: break break ;
 
 : voc [ 0 reg ] @ ;
 : here [ 1 reg ] @ ;
@@ -89,17 +94,14 @@ forth
 : !iobuf [ 5 reg ] ! ;
 : hold iobuf 1- dup !iobuf c! ;
 : xor /xor/ nip ;
-: + /+/ nip ;
-: @ @ ;
-: - - ;
-: break break ;
-: @a dup ldedi ;
-
 : buffer 9 shl [ 9 reg @ ] +l ;
-
 %
 : cfa ( a-a ) voc entry address to code address ;
-% ( linux interface )
+% ( A register and linux interface )
+: a@+ dup da@+ ;
+: a! [ #xc789 2c, ] ( nop ) drop ;
+: @a dup ldedi ;
+
 : sys/3 ebx push /sys/ ebx pop #xc [ ,+stack ] ( nop ) ;
 : write 4 sys/3 drop ;
 : bye 2dup 1 sys/3 ;
@@ -116,6 +118,7 @@ cr macros
 : if #x75 2c, here ;
 : -if #x78 2c, here ;
 : then dup raddr - over 1- c! drop ; 
+
 cr forth
 : cfa 8 +@ ;
 : floop 2dup 4 + @ xor -16 and drop if nip testeax ; ] then
@@ -127,16 +130,17 @@ cr forth
 : doj relcfa -if -2 + #xeb c, c, ; 
 ] then -5 + #xe9 c,, ; 
 
-
 : vexec @ : exec !esi drop *esi [
+
 macros
 : jne a@+ ffind if 5 bye then relcfa -if
 -2 + #x75  c, c, ; ] then -6 + #x850f 2c, , ;
 
-forth
 % ( lalla )
 : ffind ; ( w-af ) find word in dictionary 
 : wjump ; ( wc- ) compile short relative call to passed word
 : jne ; jump to word unless zero flag set. Handles long calls.
 : relcfa ; relative CFA of word on address; set NF if near
+
+
 % 

@@ -369,8 +369,6 @@ forth: .int .+4
 	.int .+16, 0x48ab6000, (sh_decode), 0
 	.int .+16, 0xc8427600, (forth_now), 0
 	.int .+16, 0x14c26000, (over), 0
-	.int .+16, 0xf7f14000, (a_at_plus), 0
-	.int .+16, 0xf4a00000, (a_store), 0
 	.int 0,0,0,0
 
 	.section .sources, "a"
