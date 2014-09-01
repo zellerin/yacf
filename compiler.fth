@@ -15,7 +15,7 @@ forth
 : fexec find if drop err ; ] then
 : found cfa exec ;
 : imm? 2 reg find if ;
-: known? [ voc ] @ find ;
+: known? [ voc ] find ;
 : cw imm? jne found drop known? jne call drop err ;
 : macro 4a+ found ;
 : ?compile #x7 and 2 cmp drop ;
@@ -36,10 +36,10 @@ dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
 h, ( compile word ) ] cw ;
-h, ( define word ) ] 4 reg @ @ dhere 4 reg @ ! w, w, here w, ; cr
-over dup w, w, ( ignore twice ) cr
-w, ( yellow nr ) drop
-h, ( yellow word ) ] 0 reg fexec next cnr ;
+cr h, ( define word ) ] 4 reg @ @ dhere 4 reg @ ! w, w, here w, ; cr
+over dup w, w, ( ignore twice )
+cr w, ( yellow nr ) drop
+cr h, ( yellow word ) ] 0 reg fexec next cnr ;
 : tagidx dup #x7 and 2 shl ;
 : nop ;
 : cword tagidx [ nop ] +l vexec ;
@@ -56,7 +56,7 @@ all function expect the code on input cr )
 : load buffer @a over a! dup do a! drop ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : ... 2 +blk buffer a! 0 do ; 
-2 +blk load 18 bye
+2 +blk load flush 18 bye
 % ( comment block )
 : wfrom ( a-ac ) ; push on stack distance between address and here
 %

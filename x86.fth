@@ -121,7 +121,7 @@ cr macros
 
 cr forth
 : cfa 8 +@ ;
-: floop 2dup 4 + @ xor -16 and drop if nip testeax ; ] then
+: floop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
 : find @ testeax if ; ] then floop ;
 : ffind voc find ;
 
