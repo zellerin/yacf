@@ -4,8 +4,6 @@
 numbers load
 : . bl nrh flush ;
 view load
-0 pg 2 pg 4 pg 6 pg 8 pg
-a@+ drop ffind cfa save 0 bye
 % ( load numbers and do basic test )
 % ( Print numbers )
 : digit 10 / dup ldedx #x30 + hold ;
@@ -32,8 +30,6 @@ a@+ drop ffind cfa save 0 bye
 % ( Individual color words )
 % ( Print individual token categories )
   : name dname drop bl ;
-  : 2dup over over ;
-  : page flush 4 + ; ( just stall at same place )
   dhere ( address of table ) cr
     h, ( continued word ) ] dname drop ; cr
     h, ( yellow number ) ] 4 ash nr yellow bl ; cr
@@ -52,7 +48,34 @@ a@+ drop ffind cfa save 0 bye
   : 16x 4x 4x 4x 4x ;
   : 64x 16x 16x 16x 16x ;
   : show black 64x 64x drop ;
-  : pg cr dup buffer #x1fc +l show nr bl [ a@+ page ] name cr flush ;
+  : pg cr dup buffer #x1fc +l show nr bl [ a@+ page ] name top flush ;
+...
 %
 : .@-code ( n-n ) print code, decrease addr )
+% ( key-based operations )
+: 0var dhere 0 w, ;
+: vock [ 0var ] ;
+: map [ 0var ] ; vock map !
+: sread 3 sys/3 ;
+: key 4 here 120 + 0 sread drop here 120 + @ ;
+: fkey 4 shl vock find ;
+: defk map @ @ dhere map @ ! w, 4 shl w, here w, ;
+: blk [ 0var ] ;
+: found cfa exec ;
+: main [ blk ] @ pg
+	     key dup fkey jne found
+          drop drop nrh [ a@+ undef ] name main ;
+#x66 defk [ blk ] @ 2 + [ blk ] ! main ;
+#x62 defk [ blk ] @ -2 + [ blk ] ! main ;
+#x63 defk [ blk ] @ 1 xor [ blk ] ! main ;
+flush main
+%
+
+: 0var ; allocate memory cell
+: vock ; keys vocabulary
+: map ; current map to use
+: blk ; curent block
+: main ; view texts
+( f-orward, b-ackwards, c-omments )
+%
 

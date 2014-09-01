@@ -162,7 +162,6 @@ __attribute__((regparm(1))) int do_parse(int color)
       nbuff=sh_encode(buff);
       switch (*buff){
       case 0x19000000:
-      case 0x4aae2000:
       case 0x6a0c8000:
       case 0xc6a40000:
 	if ((color & 0xf)==7) color=(color &0xf0) | 4;
