@@ -6,7 +6,7 @@ numbers load
 view load
 % ( load numbers and do basic test )
 % ( Print numbers )
-: digit 10 / dup ldedx #x30 + hold ;
+: digit 10 / dup [ edx ] ldreg #x30 + hold ;
 : hdigit dup #xf and 10 cmp -if 7 + then #x30 + hold 4 lsr ;
 : nrh hdigit jne nrh drop ; 
 : uu digit testeax jne uu drop ;
