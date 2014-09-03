@@ -20,7 +20,6 @@ nrmacros
 : / #xbed231 3c, , #xf6f7 2c, ;
 : cmp #x3d c,, ;
 % : + ; Add number to top
-: reg! ; mov @ebx, reg
 : 2c, ( store 2byte opcode )
 : 3c, ( store 3byte opcode )
 : 2c,n ( store 2 byte opcode followed by short number )
@@ -28,41 +27,48 @@ nrmacros
 : / ( divides by number; remainder is left in edx. )
 : @-+ @ - + ; ( sub <addr>, %eax )
 
-% macros
+% ( assembler )
+cr macros
 : ; ] #xc3 c, ;
-: nop ;
+cr forth
+: eax 0 ; : ecx 1 ; : edx 2 ; : ebx 3 ;
+: esi 6 ; : edi 7 ; 
+cr nrmacros 
+: reg! 11 shl #x038b +l 2c, ;
+: ldreg 11 shl #xc089 +l 2c, ;
+: pop #x58 +l c, ;
+: push #x50 +l c, ;
 
+macros
+% ( Assembler )
+: reg! ; mov @ebx, reg
+: ldreg ; Load register ( cl ecx ) to TOP
+: edx ldreg ; also remainder after division
+: edi ldreg ; part of @a
+
+% 
+: /+/ #x044303 3c, ;
+: nip 4 ,+stack ;
 : !cl #x0888 2c, ;
 : !ecx #x0889 2c, ;
-: ldedx #xd089 2c, ;
-: ldedi #xf889 2c, ;
+: !esi #xc689 2c, ;
 : break 204 c, ;
 : @ #x8b 2c, ;
 : - #xd8f7 2c, ;
 : 1- 72 c, ;
 : dup ,put -4 ,+stack ;
-: nip 4 ,+stack ;
 : /reg/ #x85448d , ;
 : /sys/ #x0c538b 3c, #x084b8b 3c,
       #x045b8b 3c, #x80cd 2c, ;
 : /xor/ #x44333 3c, ;
-: /+/ #x044303 3c, ;
 : da@+ #x78b 2c, #x47f8d 3c, ;
 : *esi #xe6ff 2c, ;
-: eax 0 ; : ecx 1 ; : ebx 3 ;
-: reg! 11 shl #x038b +l 2c, ;
-: !esi #xc689 2c, ;
-: pop #x58 +l c, ;
-: push #x50 +l c, ;
 % 
 : ,put ; Make code to store eax below stack
 : ,+stack ; ( n- ) Make code to advance ( that is drop ) stack by value
 
 : xxx! ; Load word pointed by ebx to register
 : !xxx ; store register to pointed by eax 
-: ldxxx ; Load register ( cl ecx ) to TOP
-: ldedx ; also remainder after division
-: ldedi ; part of @a
 : break int $3 ( debugging )
 : @ movl @eax, eax ( stack does not move )
 : - ( negate - 2bit complement )
@@ -71,11 +77,11 @@ nrmacros
 forth
 : reg /reg/ ;
 : dup dup ;
-: drop nip eax reg! ;
+: drop nip [ eax ] reg! ;
 : 2dup over over ;
 : 2drop nip drop ;
-: c! nip ecx reg! !cl drop ;
-: ! nip ecx reg! !ecx drop ;
+: c! nip [ ecx ] reg! !cl drop ;
+: ! nip [ ecx ] reg! !ecx drop ;
 
 : + /+/ nip ;
 : @ @ ;
@@ -100,13 +106,14 @@ forth
 % ( A register and linux interface )
 : a@+ dup da@+ ;
 : a! [ #xc789 2c, ] ( nop ) drop ;
-: @a dup ldedi ;
-
-: sys/3 ebx push /sys/ ebx pop #xc [ ,+stack ] ( nop ) ;
+: @a dup [ edi ] ldreg ;
+: sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
 : write 4 sys/3 drop ;
 : bye 2dup 1 sys/3 ;
+
 : flush [ 8 reg ] @ [ 5 reg ] @-+ iobuf 1 write
   [ 8 reg ] @ !iobuf ;
+
 %
 : sys/3 ; unix syscall
 : w, ; write word on data stack 
