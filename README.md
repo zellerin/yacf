@@ -32,19 +32,18 @@ Primarily, pass data between build time and run time.
 
 As part of the init, `%ebx` is set up to point to them.
 
-| Idx | words | comment |
-| --- | ----- | ------- |
-| 0 | `voc` | Vocabulary for new words | 
-| 1 | `here` | Code heap first empty place |
-| 2 | | Last macro |
-| 3 | `dhere` | Data heap first empty space |
-| 4 | | Last defined regular word |
-| 5 | `hold`, `iobuf`, `!iobuf` | Output buffer |
-| 6 | | Last numeric macro |
-| 7 | | 
-| 8 | | end of iobuffer (constant) |
-| 9 | | First buffer byte |
-
+| Idx | words                     | comment                     |
+| --- | -----                     | -------                     |
+|   0 | `voc`                     | Vocabulary for new words    |
+|   1 | `here`                    | Code heap first empty place |
+|   2 |                           | Last macro                  |
+|   3 | `dhere`                   | Data heap first empty space |
+|   4 |                           | Last defined regular word   |
+|   5 | `hold`, `iobuf`, `!iobuf` | Output buffer               |
+|   6 |                           | Last numeric macro          |
+|   7 |                           |                             |
+|   8 |                           | end of iobuffer (constant)  |
+|   9 |                           | First buffer byte           |
 
 ## Flags and jumps
 - Zero flag and negative flag are used
