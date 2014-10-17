@@ -1,3 +1,4 @@
+#!/bin/bash
 end ()
 {
 	stty icanon echo
