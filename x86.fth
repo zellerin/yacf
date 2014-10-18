@@ -5,7 +5,6 @@
 : c,, c, , ;
 : ,put #x0389 2c, ;
 : ,+stack #x5b8d 2c,n ;
-
 cr
 nrmacros
 : + #xc083 2c,n ;
@@ -19,36 +18,53 @@ nrmacros
 : and #xe083 2c,n ;
 : / #xbed231 3c, , #xf6f7 2c, ;
 : cmp #x3d c,, ;
-% : + ; Add number to top
-: 2c, ( store 2byte opcode )
-: 3c, ( store 3byte opcode )
-: 2c,n ( store 2 byte opcode followed by short number )
-
-: / ( divides by number; remainder is left in edx. )
-: @-+ @ - + ; ( sub <addr>, %eax )
-
+% ( forth )
+: 2c, store 2byte opcode
+: 3c, store 3byte opcode
+: 2c,n store 1byte opcode followed by short number
+: c,, store octet instruction and long parameter
+: ,put compile code to TOP to /stack/
+: ,+stack compile code to advance stack by octet
+[ cr nrmacros
+: +  Add octet to top
+: +l Add word to top
+: +@ + @ 
+: @-+ @ - +
+: @ [ cr cr cr cr 
+: / divides by number; remainder is left in edx ;
 % ( assembler )
 cr macros
 : ; ] #xc3 c, ;
+: over+ #x044303 3c, ;
+: nip 4 ,+stack ;
 cr forth
 : eax 0 ; : ecx 1 ; : edx 2 ; : ebx 3 ;
-: esi 6 ; : edi 7 ; 
+: esp 4 ; : ebp 5 ; : esi 6 ; : edi 7 ; 
+: + over+ nip ;
 cr nrmacros 
 : reg! 11 shl #x038b +l 2c, ;
 : ldreg 11 shl #xc089 +l 2c, ;
-: pop #x58 +l c, ;
-: push #x50 +l c, ;
+: pop #x58 + c, ;
+: push #x50 + c, ;
 
 macros
-% ( Assembler )
-: reg! ; mov @ebx, reg
-: ldreg ; Load register ( cl ecx ) to TOP
-: edx ldreg ; also remainder after division
-: edi ldreg ; part of @a
-
+% ( Assembler ) cr macros
+: ; return
+: over+ over +
+: nip drop second value [
+cr forth 
+: eax top [
+cr
+: edx remainder after division
+: ebx stack
+: esp return stack
+: ebp regbase [
+ cr
+: edi a-reg [ cr cr 
+nrmacros
+: reg! /stack/ to reg
+: ldreg /reg/ to top
 % 
-: /+/ #x044303 3c, ;
-: nip 4 ,+stack ;
 : !cl #x0888 2c, ;
 : !ecx #x0889 2c, ;
 : !esi #xc689 2c, ;
@@ -64,16 +80,20 @@ macros
 : da@+ #x78b 2c, #x47f8d 3c, ;
 : *esi #xe6ff 2c, ;
 % 
-: ,put ; Make code to store eax below stack
-: ,+stack ; ( n- ) Make code to advance ( that is drop ) stack by value
-
-: xxx! ; Load word pointed by ebx to register
-: !xxx ; store register to pointed by eax 
+: !cl cl over !
+: !ecx ecx over !
+: !esi esi over !
 : break int $3 ( debugging )
-: @ movl @eax, eax ( stack does not move )
+: @ /top/ to top ( stack does not move )
 : - ( negate - 2bit complement )
-: 1- decx %eax ( slightly more effective than -1 + ) ;
-% ( Basic words )
+: 1- -1 + ;
+[ cr
+: /reg/ 4* regbase + @
+: /sys/ syscall, needs sysnr and three args
+: /xor/ over xor
+: da@+ drop a@+
+: *esi jump to esi [ 
+; % ( Basic words )
 forth
 : reg /reg/ ;
 : dup dup ;
@@ -83,7 +103,6 @@ forth
 : c! nip [ ecx ] reg! !cl drop ;
 : ! nip [ ecx ] reg! !ecx drop ;
 
-: + /+/ nip ;
 : @ @ ;
 : - - ;
 : break break ;
