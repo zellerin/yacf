@@ -35,7 +35,7 @@ view load
     h, ( yellow number ) ] 4 ash nr yellow bl ; cr
     h, ( green word ) ] name green ; cr
     h, ( red word ) ] name red cr ; cr
-    h, ( blue word ) 0 reg ] find cfa !esi drop *esi [ cr
+    h, ( blue word ) 0 reg ] find cfa [ eax ] push drop ; cr
     h, ( white word ) ] name black ; cr
     h, ( blue number ) ] 4 ash nrh blue bl ; cr
     h, ( yellow word ) ] name yellow ;

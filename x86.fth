@@ -67,7 +67,6 @@ nrmacros
 % 
 : !cl #x0888 2c, ;
 : !ecx #x0889 2c, ;
-: !esi #xc689 2c, ;
 : break 204 c, ;
 : @ #x8b 2c, ;
 : - #xd8f7 2c, ;
@@ -78,11 +77,9 @@ nrmacros
       #x045b8b 3c, #x80cd 2c, ;
 : /xor/ #x44333 3c, ;
 : da@+ #x78b 2c, #x47f8d 3c, ;
-: *esi #xe6ff 2c, ;
 % 
 : !cl cl over !
 : !ecx ecx over !
-: !esi esi over !
 : break int $3 ( debugging )
 : @ /top/ to top ( stack does not move )
 : - ( negate - 2bit complement )
@@ -92,7 +89,6 @@ nrmacros
 : /sys/ syscall, needs sysnr and three args
 : /xor/ over xor
 : da@+ drop a@+
-: *esi jump to esi [ 
 ; % ( Basic words )
 forth
 : reg /reg/ ;
@@ -156,7 +152,7 @@ cr forth
 : doj relcfa -if -2 + #xeb c, c, ; 
 ] then -5 + #xe9 c,, ; 
 
-: vexec @ : exec !esi drop *esi [
+: vexec @ : exec [ eax ] push drop ;
 
 macros
 : jne a@+ ffind if 5 bye then relcfa -if
