@@ -1,16 +1,15 @@
+all: yacf editor.blk
+
 yacf: comp.o shannon.o
 	ld -o $@ -T yacf.lnk comp.o shannon.o
 
 yacf: raw
 
 clean:
-	rm -f *.o raw yacf parse
+	rm -f *.o raw yacf parse *.blk
 
-raw: parse x86.fth compiler.fth src.fth
-	cat x86.fth compiler.fth src.fth |./parse > raw
-
-recompile: x86.fth c/parse recompile.f
-	cat x86.f recompile.f | ./c/parse  > recompile	
+raw: x86.blk compiler.blk 
+	cat $^ > raw
 
 CFL=-fomit-frame-pointer -Os -g
 
@@ -26,3 +25,7 @@ code: code.bin
 
 code.bin: yacf
 	./yacf 3> code.bin
+
+# Compiled source
+%.blk: %.fth parse
+	./parse <$< >$@ 

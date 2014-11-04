@@ -15,16 +15,16 @@ test/show. Currently, it dumps code and shows some pages.
 `make code` shows compiled code using objdump.
 
 ## Tags
-| tag | meaning |
-| --- | ------- |
-| 0 | Continuation of word |
-| 1 | Decimal number |
-| 2 | Word to compile (green) |
-| 3 | Word to define (red) |
-| 4 | Editor word (blue) |
-| 5 | Comment (white) |
-| 6 | Hexa number |
-| 7 | Interactive word (yellow) |
+| tag | meaning                   |
+| --- | -------                   |
+|   0 | Continuation of word      |
+|   1 | Decimal number            |
+|   2 | Word to compile (green)   |
+|   3 | Word to define (red)      |
+|   4 | Editor word (blue)        |
+|   5 | Comment (white)           |
+|   6 | Hexa number               |
+|   7 | Interactive word (yellow) |
 
 ## System registers
 
@@ -62,4 +62,7 @@ As part of the init, `%ebx` is set up to point to them.
 ## Issues
 - Long names are probably not tail called - fix `next` with like of
   `dup -15 and drop if a@+ drop @a @ then ;` (but it did not help now)
-
+- The payload code is included and cannot be bigger than what is there now
+## Payloads
+- yacf is started with a source on stream as channel 4,
+- 

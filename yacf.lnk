@@ -27,7 +27,7 @@ SECTIONS
  .registers : { *(.data.registers) } : all
  .text : { *(.text) *(.rodata) *.o(.data)} : all
  .data ALIGN(0x200) : { raw(.data); } : all
-.heap : { *(.bss.heap .bss.words .bss) } : all
+ .heap : {*(.bss.pages .bss.heap .bss.words .bss) } : all
 			     
 /DISCARD/ : {*(.iplt .eh_frame .rel.dyn .igot.plt .comment .debug_*)}
 }
