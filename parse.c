@@ -19,7 +19,7 @@ int read_buffer(void)
   int data=read(0,  ibuff, 40900);
   if (data==0) return 0;
   ibuff[data-1]=' ';
-  ibuff[data]='_';
+  ibuff[data]=127;
   ibuff[data+1]=0;
   iobuff=ibuff;
 }

@@ -378,6 +378,10 @@ code:
 macros: .int 0
 nrmacros: .int 0
 
+	.section .bss.pages
+pages:		
+	.space 0x10000
+
 	.section .bss.heap
 heap:
         .space 0x0f000
@@ -388,3 +392,4 @@ iobuffer_end:
 words_area:
         .space 0x10000
 stack_end:
+

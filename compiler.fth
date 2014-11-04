@@ -56,7 +56,15 @@ all function expect the code on input cr )
 : load buffer @a over a! dup do a! drop ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : ... 2 +blk buffer a! 0 do ; 
+: sread 3 sys/3 ;
+cr #x10000 2 +blk buffer 4 sread drop
 2 +blk load flush 18 bye
 % ( comment block )
-: wfrom ( a-ac ) ; push on stack distance between address and here
-%
+: do compile word and advance
+: 1x compile word unless on page boundary
+: wfrom ( a-ac ) push on stack distance between address and here
+: save ( a- ) write TOP to here on stream 3
+: load ( b- ) save address, load block, continue
+: +blk ( -a ) Address of the next block ;
+: ... load next block ; ( done )
+% 

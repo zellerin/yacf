@@ -163,6 +163,4 @@ macros
 : wjump ; ( wc- ) compile short relative call to passed word
 : jne ; jump to word unless zero flag set. Handles long calls.
 : relcfa ; relative CFA of word on address; set NF if near
-
-
 % 
