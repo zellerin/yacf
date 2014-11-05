@@ -1,30 +1,35 @@
 % ( compile word )
-here 0 , : base [ nop ] nop ;
-: call cfa #x20 ;? if 4a+ 8 + ] then c, c, ;
+: prev here -4 + ;
+0 , : pbase [ prev ] ;
+0 ,
+: pmacros [ prev dup ] nop [ 4 reg ] ! ;
+: imm? [ nop ] find if ;
+0 ,
+: pnrmacros [ prev dup ] nop [ 4 reg ] ! ;
+: nrm? [ nop ] find if ;
+0 ,
+: known? [ prev dup ] find ;
+: pic [ nop ] nop [ 4 reg ] ! ;
+: call cfa pbase @ + dup c, 8 ash #x20 + ;? if 4a+ 8 + ] then c, ;
 : macro 4a+ found ;
 : next @a @ ;
 : found cfa exec ;
 : cw imm? jne found drop known? jne call drop err ;
-: cnr ?compile if next 6 reg find jne macro 2drop #x30 c, c, then ;
 ...
 % ( comment block xv )
-: base 
+: pbase negative start of compiled code 
 : call do a call
 : next ( -w ) ; ( next word to compile )
 : name ( w- ) ; ( print name of word with space before )
-: err ( w- ) ; ( print error message on word )
-: h, ( - ) ; ( store value of here on dstack )
-: c/j ( ao- ) ; ( compile call or jump. Takes address of cell and opcode. )
-: ;? ( - ) ; ( ZF=1, if ; follows - note drop does not change flags )
-: doj ( o0-ox ) ;
-: call ( ) ; compile call
 : ?compile ( n- ) ; Is the word green?
+: cnr if compile word follows, compile octet load ;
 % ( compiler table )
+: cnr ?compile if next nrm? jne macro 2drop c, #x30 c, then ;
 dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
 h, ( compile word ) ] cw ;
-cr h, ( define word ) ] 4 reg @ @ dhere 4 reg @ ! w, w, here base @ + w, ; cr
+cr h, ( define word ) ] 4 reg @ @ dhere 4 reg @ ! w, w, here w, ; cr
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
 cr h, ( yellow word ) ] 0 reg fexec next cnr ;
@@ -42,7 +47,6 @@ all function expect the code on input cr )
 : save wfrom 3 write drop ;
 : load buffer @a over a! dup do a! drop ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
-: ... 2 +blk buffer a! 0 do ; 
 : sread 3 sys/3 ;
 ...
 % ( comment block )
@@ -54,16 +58,18 @@ all function expect the code on input cr )
 : +blk ( -a ) Address of the next block ;
 : ... load next block ; ( done )
 % ( asm macros )
-macros
+pmacros 
 : nop 0 2c, ;
-
+: ; ] 8 2c, ;
+pnrmacros
+: movwf #x80 +l 2c, ;
 forth
-2 +blk load flush 0 bye
+: ... 2 +blk buffer a! 0 do ; ( this must be on end )
+pic
+... ( now we compile by new rules )
 % ( macros )
 % ( asm test )
-here - base !
-: foo foo nop;
-: bar foo bar ;
-: bar foo bar ;
-base @ - -1 +  save 0 bye
+here - pbase !
+: foo foo 1 nop 23 movwf ;
+pbase @ - save 0 flush bye
 % ( comment )
