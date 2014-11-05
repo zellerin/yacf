@@ -1,20 +1,18 @@
 % ( compile word )
-: prev here -4 + ;
-0 , : pbase [ prev ] ;
-0 ,
-: pmacros [ prev dup ] nop [ 4 reg ] ! ;
+: voc! [ 4 reg ] ! ;
+: pbase [ dhere ] ; 0 w,
+: pmacros [ dhere dup ] voc! ; 0 w,
 : imm? [ nop ] find if ;
-0 ,
-: pnrmacros [ prev dup ] nop [ 4 reg ] ! ;
+: pnrmacros [ dhere dup ] voc! ; 0 w,
 : nrm? [ nop ] find if ;
-0 ,
-: known? [ prev dup ] find ;
-: pic [ nop ] nop [ 4 reg ] ! ;
+: known? [ dhere dup ] find ; 0 w,
+: pic [ nop ] voc! here - pbase ! ;
 : call cfa pbase @ + dup c, 8 ash #x20 + ;? if 4a+ 8 + ] then c, ;
 : macro 4a+ found ;
 : next @a @ ;
 : found cfa exec ;
 : cw imm? jne found drop known? jne call drop err ;
+: cnr ?compile if next nrm? jne macro 2drop c, #x30 c, then ;
 ...
 % ( comment block xv )
 : pbase negative start of compiled code 
@@ -24,7 +22,6 @@
 : ?compile ( n- ) ; Is the word green?
 : cnr if compile word follows, compile octet load ;
 % ( compiler table )
-: cnr ?compile if next nrm? jne macro 2drop c, #x30 c, then ;
 dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
@@ -69,7 +66,6 @@ pic
 ... ( now we compile by new rules )
 % ( macros )
 % ( asm test )
-here - pbase !
 : foo foo 1 nop 23 movwf ;
 pbase @ - save 0 flush bye
 % ( comment )
