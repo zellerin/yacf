@@ -9,7 +9,7 @@ clean:
 	rm -f *.o raw yacf parse *.blk
 
 raw: x86.blk compiler.blk 
-	cat $^ > raw
+	echo 'x' |cat $^ -  > raw
 
 CFL=-fomit-frame-pointer -Os -g
 
