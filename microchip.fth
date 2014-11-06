@@ -16,7 +16,8 @@
 : found cfa exec ;
 : cw imm? jne found drop known? jne call drop err ;
 : cnr ?compile if next nrm? jne macro 2drop c, #x30 c, then ;
-...
+: tagidx dup #x7 and 2 shl ;
+
 % ( comment block xv )
 : pbase negative start of compiled code 
 : call do a call
@@ -25,38 +26,24 @@
 : ?compile ( n- ) ; Is the word green?
 : cnr if compile word follows, compile octet load ;
 % ( compiler table )
+: dbg dup cr name bl pbase @ here + 1 ash hdigit hdigit hdigit drop flush ;
 dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
 h, ( compile word ) ] cw ;
-cr h, ( define word ) ] 4 reg @ @ dhere 4 reg @ ! w, w, here w, ; cr
+cr h, ( define word ) ] dbg 4 reg @ @ dhere 4 reg @ ! w, w, here w, ; cr
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
-cr h, ( yellow word ) ] 0 reg fexec next cnr ;
-: tagidx dup #x7 and 2 shl ;
+cr h, ( yellow word ) ]  0 reg fexec next cnr ;
 : cword tagidx [ nop ] +l vexec ;
-...
 % ( Compile single word. cr
 the table of functions is patched back after function is created. cr
 all function expect the code on input cr )
-( define ) load 
 % ( compile block )
-: do drop a@+ cword
-: 1x @a 23 shl jne do drop ;
-: wfrom - here + dup - here + ;
-: save wfrom 3 write drop ;
-: load buffer @a over a! dup do a! drop ;
-: +blk @a [ 0 buffer - ] +l 9 lsr + ;
-: sread 3 sys/3 ;
-...
+: dbg 10 hold @a dup @ dname drop bl dup @ nrh bl nrh flush ; 
+: do ( dbg ) drop a@+ cword do ;
 % ( comment block )
-: do compile word and advance
-: 1x compile word unless on page boundary
-: wfrom ( a-ac ) push on stack distance between address and here
-: save ( a- ) write TOP to here on stream 3
-: load ( b- ) save address, load block, continue
-: +blk ( -a ) Address of the next block ;
-: ... load next block ; ( done )
+: do compile word and advance ;
 % ( asm macros )
 pmacros 
 : nop 0 2c, ;
@@ -70,12 +57,8 @@ pnrmacros
 : ifbit #x1800 +l 2c, ; 
 forth
 : bit 7 shl + ;
-: ... 2 +blk buffer a! 0 do ; ( this must be on end )
-pic
-... ( now we compile by new rules )
-% ( macros )
-% ( asm test )
+0 do pic
 : foo [ 64 3 bit ] ifbit ;
 : bar foo bar ;
-end
+end 
 % ( comment )

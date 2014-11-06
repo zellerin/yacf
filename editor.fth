@@ -1,23 +1,3 @@
-% ( Main application )
-: numbers [ 2 +blk ] ;
-: view [ 4 +blk ] ;
-numbers load
-: . bl nrh flush ;
-view load
-% ( load numbers and do basic test )
-% ( Print numbers )
-: digit 10 / dup [ edx ] ldreg #x30 + hold ;
-: hdigit dup #xf and 10 cmp -if 7 + then #x30 + hold 4 lsr ;
-: nrh hdigit jne nrh drop ; 
-: uu digit testeax jne uu drop ;
-: nr testeax -if uu ; ] then - uu 45 hold ;
-: bl 32 hold ; : cr 10 hold ;
-%
-: digit ( n-n ) hold last digit; keep nr/10
-: hdigit ( n-n )hold last hexa digit, keep nr/0x10
-: nr ( n- ) hold signed decimal number
-: nrh ( n- ) hold unsigned hexa number
-: uu ( n- ) hold unsigned decimal number
 % ( ANSI coloured output. ) 
 : hld/ dup #xff and hold 8 ash jne hld/ drop ;
 : fg 109 hold hold #x1b5b33 hld/ ;
@@ -26,7 +6,6 @@ view load
 : yellow 51 fg ; : red 49 fg ;
 : black 48 fg ; ( when white background )
 : black 57 fg ; cr
-...
 % ( Individual color words )
 % ( Print individual token categories )
   : name dname drop bl ;
@@ -39,8 +18,9 @@ view load
     h, ( white word ) ] name black ; cr
     h, ( blue number ) ] 4 ash nrh blue bl ; cr
     h, ( yellow word ) ] name yellow ;
-  : .code tagidx [ nop ] +l vexec ;
-...
+: tagidx dup #x7 and 2 shl ;
+: nop ;
+: .code tagidx [ nop ] +l vexec ;
 % ( comment block xxv )
 % ( print code blocks )
   : .@-code -4 + dup @ .code ;
@@ -49,7 +29,6 @@ view load
   : 64x 16x 16x 16x 16x ;
   : show black 64x 64x drop ;
   : pg cr dup buffer #x1fc +l show nr bl [ a@+ page ] name top flush ;
-...
 %
 : .@-code ( n-n ) print code, decrease addr )
 % ( key-based operations )
