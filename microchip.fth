@@ -1,13 +1,16 @@
 % ( compile word )
 : voc! [ 4 reg ] ! ;
-: pbase [ dhere ] ; 0 w,
+: pbase [ dhere dup ] ; 0 w,
+: end [ dup ] @ - save 0 flush bye ;
+: reladr [ nop ] @ + 1 ash ;
+
 : pmacros [ dhere dup ] voc! ; 0 w,
 : imm? [ nop ] find if ;
 : pnrmacros [ dhere dup ] voc! ; 0 w,
 : nrm? [ nop ] find if ;
 : known? [ dhere dup ] find ; 0 w,
 : pic [ nop ] voc! here - pbase ! ;
-: call cfa pbase @ + dup c, 8 ash #x20 + ;? if 4a+ 8 + ] then c, ;
+: call cfa reladr #x2000 +l ;? if 4a+ #x800 +l ] then 2c, ;
 : macro 4a+ found ;
 : next @a @ ;
 : found cfa exec ;
@@ -59,13 +62,20 @@ pmacros
 : nop 0 2c, ;
 : ; ] 8 2c, ;
 pnrmacros
-: movwf #x80 +l 2c, ;
+: @and #x500 +l 2c, ;
+: @+ #x700 +l 2c, ;
+: ! #x80 +l 2c, ;
+: 0! #x180 +l 2c, ;
+: @ #x0800 +l 2c, ;
+: ifbit #x1800 +l 2c, ; 
 forth
+: bit 7 shl + ;
 : ... 2 +blk buffer a! 0 do ; ( this must be on end )
 pic
 ... ( now we compile by new rules )
 % ( macros )
 % ( asm test )
-: foo foo 1 nop 23 movwf ;
-pbase @ - save 0 flush bye
+: foo [ 64 3 bit ] ifbit ;
+: bar foo bar ;
+end
 % ( comment )
