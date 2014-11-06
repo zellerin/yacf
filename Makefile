@@ -8,8 +8,8 @@ yacf: raw
 clean:
 	rm -f *.o raw yacf parse *.blk
 
-raw: x86.blk compiler.blk 
-	echo 'x' |cat $^ -  > raw
+raw: x86.blk numbers.blk
+	cat $^ > raw
 
 CFL=-fomit-frame-pointer -Os -g
 
