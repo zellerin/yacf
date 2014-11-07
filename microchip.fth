@@ -1,14 +1,15 @@
 % ( compile word )
 : voc! [ 4 reg ] ! ;
-: pbase [ dhere dup ] ; 0 w,
-: end [ dup ] @ - save 0 flush bye ;
-: reladr [ nop ] @ + 1 ash ;
+: 0var dhere 0 w, ;
+: pbase [ 0var ] ;
+: end [ pbase ] @ - save 0 flush bye ;
+: reladr [ pbase ] @ + 1 ash ;
 
-: pmacros [ dhere dup ] voc! ; 0 w,
+: pmacros [ 0var dup ] voc! ;
 : imm? [ nop ] find if ;
-: pnrmacros [ dhere dup ] voc! ; 0 w,
+: pnrmacros [ 0var dup ] voc! ;
 : nrm? [ nop ] find if ;
-: known? [ dhere dup ] find ; 0 w,
+: known? [ 0var dup ] find ;
 : pic [ nop ] voc! here - pbase ! ;
 : call cfa reladr #x2000 +l ;? if 4a+ #x800 +l ] then 2c, ;
 : macro 4a+ found ;
