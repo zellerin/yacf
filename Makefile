@@ -25,7 +25,7 @@ parse: LDFLAGS=
 %.blk: %.fth parse
 	./parse <$< >$@ 
 
-compile: yacf compiler.blk
+compile: yacf compiler.blk compshare.blk
 	cat compshare.blk compiler.blk > c
 	$(strace) ./yacf 4< c 3> code.bin 5> data.bin
 	objdump -D -m  i386 -b binary code.bin
