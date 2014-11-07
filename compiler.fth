@@ -7,13 +7,16 @@
 : relcfa cfa raddr -126 cmp ;
 : ,call #xE8 c, cfa raddr -4 + , ;
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
+: rfloop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then [ dbase ] @ - +
+: rfind @ testeax if ; ] then rfloop ;
+
 % see below 
 %
 : voc! 4 reg ! ;
 : target [ 0var dup ] voc! ;
-: known? [ nop ] find ;
+: known? [ nop ] rfind ;
 : there [ base ] @ here + ;
-: call dup . flush ;? if 4a+ doj ; ] then ,call ;
+: call flush ;? if 4a+ doj ; ] then ,call ;
 : imm? 2 reg find if ;
 : cw imm? jne found drop known? jne call drop err ;
 : macro 4a+ found ;
@@ -31,7 +34,7 @@
 : call ( ) ; compile call
 : ?compile ( n- ) ; Is the word green?
 % ( compiler table )
-: dbg dup cr name bl there nrh bl dhere nrh flush ;
+: dbg dup cr name bl there nrh bl dthere nrh flush ;
 dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
@@ -56,14 +59,21 @@ all function expect the code on input cr )
 : load buffer @a over a! dup do a! drop ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : ... 2 +blk buffer a! 0 do ; 
+: dfrom - dhere + dup - dhere + ;
+: dsave dfrom 5 write ;
+
 ... 
 % ( comment block )
 : do compile word and advance
 : 1x compile word unless on page boundary
 : load ( b- ) save address, load block, continue
 : +blk ( -a ) Address of the next block ;
-: ... load next block ; ( done )
+: ... load next block
+; ( done )
 % ( test )
-here dup - #x2000 + dup . base ! target
+here - #x2000 + base !
+dhere dup here target
 : foo foo foo foo foo  ;
-save 0 bye
+: bar foo break bar ;
+: baz 1 +l ;
+save dsave 0 bye
