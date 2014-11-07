@@ -1,21 +1,23 @@
- % ( bootstrap macros )
-forth
-: name dname drop 10 hold ;
-: 4a+ a@+ drop ;
+% ( redo calls def , with offset )
+: 0var dhere 0 w, ;
+: base [ 0var ] ;
+: dbase [ 0var ] ;
+: dthere [ dbase ] @ dhere + ;
+: cfa 8 +@ [ base ] @ - + ;
+: relcfa cfa raddr -126 cmp ;
+: ,call #xE8 c, cfa raddr -4 + , ;
+: doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
+: rfloop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then [ dbase ] @ - +
+: rfind @ testeax if ; ] then rfloop ;
 
-% ( conditionals )
-: @@ ( n- ) find next word in vocabulary
-
-% ( compile word )
-: next @a @ ;
-: err name [ a@+ ] error name 
-: ;? next [ a@+ ; ] cmp drop ;
-
-: call ;? if 4a+ doj ; ] then ,call ;
-: fexec find if drop err ; ] then
-: found cfa exec ;
+% see below 
+%
+: voc! 4 reg ! ;
+: target [ 0var dup ] voc! ;
+: known? [ nop ] rfind ;
+: there [ base ] @ here + ;
+: call flush ;? if 4a+ doj ; ] then ,call ;
 : imm? 2 reg find if ;
-: known? [ voc ] find ;
 : cw imm? jne found drop known? jne call drop err ;
 : macro 4a+ found ;
 : ?compile #x7 and 2 cmp drop ;
@@ -32,11 +34,12 @@ forth
 : call ( ) ; compile call
 : ?compile ( n- ) ; Is the word green?
 % ( compiler table )
+: dbg dup cr name bl there nrh bl dthere nrh flush ;
 dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
 h, ( compile word ) ] cw ;
-cr h, ( define word ) ] 4 reg @ @ dhere 4 reg @ ! w, w, here w, ; cr
+cr h, ( define word ) ] dbg 4 reg @ @ dhere 4 reg @ ! w, w, there w, ; cr
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
 cr h, ( yellow word ) ] 0 reg fexec next cnr ;
@@ -56,15 +59,21 @@ all function expect the code on input cr )
 : load buffer @a over a! dup do a! drop ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : ... 2 +blk buffer a! 0 do ; 
-: sread 3 sys/3 ;
-cr #x10000 2 +blk buffer 4 sread drop
-2 +blk load flush 18 bye
+: dfrom - dhere + dup - dhere + ;
+: dsave dfrom 5 write ;
+
+... 
 % ( comment block )
 : do compile word and advance
 : 1x compile word unless on page boundary
-: wfrom ( a-ac ) push on stack distance between address and here
-: save ( a- ) write TOP to here on stream 3
 : load ( b- ) save address, load block, continue
 : +blk ( -a ) Address of the next block ;
-: ... load next block ; ( done )
-% 
+: ... load next block
+; ( done )
+% ( test )
+here - #x2000 + base !
+dhere dup here target
+: foo foo foo foo foo  ;
+: bar foo break bar ;
+: baz 1 +l ;
+save dsave 0 bye
