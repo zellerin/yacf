@@ -55,11 +55,19 @@ pnrmacros
 : ! #x80 +l 2c, ;
 : 0! #x180 +l 2c, ;
 : @ #x0800 +l 2c, ;
-: ifbit #x1800 +l 2c, ; 
+: ifbit #x1800 +l 2c, ;
+: @1+! #x0a80 +l 2c, ;
+: @1-! #x0380 +l 2c, ;
+: @1+ #x0a00 +l 2c, ;
 forth
 : bit 7 shl + ;
 0 do pic
-: foo [ 64 3 bit ] ifbit ;
-: bar foo bar ;
+: dup 0 ! 4 @1+! ;
+: drop 4 @1-! 0 @ ;
+: init
+  #xf 0! ( tmr1h )
+  #xe 0! ( tmr1l )
+  #05 0! ( gpinit )
+;
 end 
 % ( comment )
