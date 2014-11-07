@@ -7,8 +7,8 @@
 : relcfa cfa raddr -126 cmp ;
 : ,call #xE8 c, cfa raddr -4 + , ;
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
-: rfloop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then [ dbase ] @ - +
-: rfind @ testeax if ; ] then rfloop ;
+: rfloop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
+: rfind @  [ dbase ] @ - + testeax if ; ] then rfloop ;
 
 % see below 
 %
@@ -39,7 +39,7 @@ dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
 h, ( compile word ) ] cw ;
-cr h, ( define word ) ] dbg 4 reg @ @ dhere 4 reg @ ! w, w, there w, ; cr
+cr h, ( define word ) ] dbg 4 reg @ @ dhere [ dbase ] @ + dup . 4 reg @ ! w, w, there w, ; cr
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
 cr h, ( yellow word ) ] 0 reg fexec next cnr ;
@@ -72,6 +72,7 @@ all function expect the code on input cr )
 ; ( done )
 % ( test )
 here - #x2000 + base !
+dhere - #x3000 + dup . dbase !
 dhere dup here target
 : foo foo foo foo foo  ;
 : bar foo break bar ;
