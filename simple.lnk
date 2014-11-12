@@ -6,7 +6,7 @@
  */
 
 /* Part of the source is raw binary. */
-INPUT(test.o)
+INPUT(simple.o)
 TARGET(binary)
 INPUT(data.bin)
 INPUT(code.bin)
@@ -25,8 +25,8 @@ SECTIONS
 {
  . = 0x20000;
  . = . + SIZEOF_HEADERS;
- .text : { test.o(.text) code.bin(.data) data.bin(.text)} : all
- .heap : { test.o(.bss) } : all
+ .text : { simple.o(.text) code.bin(.data) data.bin(.text)} : all
+ .heap : { simple.o(.bss) } : all
 			     
 /DISCARD/ : {*(.iplt .eh_frame .rel.dyn .igot.plt .comment .debug_*)}
 }

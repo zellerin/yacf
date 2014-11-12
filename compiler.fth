@@ -2,23 +2,20 @@
 : relcfa cfa raddr -126 cmp ;
 : ,call #xE8 c, cfa raddr -4 + , ;
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
-: call flush ;? if 4a+ doj ; ] then ,call ;
-: imm? 2 reg find if ;
+: call ;? if 4a+ doj ; ] then ,call ;
 : cw imm? jne found drop known? jne call drop err ;
-: macro 4a+ found ;
-: cnr ?compile if next 6 reg find jne macro 2drop [ a@+ dup ] cw #xb8 c,, then ;
-% ( comment block xv )
-: cw 
-: name ( w- ) ; ( print name of word with space before )
-: err ( w- ) ; ( print error message on word )
-: h, ( - ) ; ( store value of here on dstack )
-: c/j ( ao- ) ; ( compile call or jump. Takes address of cell and opcode. )
-: ;? ( - ) ; ( ZF=1, if ; follows - note drop does not change flags )
-: doj ( o0-ox ) ;
-: call ( ) ; compile call
-: ?compile ( n- ) ; Is the word green?
-% ( compiler table )
+: ,lit [ a@+ dup ] cw #xb8 c,, ;
+: ytog next 6 reg find if 2drop ,lit ; ] then 4a+ found ; 
+: cnr ?compile if ytog then ;
 : dbg dup cr name bl there nrh bl dthere nrh flush ;
+% ( comment block xv )
+: relcfa ( a-o ) relative cfa for short calls ; set flag if small
+: ,call ( ) ; compile call
+: doj ( o0-ox )
+: call ( ) ; compile call or jump
+: ytog handle yellow to green transition  
+;
+% ( compiler table )
 dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
@@ -43,8 +40,6 @@ all function expect the code on input cr )
 : load buffer @a over a! dup do a! drop ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : ... 2 +blk buffer a! 0 do ; 
-: dfrom - dhere + dup - dhere + ;
-: dsave dfrom 5 write ;
 ... 
 % ( comment block )
 : do compile word and advance
@@ -54,17 +49,22 @@ all function expect the code on input cr )
 : ... load next block
 ; ( done )
 % ( simple sample app )
-here - base !
-dhere - #x3000 + dbase !
-dhere dup here target
+mark target
 0var
 : over dup [ #x08438b 3c, ] ( nop ) ;
 : 2dup over over ;
 : sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
 : bye 2dup 1 sys/3 ;
+: xor /xor/ nip ;
+: + over+ nip ;
+: dup dup ;
+: drop nip [ eax ] reg! ;
+: 2drop nip drop ;
+: c! nip [ ecx ] reg! !cl drop ;
+: ! nip [ ecx ] reg! !ecx drop ;
 there over ! drop 
 ] 0 bye ;
-save dsave 0 bye
+dump 0 bye
 
 % 
 % ( to use later )
@@ -74,7 +74,7 @@ save dsave 0 bye
 
 : over dup [ #x08438b 3c, ] ( nop ) ;
 : 2dup over over ;
-: xor /xor/ nip ;
+
 : floop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
 : find @ testeax if ; ] then floop ;
 : voc 0 ; 
