@@ -8,6 +8,7 @@ forth
 : bl 32 hold ; : cr 10 hold ;
 : . bl nrh flush ;
 cr
+: nop ;
 : load buffer a! ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : sread 3 sys/3 ;

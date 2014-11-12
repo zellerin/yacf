@@ -1,30 +1,14 @@
-% ( redo calls def , with offset )
-: 0var dhere 0 w, ;
-: base [ 0var ] ;
-: dbase [ 0var ] ;
-: dthere [ dbase ] @ dhere + ;
-: cfa 8 +@ [ base ] @ - + ;
+% ( redo calls def, with offset )
 : relcfa cfa raddr -126 cmp ;
 : ,call #xE8 c, cfa raddr -4 + , ;
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
-: rfloop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
-: rfind @ testeax if ; ] then [ dbase ] @ - + rfloop ;
-
-% see below 
-%
-: voc! 4 reg ! ;
-: target [ 0var dup ] voc! ;
-: known? [ nop ] rfind ;
-: there [ base ] @ here + ;
 : call flush ;? if 4a+ doj ; ] then ,call ;
 : imm? 2 reg find if ;
 : cw imm? jne found drop known? jne call drop err ;
 : macro 4a+ found ;
-: ?compile #x7 and 2 cmp drop ;
 : cnr ?compile if next 6 reg find jne macro 2drop [ a@+ dup ] cw #xb8 c,, then ;
 % ( comment block xv )
 : cw 
-: next ( -w ) ; ( next word to compile )
 : name ( w- ) ; ( print name of word with space before )
 : err ( w- ) ; ( print error message on word )
 : h, ( - ) ; ( store value of here on dstack )
