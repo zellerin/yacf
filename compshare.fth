@@ -46,10 +46,10 @@
 
 ( saving heap and data heap )
 : wfrom - here + dup - here + ;
-: save wfrom 3 write drop ;
+: save wfrom 3 write  ;
 : dfrom - dhere + dup - dhere + ;
 : dsave dfrom 5 write ;
-: mark here - base ! dhere - dbase ! dhere dup here ;
+: mark here - base ! dhere - dbase ! dhere here ;
 : dump save dsave ;
 : init there over ! drop ;
 
@@ -58,9 +58,9 @@
 : save ( a- ) write to stream 3 from address to here
 : dfrom 
 : dsave ( a- ) write to stream 5 from address to dhere
-: mark marks here and dhere as start for dumo
-: dump save heap and data heap
-: init boot code follows 
+: mark ( -aa ) marks here and dhere as start for dumo
+: dump ( aa- ) save heap (from top address) and data heap (from next address)
+: init ( a- ) boot code follows; store its location to address
 
 cr (search in offsetted words )
 ;
