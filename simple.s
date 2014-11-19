@@ -1,3 +1,16 @@
+/*
+ * Memory layout:
+
+| passed as | Address                |                        |
+|-----------+------------------------+------------------------|
+| %ecx      | _binary_code_bin_start | Start of code.bin      |
+| TOP (eax) | _binary_data_bin_start | Start of data.bin      |
+| reg word  | pseudoregisters (r/o)  | last words of data.bin |
+|           | 0x100000               | heap                   |
+| ebx       | stack_end              | end of stack           |
+
+*/
+
 	.text
 	.global _start
 _start:
@@ -6,9 +19,10 @@ _start:
 	addl %eax, 4(%ecx)    # reg word
 	movl (%eax), %esi
 	addl %ecx, %esi
-	movl $stack_end, %ebx
+	movl $stack_end-4, %ebx
 	jmp *%esi
+
 	.bss
-stack:	.space 0x100
+heap:	.space 0x100000
 stack_end:
 	

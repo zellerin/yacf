@@ -27,7 +27,7 @@ SECTIONS
  . = . + SIZEOF_HEADERS;
  .text : { simple.o(.text) code.bin(.data) data.bin(.text)} : all
 
- .heap ALIGN(0x10000) : { simple.o(.bss) } : all
+ .heap ALIGN(0x100000) : { simple.o(.bss) } : all
 			     
 /DISCARD/ : {*(.iplt .eh_frame .rel.dyn .igot.plt .comment .debug_*)}
 }
