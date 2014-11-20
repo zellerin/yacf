@@ -19,7 +19,8 @@ _start:
 	addl %eax, 4(%ecx)    # reg word
 	movl (%eax), %esi
 	addl %ecx, %esi
-	movl $stack_end-4, %ebx
+	movl $stack_end-8, %ebx
+	movl $letters, %eax
 	jmp *%esi
 
 letters:

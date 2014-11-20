@@ -22,6 +22,7 @@ mark target
 : ! nip [ ecx ] reg! !ecx drop ;
 
 : iobuffer #x100000 ;
+: letter #x100004 @ + @ #x7f and 
 : hold iobuffer @ -1 + iobuffer ! iobuffer @ c! ;
 : write 4 sys/3 drop ;
 : iob! #x100100 iobuffer ! ;
@@ -45,8 +46,9 @@ mark target
 : align 1 shl ifc ; ] then align ;
 
 init ( nop ) ]
-dup iob! 
-23 . -23 . 2345 uu flush
+dup iob!
+#x100004 !
+1 letter flush
 0 bye ;
 2dup .  . ( dstart start ) 
 over - dhere + over 4 + ! ( fix last to work )
