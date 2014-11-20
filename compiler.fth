@@ -40,5 +40,8 @@ all function expect the code on input cr )
 : load buffer @a over a! dup do a! drop ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : ... 2 +blk buffer a! 0 do ; 
+macros
+: ifc #x73 2c, here ;
+forth
 ... 
 % 

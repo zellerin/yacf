@@ -22,6 +22,8 @@ _start:
 	movl $stack_end-4, %ebx
 	jmp *%esi
 
+letters:
+	.ascii " rtoeani" "smcylgfw" "dvpbhxuqkzj34567891-0.2/;:!+@*,?"
 	.bss
 heap:	.space 0x100000
 stack_end:

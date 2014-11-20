@@ -21,12 +21,34 @@ mark target
 : c! nip [ ecx ] reg! !cl drop ;
 : ! nip [ ecx ] reg! !ecx drop ;
 
+: iobuffer #x100000 ;
+: hold iobuffer @ -1 + iobuffer ! iobuffer @ c! ;
+: write 4 sys/3 drop ;
+: iob! #x100100 iobuffer ! ;
+...
+% ( comment )
+% 
+: flush #x100100 iobuffer @ - + iobuffer @ 1 write
+  #x100100 iobuffer ! ;
+: digit 10 / dup [ edx ] ldreg #x30 + hold ;
+: hdigit dup #xf and 10 cmp -if 7 + then #x30 + hold 4 lsr ;
+: nrh hdigit if drop ; ] then nrh ; 
+: uu digit testeax if drop ; ] then uu ;
+: nr testeax -if uu ; ] then - uu 45 hold ;
+: bl 32 hold ; : cr 10 hold ;
+: . bl nrh flush ;
+...
+% ( comment )
+%
 : floop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
 : find @ testeax if ; ] then floop ;
-init ( nop ) ] 0 reg @ bye ;
-( dstart start ) 
+: align 1 shl ifc ; ] then align ;
+
+init ( nop ) ]
+dup iob! 
+23 . -23 . 2345 uu flush
+0 bye ;
+2dup .  . ( dstart start ) 
 over - dhere + over 4 + ! ( fix last to work )
-42 w,
 dump flush 0 bye
 % 
-
