@@ -1,4 +1,4 @@
-% ( ANSI coloured output. ) 
+% ( editor - ANSI coloured output. ) 
 : hld/ dup #xff and hold 8 ash jne hld/ drop ;
 : fg 109 hold hold #x1b5b33 hld/ ;
 : top #x1b5b4a hld/ #x3b3166 hld/ #x1b5b31 hld/ ;
@@ -7,22 +7,21 @@
 : black 48 fg ; ( when white background )
 : black 57 fg ; cr
 % ( Individual color words )
-% ( Print individual token categories )
-  : name dname drop bl ;
-  dhere ( address of table ) cr
+% ( editor - Print individual token categories )
+: nm dname drop bl ;
+dhere ( address of table ) cr
     h, ( continued word ) ] dname drop ; cr
     h, ( yellow number ) ] 4 ash nr yellow bl ; cr
-    h, ( green word ) ] name green ; cr
-    h, ( red word ) ] name red cr ; cr
+    h, ( green word ) ] nm green ; cr
+    h, ( red word ) ] nm red cr ; cr
     h, ( blue word ) 0 reg ] find cfa [ eax ] push drop ; cr
-    h, ( white word ) ] name black ; cr
+    h, ( white word ) ] nm black ; cr
     h, ( blue number ) ] 4 ash nrh blue bl ; cr
-    h, ( yellow word ) ] name yellow ;
+    h, ( yellow word ) ] nm yellow ;
 : tagidx dup #x7 and 2 shl ;
-: nop ;
 : .code tagidx [ nop ] +l vexec ;
 % ( comment block xxv )
-% ( print code blocks )
+% ( editor - print code blocks )
   : .@-code -4 + dup @ .code ;
   : 4x .@-code .@-code .@-code .@-code ;
   : 16x 4x 4x 4x 4x ;
@@ -32,29 +31,28 @@
 %
 : .@-code ( n-n ) print code, decrease addr )
 % ( key-based operations )
-: 0var dhere 0 w, ;
 : vock [ 0var ] ;
 : map [ 0var ] ; vock map !
-: sread 3 sys/3 ;
-: key 4 here 120 + 0 sread drop here 120 + @ ;
+: key 4 here 0 sread drop here @ ;
 : fkey 4 shl vock find ;
 : defk map @ @ dhere map @ ! w, 4 shl w, here w, ;
-: blk [ 0var ] ;
-: found cfa exec ;
-: main [ blk ] @ pg
+: !blk [ 0var dup ] ! ; 24 !blk
+: @blk [ nop ] @ ;
+: main @blk pg
 	     key dup fkey jne found
-          drop drop nrh [ a@+ undef ] name main ;
-#x66 defk [ blk ] @ 2 + [ blk ] ! main ;
-#x62 defk [ blk ] @ -2 + [ blk ] ! main ;
-#x63 defk [ blk ] @ 1 xor [ blk ] ! main ;
-flush main
+          2drop nrh [ a@+ undef ] name main ;
+cr #x66 defk ( f-orward ) ] @blk 2 + !blk main ;
+cr #x62 defk ( b-ackward ) ] @blk -2 + !blk main ;
+cr #x63 defk ( c-comment ) ] @blk 1 xor !blk main ;
+cr flush main
 %
-
-: 0var ; allocate memory cell
 : vock ; keys vocabulary
 : map ; current map to use
-: blk ; curent block
-: main ; view texts
-( f-orward, b-ackwards, c-omments )
+: key ( -c ) read 4 chars return as word
+: fkey ( c-a ) find word in vock
+: defk ( c- ) code for char starts here
+: !blk ( b- ) set curent block
+: @blk ( -b ) read current block
+: main ( - ) display page and read/execute key
 %
 
