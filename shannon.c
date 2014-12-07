@@ -14,19 +14,27 @@ unsigned const char letter_queue[]=
 
 extern char * iobuff;
 
-
+static unsigned int put_char(char letter, unsigned char size, unsigned int word)
+{
+    *--iobuff=letter;
+    return word<<size;
+}
 
 unsigned int sh_decode (unsigned int word)
 {
   word &=-8;
   while (word>0){
     unsigned char sizeflag = (word >> 30);
+    // word sizeflag
     unsigned char size = MAGIC_FOUR(0x07050404, sizeflag);
-    unsigned char shift = 32 - size;
+    // word size sizeflag
     char offset = MAGIC_FOUR(0xb0f80000, sizeflag);
-    unsigned int letter = letter_queue[(word >> shift) + offset];
-    *--iobuff=letter;
-    word <<=size;
+    // word size word size / rstack offset
+    unsigned char shift = 32 - size;
+    // word size offset word shift -- letter
+    unsigned char letter=letter_queue[(word >> shift) + offset];
+    // word size letter -- word
+    word=put_char(letter, size, word);
   }
   return 0;
 }

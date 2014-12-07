@@ -34,7 +34,7 @@ dhere ( address of table ) cr
 : vock [ 0var ] ;
 : map [ 0var ] ; vock map !
 : key 4 here 0 sread drop here @ ;
-: fkey 4 shl vock find ;
+: fkey 4 shl map @ find ;
 : defk map @ @ dhere map @ ! w, 4 shl w, here w, ;
 : !blk [ 0var dup ] ! ; 24 !blk
 : @blk [ nop ] @ ;
@@ -60,14 +60,29 @@ cr here !err
 : exekey ( - ) read key and execute associated action
 : view ( - ) display page and read/execute keys. does not return
 % ( editor - simple keys )
-cr #x61 defk ( a-bort ) ] 0 bye ;
+[ cr #x61 defk ( a-bort ) ] 0 bye ;
 cr #x66 defk ( f-orward ) ] @blk 2 + !blk view ;
 cr #x62 defk ( b-ackward ) ] @blk -2 + !blk view ;
 cr #x63 defk ( c-comment ) ] @blk 1 xor !blk view ;
-cr #x30 defk #x31 defk #x32 defk #x33 defk #x34 defk #x35 defk
-#x36 defk #x37 defk #x38 defk #x39 defk ( zero to nine ) ]
-here @ -48 +l view ;
-cr #x70 defk ( p-age ) ] !blk view ;
-cr view
+cr #x64 defk ( d-rop ) ] drop view ;
 % ( editor - simple keys )
+% ( editor - numbers )
+: defdigit #x30 defk #x31 defk #x32 defk #x33 defk #x34 defk [ cr ] #x35 defk
+#x36 defk #x37 defk #x38 defk #x39 defk ;
+: digk [ 0var ] ; digk map !
+defdigit ( in digit  ) ] 4 shl here @ -48 + + view ;
+cr #x61 defk #x62 defk #x63 defk #x64 defk #x65 defk #x66 defk
+( hexa digit ) ] 4 shl here @ -87 + + view ;
+cr #x70 defk ( p-age ) ] !blk [
+cr #x20 defk ( go back ) ] vock map ! view ;
+vock map !  
+cr defdigit ( 0-9 ) ] here @ -48 + digk map ! view ;
+% ( editor - numbers )
+% ( editor - symbols )
+here 
+cr #x20 defk ( go back ) ] vock map ! view ;
+cr #x27 defk ( single quote ) ] key #x7f and -32 + view ;
+#Xe5e5 view
+
+% ( editor - symbols )
 % 

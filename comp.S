@@ -285,11 +285,6 @@ compile_push_code:
         movl $0xfc, %eax
         jmp do_comma_char
 
-compile_semicolon:
-        push_stack
-        movl $0xc3, TOP
-        jmp do_comma_char
-
 over:                           # (a b -- b a b)
         push_stack
         mov 8(%ebx), %eax
@@ -350,13 +345,14 @@ regs:
         .int macros /* 2 */
         .int words_area /* 3 */
         .int forth /* New words dict - 4 */
-
+	
 iobuff:
         .int iobuffer_end
         .int nrmacros /* 6 */
         .int forth /* 7: forth dictionary for compiling */
 	.int iobuffer_end /* 8: iobuffer end, constant */
 	.int _binary_raw_start /* 9: where source is */
+	.int letter_size_code /* 10: parsing letters */
 	
 	.data
 
