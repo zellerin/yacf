@@ -30,7 +30,7 @@ dhere ( address of table ) cr
   : pg cr dup buffer #x1fc +l show nr bl [ a@+ page ] name top flush ;
 %
 : .@-code ( n-n ) print code, decrease addr )
-% ( key-based operations )
+% ( key ops )
 : vock [ 0var ] ;
 : map [ 0var ] ; vock map !
 : key 4 here 0 sread drop here @ ;
@@ -38,9 +38,13 @@ dhere ( address of table ) cr
 : defk map @ @ dhere map @ ! w, 4 shl w, here w, ;
 : !blk [ 0var dup ] ! ; 24 !blk
 : @blk [ nop ] @ ;
-: main @blk pg
-	     key dup fkey jne found
-          2drop nrh [ a@+ undef ] name main ;
+: err [ 0var dup ] @ exec ;
+: !err [ nop ] ! ;
+: exekey key dup fkey jne found
+          2drop nrh [ a@+ undef ] name err ;
+here !err 
+: main @blk pg exekey ;
+cr #x61 defk ( a-bort ) ] 0 bye ;
 cr #x66 defk ( f-orward ) ] @blk 2 + !blk main ;
 cr #x62 defk ( b-ackward ) ] @blk -2 + !blk main ;
 cr #x63 defk ( c-comment ) ] @blk 1 xor !blk main ;
