@@ -41,7 +41,7 @@ cr h, ( yellow word ) ]  0 reg fexec next cnr ;
 the table of functions is patched back after function is created. cr
 all function expect the code on input cr )
 % ( compile block )
-: dbg 10 hold @a dup @ dname drop bl dup @ nrh bl nrh flush ; 
+: dbg 10 hold @a dup @ dname bl dup @ nrh bl nrh flush ; 
 : do ( dbg ) drop a@+ cword do ;
 % ( comment block )
 : do compile word and advance ;

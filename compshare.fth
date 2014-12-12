@@ -1,5 +1,5 @@
 % ( Output )
-: name bl dname drop ;
+: name bl dname ;
 : next @a @ ;
 : err cr name [ a@+ ] error name flush ;
 

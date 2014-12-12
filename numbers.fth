@@ -27,11 +27,11 @@ forth
 : ash tocl drop 8 ,rot ; 
 : size #x7050404 over 3 shl ash #x7f and ;
 : offset [ #x161f000 4 shl ] over 3 shl ash #x7f and 3 shl ;
-: 2. 2dup nrh bl nrh bl ;
+: uncode #x3f and [ 10 reg @ ] +l @ #x7f and hold ;
+: dname -8 and 
 : decode sizeflag offset
-[ eax ] push drop size nip 2dup - 32 + ash dup [ eax ] pop + ;
-a@+ i decode nrh bl nrh bl nrh flush
-1 bye
+[ eax ] push drop size nip 2dup - 32 + ash dup [ eax ] pop + 
+uncode shl if drop ; ] then decode ;
 cr #x10000 2 +blk buffer 4 sread drop
 2 +blk load flush 18 bye
 

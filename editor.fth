@@ -8,9 +8,9 @@
 : black 57 fg ; cr
 % ( Individual color words )
 % ( editor - Print individual token categories )
-: nm dname drop bl ;
+: nm dname bl ;
 dhere ( address of table ) cr
-    h, ( continued word ) ] dname drop ; cr
+    h, ( continued word ) ] dname ; cr
     h, ( yellow number ) ] 4 ash nr yellow bl ; cr
     h, ( green word ) ] nm green ; cr
     h, ( red word ) ] nm red cr ; cr
@@ -82,7 +82,7 @@ cr defdigit ( 0-9 ) ] here @ -48 + digk map ! view ;
 here 
 cr #x20 defk ( go back ) ] vock map ! view ;
 cr #x27 defk ( single quote ) ] key #x7f and -32 + view ;
-#Xe5e5 view
+#xe5e5 view
 
 % ( editor - symbols )
 % 

@@ -352,7 +352,7 @@ iobuff:
         .int forth /* 7: forth dictionary for compiling */
 	.int iobuffer_end /* 8: iobuffer end, constant */
 	.int _binary_raw_start /* 9: where source is */
-	.int letter_size_code /* 10: parsing letters */
+	.int letter_queue /* 10: parsing letters */
 	
 	.data
 
@@ -362,7 +362,6 @@ forth: .int .+4
 	.int .+16, 0x87e96000, (do_comma_char_shift), 0
 	.int .+16, 0x818c9620, (macros_now), 0
 	.int .+16, 0x192c4580, (nrmacros_now), 0
-	.int .+16, 0x48ab6000, (sh_decode), 0
 	.int .+16, 0xc8427600, (forth_now), 0
 	.int .+16, 0x14c26000, (over), 0
 	.int 0,0,0,0
