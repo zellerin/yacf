@@ -60,7 +60,7 @@ cr here !err
 : exekey ( - ) read key and execute associated action
 : view ( - ) display page and read/execute keys. does not return
 % ( editor - simple keys )
-[ cr #x61 defk ( a-bort ) ] 0 bye ;
+[ cr #x61 defk ( a-bort ) ] cr flush 0 bye ;
 cr #x66 defk ( f-orward ) ] @blk 2 + !blk view ;
 cr #x62 defk ( b-ackward ) ] @blk -2 + !blk view ;
 cr #x63 defk ( c-comment ) ] @blk 1 xor !blk view ;
@@ -82,7 +82,7 @@ cr defdigit ( 0-9 ) ] here @ -48 + digk map ! view ;
 here 
 cr #x20 defk ( go back ) ] vock map ! view ;
 cr #x27 defk ( single quote ) ] key #x7f and -32 + view ;
-#xe5e5 view
+a@+ ---- view
 
 % ( editor - symbols )
 % 

@@ -1,11 +1,18 @@
-( number macros )
+( auxiliary words for macros )
 : 2c, dc,s c, ;
 : 3c, dc,s 2c, ;
 : 2c,n 2c, c, ;
 : c,, c, , ;
 : ,put #x0389 2c, ;
 : ,+stack #x5b8d 2c,n ;
-cr
+% ( auxiliary words for macros )
+: 2c, ( w- ) store 2byte opcode
+: 3c, ( w- ) store 3byte opcode
+: 2c,n ( cw- )store 1byte opcode followed by short number
+: c,, ( wc- ) store octet instruction and long parameter
+: ,put ( - ) dup sr @ ! ; compile code to copy top below stack
+: ,+stack ( c- ) sr @ + sr ! ; compile code to advance stack by octet
+% ( nrmacros )
 nrmacros
 : + #xc083 2c,n ;
 : +l #x05 c,, ;
@@ -18,20 +25,19 @@ nrmacros
 : and #xe083 2c,n ;
 : / #xbed231 3c, , #xf6f7 2c, ;
 : cmp #x3d c,, ;
-% ( forth )
-: 2c, store 2byte opcode
-: 3c, store 3byte opcode
-: 2c,n store 1byte opcode followed by short number
-: c,, store octet instruction and long parameter
-: ,put compile code to TOP to /stack/
-: ,+stack compile code to advance stack by octet
-[ cr nrmacros
-: +  Add octet to top
+% ( nrmacros )
+: +  ( c- , w - w+c ) Add octet to top
 : +l Add word to top
 : +@ + @ 
 : @-+ @ - +
-: @ [ cr cr cr cr 
-: / divides by number; remainder is left in edx ;
+: @ ( a- ; -w ) reads word from address 
+: ash arithmetical shift right 
+: lsr logical shift right 
+: shl shift left 
+: and and with signed octet 
+: / ( y- , a-b ) divides a by y remainder is left in edx 
+: cmp ( w- , n-n; sets flag ) 
+[
 % ( assembler )
 cr macros
 : ; ] #xc3 c, ;
