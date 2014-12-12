@@ -98,8 +98,7 @@ iobuffer_word_sp:
         push_stack
         movl $0x20, TOP
         call do_hold
-iobuffer_word:
-        call sh_decode
+        # call sh_decode
         jmp pop
 
 underflow:
@@ -353,7 +352,8 @@ iobuff:
 	.int iobuffer_end /* 8: iobuffer end, constant */
 	.int _binary_raw_start /* 9: where source is */
 	.int letter_queue /* 10: parsing letters */
-	
+
+letter_queue:	.ascii   " rtoeani" "smcylgfw" "dvpbhxuqkzj34567891-0.2/;:!+@*,?"
 	.data
 
 forth: .int .+4
