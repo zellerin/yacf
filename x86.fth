@@ -1,4 +1,4 @@
-( auxiliary words for macros )
+% ( auxiliary words for macros )
 : 2c, dc,s c, ;
 : 3c, dc,s 2c, ;
 : 2c,n 2c, c, ;
@@ -12,8 +12,7 @@
 : c,, ( wc- ) store octet instruction and long parameter
 : ,put ( - ) dup sr @ ! ; compile code to copy top below stack
 : ,+stack ( c- ) sr @ + sr ! ; compile code to advance stack by octet
-% ( nrmacros )
-nrmacros
+% nrmacros
 : + #xc083 2c,n ;
 : +l #x05 c,, ;
 : +@ #x408b 2c,n ;
@@ -38,7 +37,7 @@ nrmacros
 : / ( y- , a-b ) divides a by y remainder is left in edx 
 : cmp ( w- , n-n; sets flag ) 
 [
-% ( assembler )
+% ( x86 assembler )
 cr macros
 : ; ] #xc3 c, ;
 : over+ #x044303 3c, ;
@@ -54,8 +53,8 @@ cr nrmacros
 : push #x50 + c, ;
 
 macros
-% ( Assembler ) cr macros
-: ; return
+% ( x86 assembler ) cr macros
+: ; return - now we can return from functions
 : over+ over +
 : nip drop second value [
 cr forth 
@@ -70,7 +69,7 @@ cr
 nrmacros
 : reg! /stack/ to reg
 : ldreg /reg/ to top
-% 
+% ( x86 asm )
 : !cl #x0888 2c, ;
 : !ecx #x0889 2c, ;
 : break 204 c, ;
@@ -83,7 +82,7 @@ nrmacros
       #x045b8b 3c, #x80cd 2c, ;
 : /xor/ #x44333 3c, ;
 : da@+ #x78b 2c, #x47f8d 3c, ;
-% 
+% ( x86 asm )
 : !cl cl over !
 : !ecx ecx over !
 : break int $3 ( debugging )
@@ -95,7 +94,7 @@ nrmacros
 : /sys/ syscall, needs sysnr and three args
 : /xor/ over xor
 : da@+ drop a@+
-; % ( Basic words )
+[ % ( Basic words )
 forth
 : reg /reg/ ;
 : dup dup ;

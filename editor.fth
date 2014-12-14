@@ -33,7 +33,7 @@ dhere ( address of table ) cr
 % ( key driven actions )
 : vock [ 0var ] ;
 : map [ 0var ] ; vock map !
-: key 4 here 0 sread drop here @ ;
+: key 4 here 0 over ! 0 sread drop here @ ;
 : fkey 4 shl map @ find ;
 : defk map @ @ dhere map @ ! w, 4 shl w, here w, ;
 : !blk [ 0var dup ] ! ; 24 !blk
@@ -42,7 +42,7 @@ dhere ( address of table ) cr
 : !err [ nop ] ! ;
 : exekey key fkey jne found
 : undef drop 4 ash dup nrh bl hold [ a@+ undef ] name err ;
-: .many dup nrh dup bl nr nm cr ;
+: .many dup nrh dup bl nr bl nm cr ;
 : state 2dup .many .many [ a@+ stack ] name cr flush ;
 cr here !err 
 
@@ -82,7 +82,5 @@ cr defdigit ( 0-9 ) ] here @ -48 + digk map ! view ;
 here 
 cr #x20 defk ( go back ) ] vock map ! view ;
 cr #x27 defk ( single quote ) ] key #x7f and -32 + view ;
-a@+ ---- view
-
 % ( editor - symbols )
 % 

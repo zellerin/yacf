@@ -1,4 +1,4 @@
-% ( redo calls def, with offset )
+% ( redefine function calls, using offset )
 : relcfa cfa raddr -126 cmp ;
 : ,call #xE8 c, cfa raddr -4 + , ;
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
@@ -10,11 +10,15 @@
 : dbg dup cr name bl there nrh bl dthere nrh flush ;
 % ( comment block xv )
 : relcfa ( a-o ) relative cfa for short calls ; set flag if small
-: ,call ( ) ; compile call
-: doj ( o0-ox )
-: call ( ) ; compile call or jump
-: ytog handle yellow to green transition  
-;
+: ,call ( a- ) compile call to address
+: cw ( w- ) execute if immediate, compile call if in dictionary or error
+: ,lit ( w-,-w ) compile call to last dup definition and ensure top is loaded
+: doj ( a- ) compile short or long jump to address
+: call ( a- ) ; compile call or jump (short or long)
+: ytog ( n-? ) execute following numeric macro or ensure top is loaded
+: cnr ( ?-? ) run ytog if green word follows
+: dbg ( w-w ) print current word and position
+[
 % ( compiler table )
 dhere cr
 h, here ( ignore word ) ] drop ; cr
@@ -30,18 +34,27 @@ cr h, ( yellow word ) ] 0 reg fexec next cnr ;
 
 % ( Compile single word. cr
 the table of functions is patched back after function is created. cr
-all function expect the code on input cr )
+all function expect the code on input cr
 ( define ) load 
-% ( compile block )
+[ % ( compile block )
 : do drop a@+ cword
 : 1x @a 23 shl jne do drop ;
 : wfrom - here + dup - here + ;
 : save wfrom 3 write drop ;
-: load buffer @a over a! dup do a! drop ;
+: load buffer @a [ eax ] push drop dup a! do dup [ eax ] pop a! ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : ... 2 +blk buffer a! 0 do ; 
 macros
 : ifc #x73 2c, here ;
-forth
-... 
+cr #x6c defk ( l-oad ) ] @blk load view ;
+a@+ ---- view
+
+% ( comment block )
+: do compile word and advance
+: 1x compile word unless on page boundary
+: load ( b- ) save address, load block, continue
+: +blk ( -a ) Address of the next block ;
+: ... load next block [
 % 
+
+

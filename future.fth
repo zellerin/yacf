@@ -1,10 +1,3 @@
-% ( comment block )
-: do compile word and advance
-: 1x compile word unless on page boundary
-: load ( b- ) save address, load block, continue
-: +blk ( -a ) Address of the next block ;
-: ... load next block
-; ( done )
 % ( simple sample app )
 mark target
 0var ( offset of start )
@@ -52,5 +45,5 @@ dup iob!
 0 bye ;
 2dup .  . ( dstart start ) 
 over - dhere + over 4 + ! ( fix last to work )
-dump flush 0 bye
+dump flush
 % 
