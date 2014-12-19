@@ -35,3 +35,6 @@ code.bin data.bin: yacf bulk.blk
 	$(strace) ./yacf 4<bulk.blk 3> code.bin 5> data.bin
 	objdump -D -m  i386 -b binary code.bin
 	od -t x4 data.bin
+
+dump: compshare.blk editor.blk dump.blk
+	cat $^ > $@
