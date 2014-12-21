@@ -36,5 +36,5 @@ code.bin data.bin: yacf bulk.blk
 	objdump -D -m  i386 -b binary code.bin
 	od -t x4 data.bin
 
-dump: numbers.blk compshare.blk editor.blk dump.blk
+dump: conditionals.blk numbers.blk compshare.blk editor.blk dump.blk
 	cat $^ > $@
