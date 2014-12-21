@@ -9,9 +9,6 @@ forth
 : . bl nrh flush ;
 cr
 : nop ;
-: load buffer a! ;
-: +blk @a [ 0 buffer - ] +l 9 lsr + ;
-: sread 3 sys/3 ;
 %
 : digit ( n-n ) hold last digit; keep nr/10
 : hdigit ( n-n )hold last hexa digit, keep nr/0x10
@@ -32,12 +29,10 @@ forth
 : decode sizeflag offset
 [ eax ] push drop size nip 2dup - 32 + ash dup [ eax ] pop + 
 uncode shl if drop ; ] then decode ;
-cr #x10000 2 +blk buffer 4 sread drop
-2 +blk load flush 18 bye
-
 % ( Print names )
 : sizeflag ( word -- word sizeflag )
 : size ( sizeflag -- sizeflag size )
 : offset ( sizeflag -- sizeflag offset )
 : decode ( word -- word size letter )
 [
+% 

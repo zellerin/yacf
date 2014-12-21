@@ -1,6 +1,6 @@
 all: yacf editor.blk
 
-yacf: comp.o shannon.o
+yacf: comp.o
 	ld -o $@ -T yacf.lnk comp.o
 
 yacf: raw
@@ -8,7 +8,7 @@ yacf: raw
 clean:
 	rm -f *.o raw yacf parse *.blk
 
-raw: x86.blk numbers.blk
+raw: x86.blk boot.blk
 	cat $^ > raw
 
 CFL=-fomit-frame-pointer -Os -g
@@ -36,5 +36,5 @@ code.bin data.bin: yacf bulk.blk
 	objdump -D -m  i386 -b binary code.bin
 	od -t x4 data.bin
 
-dump: compshare.blk editor.blk dump.blk
+dump: numbers.blk compshare.blk editor.blk dump.blk
 	cat $^ > $@
