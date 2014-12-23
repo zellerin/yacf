@@ -1,0 +1,55 @@
+* x86 assembler low level words
+Legend: ~o~ is signed octet, ~w~ is word
+
+** Builder words
+These are forth words that put te code
+| forth     | x86               | usage           |
+|-----------+-------------------+-----------------|
+| ,put      | mov %eax, (%ebx)  | ~dup~ component |
+| n ,+stack | lea n(%ebx), %ebx | ~nip~, ...      |
+
+
+** Number macros
+| forth       | x86 assembler                          |
+|-------------+----------------------------------------|
+| n +         | add n, %eax                            |
+| w +l        | add w, %eax                            |
+| o +@        | mov n(eax), %eax                       |
+| w @-+       | sub w, %eax                            |
+| w @         | <dup>; mov w, %eax                     |
+| o ash       | sar o, %eax                            |
+| o lsr       | shr o, %eax                            |
+| o shl       | shl o, %eax                            |
+| o and       | and o, %eax                            |
+| w /         | xor %edx, %edx; mov $w, %esi; div %esi |
+| w cmp       | cmp $w, %eax                           |
+| <reg> reg!  | mov (%ebx), <reg>                      |
+| <reg> ldreg | mov <reg>, %eax                        |
+| <reg> pop   | pop <reg>                              |
+| <reg> push  | push <reg>                             |
+
+
+** Macros
+| forth   | x86 assembler              |
+|---------+----------------------------|
+| ~;~     | ret                        |
+| ~over+~ | add 4(%ebx), %eax          |
+| ~/xor/~ | xor 4(%ebx), %eax          |
+| ~!cl~   | mov %cl, (%eax)            |
+| ~!ecx~  | mov %ecx, (%eax)           |
+| ~break~ | int 0x3                    |
+| ~@~     | mov (%eax), %eax           |
+| ~-~     | neg %eax                   |
+| ~1-~    | dec %eax                   |
+| ~/reg/~ | lea 0(%ebp, %eax, 4), %eax |
+| ~/sys/~ | mov 0xc(%ebx), %edx        |
+|         | mov 0x8(%ebx), %ecx        |
+|         | mov 0x4(%ebx), %ebx        |
+|         | int 0x80                   |
+| ~da@+~  | mov (%edi), %eax           |
+|         | lea 4(%edi), %edi          |
+| ~a!~    | mov %eax, %edi  ; ~drop~   |
+|         |                            |
+
+Note: ~/reg/~ could be possibly even better defined as an number
+macro. However, it would need to change the stack size.
