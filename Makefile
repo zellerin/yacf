@@ -25,7 +25,7 @@ parse: LDFLAGS=
 %.blk: %.fth parse
 	./parse <$< >$@ 
 
-bulk.blk: compshare.blk compiler.blk future.blk
+bulk.blk: conditionals.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk
 	cat $^ > $@
 
 simple: code.bin data.bin simple.lnk simple.o

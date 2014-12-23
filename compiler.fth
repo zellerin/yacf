@@ -46,9 +46,6 @@ all function expect the code on input cr
 : ... 2 +blk buffer a! 0 do ; 
 macros
 : ifc #x73 2c, here ;
-cr #x6c defk ( l-oad ) ] @blk load view ;
-a@+ ---- view
-
 % ( comment block )
 : do compile word and advance
 : 1x compile word unless on page boundary
