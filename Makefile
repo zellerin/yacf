@@ -31,10 +31,10 @@ bulk.blk: conditionals.blk numbers.blk compshare.blk elf.blk compiler.blk future
 simple: code.bin data.bin simple.lnk simple.o
 	ld -T simple.lnk
 
-code.bin data.bin: yacf bulk.blk
-	$(strace) ./yacf 4<bulk.blk 3> code.bin 5> data.bin
-	objdump -D -m  i386 -b binary code.bin
-	od -t x4 data.bin
+future: yacf bulk.blk
+	$(strace) ./yacf 4<bulk.blk 3> future | tee future.lst
+	objdump -D -m  i386 -b binary future
+	chmod +x $@
 
 dump: conditionals.blk numbers.blk compshare.blk editor.blk dump.blk
 	cat $^ > $@

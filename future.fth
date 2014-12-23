@@ -1,11 +1,5 @@
 % ( simple sample app )
-target
-mark
-( boot code )
-...
-% ( foo ) 
-%
-0var drop
+target mark compile
 : reg 2 shl #xbeef +l ;
 : over dup [ #x08438b 3c, ] ( nop ) ;
 : 2dup over over ;
@@ -25,6 +19,7 @@ init
 ] 23 bye [
 0 c, ( align )
 ( start )
+2dup  . .
 dump flush 0 bye
 =======
 : align 1 shl ifc ; ] then align ;

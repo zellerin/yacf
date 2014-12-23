@@ -49,16 +49,15 @@
 : save wfrom 3 write  ;
 : dfrom - dhere + dup - dhere + ;
 : dsave dfrom 5 write ;
-: mark here - base ! dhere - dbase ! dhere here ;
-: dump save dsave ;
-: init there over ! drop ;
+: mark here - base ! dhere - dbase ! here ;
+: dump save ;
 
 %  ( saving heap )
 : wfrom ( a-an ) push on stack distance between address and here
 : save ( a- ) write to stream 3 from address to here
 : dfrom 
 : dsave ( a- ) write to stream 5 from address to dhere
-: mark ( -aa ) marks here and dhere as start for dumo
+: mark ( -aa ) marks here and dhere as start for dump
 : dump ( aa- ) save heap (from top address) and data heap (from next address)
 : init ( a- ) boot code follows; store its location to address
 
