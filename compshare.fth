@@ -35,8 +35,8 @@
 
 % ( search in offsetted words )
 : rfloop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
-: rfind @ testeax if ; ] then [ dbase ] @ - + rfloop ;
-: cfa 8 +@ [ base ] @ - + ;
+: rfind @ testeax if ; ] then [ dbase ] @-+ rfloop ;
+: cfa 8 +@ [ base ] @-+ ;
 
 ( compile for target )
 : voc! 4 reg ! ;
