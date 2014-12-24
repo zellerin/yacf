@@ -38,7 +38,7 @@ all function expect the code on input cr
 ( define ) load 
 [ % ( compile block )
 : compile a@+ cword
-: 1x @a 23 shl drop jne compile [ a@+ page ] name . @a #x200 +l compile ;
+: 1x @a 23 shl drop jne compile @a #x200 +l a! compile ;
 : wfrom - here + dup - here + ;
 : save wfrom 3 write drop ;
 : load buffer @a [ eax ] push drop dup a! compile dup [ eax ] pop a! ;

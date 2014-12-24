@@ -24,7 +24,9 @@ a_at_plus:
 
 a_store:
 	mov TOP, Areg
-	jmp pop
+pop:    mov 4(%ebx), %eax
+        lea 4(%ebx), %ebx
+        ret
 
 do_store:
 	mov 4(%ebx), %esi
@@ -33,9 +35,6 @@ do_store:
 	lea 8(%ebx), %ebx
 	ret
 	
-pop:    mov 4(%ebx), %eax
-        lea 4(%ebx), %ebx
-        ret
 
 find_loop:      /* top of stack - word; stack - address */
         call over
