@@ -1,12 +1,50 @@
+#+TITLE: Yet Another Color Forth (yacf)
+
+This is a toy project aimed on exploration.
+
+* Features
+- stack based (forth...)
+- two heaps (or more) :: separate data heap and code heap
+- compiles tagged ("coloured") words :: 32 bit words contain 3-bit tag
+     and 29 bit name
+- x86 as build host :: actually, x86 means Intel Atom™ processor.
+- machine code as target :: 
+- no BASE :: numbers are explicitly decimal or hexadecimal, both on
+             input (different color) and output (different words).
+- no STATE :: green words mean we are compiling, yellow we are executing.
+- tail call optimization :: if semicolon to be compiled follows
+     compiled call to word, jump is compiled instead. This allow to
+     delay for some time real definition of semicolon.
+* [1/4] Immediate targets
+- [X] Compile elf binary
+- [ ] Compile itself as a binary
+- [ ] Compile arm binary
+- [ ] Compile pic (Microchip) binary :: it was in place some time ago,
+     but got lost.
+- [ ] Make editor to edit blocks :: currently, conversion is done
+     externally.
+* Elf binary
+|     VMA | Contains            |
+|---------+---------------------|
+| 0x20000 | Elf header          |
+| 0x20054 | last dictionary VMA |
+|         | words code          |
+|    init | init code           |
+|         | dictionary          |
+|     ... | ...                 |
+|         | stack               |
+| 0x30100 | end                 |
+
+- code starts at 0x20054 (after elf headers)
 * x86 assembler low level words
 Legend: ~o~ is signed octet, ~w~ is word
 
 ** Builder words
 These are forth words that put te code
-| forth     | x86               | usage           |
-|-----------+-------------------+-----------------|
-| ,put      | mov %eax, (%ebx)  | ~dup~ component |
-| n ,+stack | lea n(%ebx), %ebx | ~nip~, ...      |
+| forth         | x86               | usage           |
+|---------------+-------------------+-----------------|
+| ~,put~        | mov %eax, (%ebx)  | ~dup~ component |
+| /n/ ~,+stack~ | lea n(%ebx), %ebx | ~nip~, ...      |
 
 
 ** Number macros
