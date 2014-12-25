@@ -17,8 +17,9 @@ This is a toy project aimed on exploration.
 - tail call optimization :: if semicolon to be compiled follows
      compiled call to word, jump is compiled instead. This allow to
      delay for some time real definition of semicolon.
-* [1/4] Immediate targets
+* [1/4] Immediate plans
 - [X] Compile elf binary
+- [ ] Output buffer words
 - [ ] Compile itself as a binary
 - [ ] Compile arm binary
 - [ ] Compile pic (Microchip) binary :: it was in place some time ago,
@@ -34,6 +35,8 @@ This is a toy project aimed on exploration.
 |    init | init code           |
 |         | dictionary          |
 |     ... | ...                 |
+|         | output buffer       |
+| 0x30000 | random variables    |
 |         | stack               |
 | 0x30100 | end                 |
 

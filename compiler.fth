@@ -43,9 +43,9 @@ all function expect the code on input cr
 : 1x @a 23 shl drop jne compile @a #x200 +l a! compile ;
 : wfrom - here + dup - here + ;
 : save wfrom 3 write drop ;
-: load buffer @a [ eax ] push drop dup a! compile dup [ eax ] pop a! ;
+: load flush dup cr nr bl [ a@+ page ] name flush
+  buffer @a over a! nip ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
-: ... 2 +blk buffer a! 0 compile ; 
 macros
 : ifc #x73 2c, here ;
 % ( comment block )
