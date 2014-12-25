@@ -97,7 +97,7 @@ iobuffer_word_sp:
         push_stack
         movl $0x20, TOP
         call do_hold
-        # call sh_decode
+        call sh_decode
         jmp pop
 
 underflow:

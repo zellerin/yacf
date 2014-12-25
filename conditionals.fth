@@ -21,7 +21,8 @@ cr forth
 macros
 : jne a@+ ffind if 5 bye then relcfa -if
 -2 + #x75  c, c, ; ] then -6 + #x850f 2c, , ;
-
+forth
+;s
 % ( lalla )
 : ffind ; ( w-af ) find word in dictionary 
 : wjump ; ( wc- ) compile short relative call to passed word

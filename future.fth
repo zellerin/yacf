@@ -23,7 +23,7 @@ dhere 4 reg @ ! ( ensure link will be 0 )
 : + over+ nip ;
 : write 4 sys/3 drop ;
 : flush #x30000 iobuf - + iobuf 1 write ;
-1 +blk load
+#x10 load
 init #xbb c, #x30100 , ( ebx - stack ) ]
 #x30000 !iobuf
 #x12 .
@@ -31,19 +31,6 @@ init #xbb c, #x30100 , ( ebx - stack ) ]
 4 reg @ @ dbase @ + there + base @ - #x20054 + ! ( fix last )
 dump flush 0 bye 
 % ( output )
-% ( numbers )
-: digit 10 / dup [ edx ] ldreg #x30 + hold ;
-: hdigit dup #xf and 10 cmp -if 7 + then #x30 + hold 4 lsr ;
-: nrh hdigit if drop ; ] then nrh ; 
-: uu digit testeax if drop ; ] then uu ;
-: nr testeax -if uu ; ] then - uu 45 hold ;
-: bl 32 hold ; : cr 10 hold ;
-: . bl nrh flush ;
-cr
-: nop ;
-dup . a!
-% ( numbers )
-
 % ( Simple app )
 : reg 2 shl #xbeef +l ;
 : + over+ nip ;

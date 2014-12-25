@@ -97,3 +97,24 @@ These are forth words that put te code
 Note: ~/reg/~ could be possibly even better defined as an number
 macro. However, it would need to change the stack size.
 
+* Code pages index
+
+** Core
+| pg | content                     |
+|----+-----------------------------|
+| 00 | auxiliary words             |
+| 02 | x86 number macros           |
+| 04 | x86 macros                  |
+| 06 | 〃                          |
+| 08 | simplest words  (~dup~ ...) |
+| 0a | A register, sys/3           |
+| 0c | load program code           |
+|----+-----------------------------|
+** Conditionals
+| 0e | conditionals |
+
+** Numbers
+| pg | content         |
+|----+-----------------|
+| 10 | number printing |
+| 12 | word printing   |

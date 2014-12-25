@@ -1,7 +1,7 @@
 all: yacf editor.blk
 
 yacf: comp.o
-	ld -o $@ -T yacf.lnk comp.o
+	ld -o $@ -T yacf.lnk comp.o shannon.o
 
 yacf: raw
 

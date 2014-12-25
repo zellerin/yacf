@@ -39,18 +39,15 @@ the table of functions is patched back after function is created. cr
 all function expect the code on input cr
 ( define ) load 
 [ % ( compile block )
-: compile a@+ cword
-: 1x @a 23 shl drop jne compile @a #x200 +l a! compile ;
+: compile a@+ @a 23 shl drop
+  if @a #x200 +l a! then cword compile ;
 : wfrom - here + dup - here + ;
 : save wfrom 3 write drop ;
-: load flush dup cr nr bl [ a@+ page ] name flush
-  buffer @a over a! nip ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 macros
 : ifc #x73 2c, here ;
 % ( comment block )
 : compile ( w- ) compile word and advance
-: 1x ( - ) compile word unless on page boundary
 : load ( b- ) save address, load block, continue
 : +blk ( -a ) Address of the next block ;
 : ... load next block [
