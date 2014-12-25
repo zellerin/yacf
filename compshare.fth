@@ -35,24 +35,25 @@
 
 % ( search in offsetted words )
 : rfloop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
-: rfind @ testeax if ; ] then [ dbase ] @-+ rfloop ;
+dup @ testeax if nip ; ] then - + rfloop ;
 : cfa 8 +@ [ base ] @-+ ;
 
 ( compile for target )
 : voc! 4 reg ! ;
 : target [ 0var dup ] voc! ;
-: known? [ nop ] rfind ;
+: known? [ nop ] @ rfloop ;
 : there [ base ] @ here + ;
 
 ( saving heap and data heap )
 : wfrom - here + dup - here + ;
-: save wfrom 3 write  ;
+: save wfrom 3 write ;
 : dfrom - dhere + dup - dhere + ;
-: dsave dfrom 5 write ;
-: mark here - base ! dhere - dbase ! here ;
-: dump save ;
+: dsave dfrom 3 write ;
+: mark here - #x20054 +l base ! dhere - dbase ! dhere here ;
+: dump save dsave ;
 
 %  ( saving heap )
+: rfloop ( wv-a ) return address of word in vocabulary or zero, set flag
 : wfrom ( a-an ) push on stack distance between address and here
 : save ( a- ) write to stream 3 from address to here
 : dfrom 

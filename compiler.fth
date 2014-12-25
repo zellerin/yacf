@@ -24,7 +24,9 @@ dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
 h, ( compile word ) ] cw ;
-cr h, ( define word ) ] dbg 4 reg @ @ dhere [ dbase ] @ + 4 reg @ ! w, w, there w, ; cr
+cr h, ( define word ) ] dbg
+  dhere 4 reg @ @ - over +
+  w, 4 reg @ ! w, there w, ; cr
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
 cr h, ( yellow word ) ] 0 reg fexec next cnr ;
