@@ -1,6 +1,7 @@
 % ( comp.S duplicate )
 target mark compile
 dhere 4 reg @ ! ( ensure link will be 0 )
+0 , ( last )
 : a@+ dup da@+ ;
 : a! [ #xc789 2c, ] ( nop )
 : drop nip [ eax ] reg! ;
@@ -13,6 +14,7 @@ dhere 4 reg @ ! ( ensure link will be 0 )
 : bye 2dup 1 sys/3 ;
 init #xbb c, #x30100 , ( ebx - stack ) ]
 30 bye ;
+4 reg @ @ dbase @ + there + base @ - #x20054 + ! ( fix last )
 dump flush 0 bye 
 
 % ( comp.S duplicate )

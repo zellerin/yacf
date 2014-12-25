@@ -3,7 +3,8 @@
 This is a toy project aimed on exploration.
 
 * Features
-- stack based (forth...)
+- stack based (forth...) :: system stack for control stack, other
+     register stack index for data stack
 - two heaps (or more) :: separate data heap and code heap
 - compiles tagged ("coloured") words :: 32 bit words contain 3-bit tag
      and 29 bit name
