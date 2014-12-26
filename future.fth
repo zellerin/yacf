@@ -7,16 +7,16 @@
 #x16 ld ( search )
 #x18 ld ( search )
 #x1a ld ( elf )
-#x1c ld ( compiler 1 )
-#x1e ld ( compiler 2 )
-( #x20 is us )
-#x22 ld 
-42 bye
+#x1c ld ( compiler )
+#x1e ld ( compiler )
+target mark compile
+#x22 ld ( generated code )
+dump flush
+
 ;s
 % ( rebuild app )
 42 bye
 % ( comp.S duplicate )
-target mark compile
 dhere 4 reg @ ! ( ensure link will be 0 )
 0 , ( last )
 : a@+ dup da@+ ;
@@ -44,7 +44,7 @@ init #xbb c, #x30100 , ( ebx - stack ) ]
 #x12 .
 30 bye ;
 4 reg @ @ dbase @ + there + base @ - #x20054 + ! ( fix last )
-dump flush 0 bye 
+;s
 % ( output )
 % ( Simple app )
 : reg 2 shl #xbeef +l ;

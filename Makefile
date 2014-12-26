@@ -32,7 +32,7 @@ simple: code.bin data.bin simple.lnk simple.o
 	ld -T simple.lnk
 
 future: yacf bulk.blk
-	$(strace) ./yacf 4<bulk.blk 3> future | tee future.lst
+	$(strace) ./yacf 4> future | tee future.lst
 	objdump -D -m  i386 -b binary future
 	chmod +x $@
 

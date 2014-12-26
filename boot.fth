@@ -13,7 +13,7 @@ openr drop
 cr #x10000 2 +blk buffer
 3 sread drop
 r. r. r. prnr load
-18 bye
+0 bye
 % ( load code from ch4 )
 : +blk ( -n ) number of code block n blocks forward
 : sread ( size from fd - ) read data from input

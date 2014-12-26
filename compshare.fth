@@ -45,9 +45,9 @@ dup @ testeax if nip ; ] then - + rfloop ;
 
 ( saving heap and data heap )
 : wfrom - here + dup - here + ;
-: save wfrom 3 write ;
+: save wfrom 4 write ;
 : dfrom - dhere + dup - dhere + ;
-: dsave dfrom 3 write ;
+: dsave dfrom 4 write ;
 : mark here - #x20054 +l base ! dhere - dbase ! dhere here ;
 : dump save dsave ;
 ;s
