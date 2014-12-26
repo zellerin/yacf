@@ -9,64 +9,34 @@
 #x1a ld ( elf )
 #x1c ld ( compiler )
 #x1e ld ( compiler )
+: oreg reg ;
+: reg 2 shl #x30000 +l ;
 target mark compile
 #x22 ld ( generated code )
 dump flush
-
 ;s
 % ( rebuild app )
 42 bye
-% ( comp.S duplicate )
-dhere 4 reg @ ! ( ensure link will be 0 )
+% ( init code )
+cr dhere 4 oreg @ ! ( ensure link will be 0 )
 0 , ( last )
-: a@+ dup da@+ ;
-: a! [ #xc789 2c, ] ( nop )
-: ! nip [ ecx ] reg! !ecx drop ;
 : over dup [ #x08438b 3c, ] ( nop ) ;
-: r@ dup [ eax ] pop ;
-: sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
-: bye 2dup 1 sys/3 ;
-: reg 2 ash #x30000 +l ;
-#x08 load
-: iobuf 5 reg @ ; ( in x86 )
-% ( basics )
-% ( output )
-: !iobuf 5 reg ! ;
-: c! nip [ ecx ] reg! !cl drop ;
-: ! nip [ ecx ] reg! !ecx drop ;
-: hold iobuf 1- dup !iobuf c! ;
-: + over+ nip ;
-: write 4 sys/3 drop ;
-: flush #x30000 iobuf - + iobuf 1 write ;
-#x10 load
+#x08 ld ( basic words )
+#x0a ld ( a-words )
+#x10 ld ( numbers )
 init #xbb c, #x30100 , ( ebx - stack ) ]
-#x30000 !iobuf
-#x12 .
-30 bye ;
-4 reg @ @ dbase @ + there + base @ - #x20054 + ! ( fix last )
+#x30000 dup !iobuf
+[ 8 reg ] !
+#x12 . 30 bye ;
+4 oreg @ @ dbase @ + there + base @ - #x20054 + ! ( fix last )
 ;s
-% ( output )
-% ( Simple app )
-: reg 2 shl #xbeef +l ;
-: + over+ nip ;
-: dup dup ;
-: drop nip [ eax ] reg! ;
-: 2drop nip drop ;
-init
-] 23 bye [
-0 c, ( align )
-( start )
-2dup  . .
-dump flush 0 bye
-=======
-: align 1 shl ifc ; ] then align ;
-
-init ( nop ) ]
-dup iob!
-#x100004 !
-1 letter flush
-0 bye ;
-2dup .  . ( dstart start ) 
-over - dhere + over 4 + ! ( fix last to work )
-dump flush
-% 
+% ( init code )
+cr ensure last links is 0
+cr place for latest word
+cr basic words
+cr a-words
+cr numbers
+cr stack top to ebx
+cr set iobuf and its end
+cr print #x12
+cr fixt latest pointer

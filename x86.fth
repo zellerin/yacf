@@ -135,7 +135,7 @@ forth
 
 : flush [ 8 reg ] @ [ 5 reg ] @-+ iobuf 1 write
   [ 8 reg ] @ !iobuf ;
-
+;s
 %
 : sys/3 ; unix syscall
 : w, ; write word on data stack 

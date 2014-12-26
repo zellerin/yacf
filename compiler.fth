@@ -45,8 +45,6 @@ all function expect the code on input cr
 : wfrom - here + dup - here + ;
 : save wfrom 3 write drop ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
-macros
-: ifc #x73 2c, here ;
 ;s
 % ( comment block )
 : compile ( w- ) compile word and advance

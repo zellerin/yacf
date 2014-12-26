@@ -31,9 +31,9 @@ A: conditionals.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk
 simple: code.bin data.bin simple.lnk simple.o
 	ld -T simple.lnk
 
-future: yacf bulk.blk
-	$(strace) ./yacf 4> future | tee future.lst
-	objdump -D -m  i386 -b binary future
+future future.asm future.lst: yacf A
+	$(strace) ./yacf 32 4> future | tee future.lst
+	objdump -D -m  i386 -b binary future | tee future.asm
 	chmod +x $@
 
 dump: conditionals.blk numbers.blk compshare.blk editor.blk dump.blk
