@@ -1,18 +1,17 @@
 % ( Output )
 : name bl dname ;
 : next @a @ ;
-: err cr name [ a@+ ] error name flush ;
+: err cr name [ a@+ error ] name flush ;
 
 ( source reading )
 : 4a+ a@+ drop ;
 : ?compile #x7 and #x2 cmp drop ;
 : ;? next [ a@+ ; ] cmp drop ;
-: imm? 2 reg find if ;
+: imm? 2 reg find ;
 
 ( vocabulary searches )
 : fexec find if drop err ; ] then	
 : found cfa exec ;
-
 
 ( compiling targets )
 : 0var dhere 0 w, ;
