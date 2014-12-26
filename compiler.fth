@@ -8,6 +8,7 @@
 : ytog next 6 reg find if 2drop ,lit ; ] then 4a+ found ; 
 : cnr ?compile if ytog then ;
 : dbg dup cr name bl there nrh bl dthere nrh flush ;
+;s
 % ( comment block xv )
 : relcfa ( a-o ) relative cfa for short calls ; set flag if small
 : ,call ( a- ) compile call to address
@@ -33,7 +34,7 @@ cr h, ( yellow word ) ] 0 reg fexec next cnr ;
 : tagidx dup #x7 and 2 shl ;
 : nop ;
 : cword tagidx [ nop ] +l vexec ;
-
+;s
 % ( Compile single word. cr
 the table of functions is patched back after function is created. cr
 all function expect the code on input cr

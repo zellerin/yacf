@@ -50,7 +50,7 @@ dup @ testeax if nip ; ] then - + rfloop ;
 : dsave dfrom 3 write ;
 : mark here - #x20054 +l base ! dhere - dbase ! dhere here ;
 : dump save dsave ;
-
+;s
 %  ( saving heap )
 : rfloop ( wv-a ) return address of word in vocabulary or zero, set flag
 : wfrom ( a-an ) push on stack distance between address and here

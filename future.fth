@@ -5,8 +5,12 @@
 #x12 ld ( names )
 #x14 ld ( output )
 #x16 ld ( search )
-
-2 +blk ld 
+#x18 ld ( search )
+#x1a ld ( elf )
+#x1c ld ( compiler 1 )
+#x1e ld ( compiler 2 )
+( #x20 is us )
+#x22 ld 
 42 bye
 ;s
 % ( rebuild app )
