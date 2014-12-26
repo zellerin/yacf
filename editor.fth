@@ -1,3 +1,19 @@
+% ( editor )
+#x0e load ( conditionals )
+#x10 load ( numbers )
+: ld bl #x5d hold dup nr #x5b hold flush load ;
+#x12 ld ( names )
+#x14 ld ( output )
+#x16 ld ( search )
+#x18 ld ( search )
+2 +blk load ( ansi color )
+4 +blk load ( editor )
+6 +blk load ( editor 2 )
+8 +blk load ( keys )
+10 +blk load ( number keys )
+12 +blk load ( number keys? )
+view
+% ( editor )
 % ( editor - ANSI coloured output. ) 
 : hld/ dup #xff and hold 8 ash jne hld/ drop ;
 : fg 109 hold hold #x1b5b33 hld/ ;
@@ -6,6 +22,7 @@
 : yellow 51 fg ; : red 49 fg ;
 : black 48 fg ; ( when white background )
 : black 57 fg ; cr
+;s
 % ( Individual color words )
 % ( editor - Print individual token categories )
 : nm dname bl ;
@@ -20,6 +37,7 @@ dhere ( address of table ) cr
     h, ( yellow word ) ] nm yellow ;
 : tagidx dup #x7 and 2 shl ;
 : .code tagidx [ nop ] +l vexec ;
+;s
 % ( comment block xxv )
 % ( editor - print code blocks )
   : .@-code -4 + dup @ .code ;
@@ -28,6 +46,7 @@ dhere ( address of table ) cr
   : 64x 16x 16x 16x 16x ;
   : show black 64x 64x drop ;
   : pg cr dup buffer #x1fc +l show nr bl [ a@+ page ] name top flush ;
+;s
 %
 : .@-code ( n-n ) print code, decrease addr )
 % ( key driven actions )
@@ -47,6 +66,7 @@ dhere ( address of table ) cr
 cr here !err 
 
 : view @blk pg state exekey ;
+;s
 %
 : vock keys vocabulary
 : map current map to use
@@ -65,6 +85,7 @@ cr #x66 defk ( f-orward ) ] @blk 2 + !blk view ;
 cr #x62 defk ( b-ackward ) ] @blk -2 + !blk view ;
 cr #x63 defk ( c-comment ) ] @blk 1 xor !blk view ;
 cr #x64 defk ( d-rop ) ] drop view ;
+;s
 % ( editor - simple keys )
 % ( editor - numbers )
 : defdigit #x30 defk #x31 defk #x32 defk #x33 defk #x34 defk [ cr ] #x35 defk
@@ -77,10 +98,12 @@ cr #x70 defk ( p-age ) ] !blk [
 cr #x20 defk ( go back ) ] vock map ! view ;
 vock map !  
 cr defdigit ( 0-9 ) ] here @ -48 + digk map ! view ;
+;s
 % ( editor - numbers )
 % ( editor - symbols )
 here 
 cr #x20 defk ( go back ) ] vock map ! view ;
 cr #x27 defk ( single quote ) ] key #x7f and -32 + view ;
+;s
 % ( editor - symbols )
 % 

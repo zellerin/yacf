@@ -1,19 +1,19 @@
 % ( rebuild app )
-#x0e load ( conditionals )
-#x10 load ( numbers )
+cr #x0e load ( conditionals )
+cr #x10 load ( numbers )
 : ld bl #x5d hold dup nr #x5b hold flush load ;
-#x12 ld ( names )
-#x14 ld ( output )
-#x16 ld ( search )
-#x18 ld ( search )
-#x1a ld ( elf )
-#x1c ld ( compiler )
-#x1e ld ( compiler )
+cr #x12 ld ( names )
+cr #x14 ld ( output )
+cr #x16 ld ( search )
+cr #x18 ld ( search )
+cr #x1a ld ( elf )
+cr #x1c ld ( compiler )
+cr #x1e ld ( compiler )
 : oreg reg ;
 : reg 2 shl #x30000 +l ;
-target mark compile
-#x22 ld ( generated code )
-dump flush
+cr target mark compile
+cr #x22 ld ( generated code )
+cr dump flush
 ;s
 % ( rebuild app )
 42 bye
@@ -40,3 +40,4 @@ cr stack top to ebx
 cr set iobuf and its end
 cr print #x12
 cr fixt latest pointer
+% 
