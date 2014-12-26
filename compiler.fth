@@ -46,6 +46,7 @@ all function expect the code on input cr
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 macros
 : ifc #x73 2c, here ;
+;s
 % ( comment block )
 : compile ( w- ) compile word and advance
 : load ( b- ) save address, load block, continue

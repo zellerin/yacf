@@ -82,6 +82,9 @@ nrmacros
       #x045b8b 3c, #x80cd 2c, ;
 : /xor/ #x44333 3c, ;
 : da@+ #x78b 2c, #x47f8d 3c, ;
+forth
+: ;s ;
+: reg /reg/ ;
 % ( x86 asm )
 : !cl cl over !
 : !ecx ecx over !
@@ -95,8 +98,6 @@ nrmacros
 : /xor/ over xor
 : da@+ drop a@+
 [ % ( Basic words )
-forth
-: reg /reg/ ;
 : dup dup ;
 : drop nip [ eax ] reg! ;
 : 2dup over over ;
@@ -121,6 +122,7 @@ forth
 : hold iobuf 1- dup !iobuf c! ;
 : xor /xor/ nip ;
 : buffer 9 shl [ 9 reg @ ] +l ;
+;s
 %
 : cfa ( a-a ) voc entry address to code address ;
 % ( A register and linux interface )

@@ -118,3 +118,7 @@ macro. However, it would need to change the stack size.
 |----+-----------------|
 | 10 | number printing |
 | 12 | word printing   |
+
+** Applications
+| 32 | x86 compiler |
+

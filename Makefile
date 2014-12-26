@@ -1,4 +1,4 @@
-all: yacf editor.blk
+all: yacf editor.blk A
 
 yacf: comp.o
 	ld -o $@ -T yacf.lnk comp.o shannon.o
@@ -25,7 +25,7 @@ parse: LDFLAGS=
 %.blk: %.fth parse
 	./parse <$< >$@ 
 
-bulk.blk: conditionals.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk
+A: conditionals.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk
 	cat $^ > $@
 
 simple: code.bin data.bin simple.lnk simple.o

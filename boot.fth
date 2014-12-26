@@ -4,11 +4,15 @@ forth
 : sread 3 sys/3 ;
 : load buffer @a over a! nip ;
 : ;s a! ;
-cr #x10000 2 +blk buffer 4 sread drop
-#x0e load ( condits )
-#x10 load ( numbers )
-6 +blk load ( names )
-8 +blk load ( program ...)
+: openr 0 dup iobuf 5 sys/3 ;
+: r. [ edx ] pop [ eax ] pop [ edx ] push ;
+: x10  1 shl dup 2 shl + ;
+: prnr @ dup 8 ash #xf and over #xf and x10 + ;
+0 hold 65 hold
+openr drop
+cr #x10000 2 +blk buffer
+3 sread drop
+r. r. r. prnr load
 18 bye
 % ( load code from ch4 )
 : +blk ( -n ) number of code block n blocks forward

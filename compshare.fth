@@ -19,7 +19,7 @@
 : dbase [ 0var ] ;
 : dthere [ dbase ] @ dhere + ;
 
-
+;s
 % ( Shared compile words )
 : name ( n- ) hold name
 : next ( -w ) ; ( next word to compile )
