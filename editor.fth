@@ -41,11 +41,11 @@ dhere ( address of table ) cr
 % ( comment block xxv )
 % ( editor - print code blocks )
   : .@-code -4 + dup @ .code ;
-  : 4x .@-code .@-code .@-code .@-code ;
-  : 16x 4x 4x 4x 4x ;
-  : 64x 16x 16x 16x 16x ;
-  : show black 64x 64x drop ;
-  : pg cr dup buffer #x1fc +l show nr bl [ a@+ page ] name top flush ;
+  : stop dup 23 shl testeax drop ;
+  : gauge stop if 4 + ; ] then -4 + dup @ testeax drop if gauge ; ] then 4 +
+   dup - 2 ash #x7f and [ a@+ free ] dname bl nr black cr ; 
+  : show .@-code stop if drop ; ] then show ;
+  : pg cr dup buffer #x1fc +l gauge black show nr bl [ a@+ page ] name top flush ;
 ;s
 %
 : .@-code ( n-n ) print code, decrease addr )

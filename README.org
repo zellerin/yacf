@@ -120,5 +120,6 @@ macro. However, it would need to change the stack size.
 | 12 | word printing   |
 
 ** Applications
-| 32 | x86 compiler |
+| 32 | x86 compiler  |
+| 36 | Viewer/editor |
 
