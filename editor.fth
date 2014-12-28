@@ -12,7 +12,7 @@
 8 +blk load ( keys )
 10 +blk load ( number keys )
 12 +blk load ( number keys? )
-view
+a@+ ---- view
 % ( editor )
 % ( editor - ANSI coloured output. ) 
 : hld/ dup #xff and hold 8 ash jne hld/ drop ;
