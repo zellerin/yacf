@@ -17,10 +17,11 @@ cr #x1e ld ( compiler )
 : cpchars 10 oreg @ ,16 ,16 ,16 drop ;
 cr target mark compile
 cr #x22 ld ( generated code )
-cr dump flush
+cr edump dump flush
 ;s
 % ( rebuild app )
-42 bye
+: ld load reporting progress [
+: cpchars copy character table from master [
 % ( init code )
 cr dhere 4 oreg @ !
 cr 0 , ( last )
