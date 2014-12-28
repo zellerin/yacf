@@ -16,19 +16,15 @@ cr
 : nrh ( n- ) hold unsigned hexa number
 : uu ( n- ) hold unsigned decimal number
 % ( Print names )
-43 bye
 : sizeflag dup 30 ash 3 and ;
-macros : tocl #xc189 2c, ;
-nrmacros : ,rot 8 shl #xe0d3 +l 2c, ;
-forth
 : shl tocl drop 0 ,rot ;
 : ash tocl drop 8 ,rot ; 
 : size #x7050404 over 3 shl ash #x7f and ;
 : offset [ #x161f000 4 shl ] over 3 shl ash #x7f and 3 shl ;
-: uncode #x3f and [ 10 reg @ ] +l @ #x7f and hold ;
+: uncode #x3f and [ 10 reg ] @ + @ #x7f and hold ;
 : dname -8 and 
 : decode sizeflag offset
-[ eax ] push drop size nip 2dup - 32 + ash dup [ eax ] pop + 
+[ eax ] push drop size nip 2dup - 32 + ash dup [ eax ] pop +
 uncode shl if drop ; ] then decode ;
 ;s
 % ( Print names )

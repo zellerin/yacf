@@ -2,6 +2,7 @@
 #x0e load ( conditionals )
 #x10 load ( numbers )
 : ld bl #x5d hold dup nr #x5b hold flush load ;
+52 ld
 #x12 ld ( names )
 #x14 ld ( output )
 #x16 ld ( search )
