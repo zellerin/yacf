@@ -134,6 +134,7 @@ forth
 : bye 2dup 1 sys/3 ;
 
 : flush [ 8 reg ] @ [ 5 reg ] @-+ iobuf 1 write
+: obufset
   [ 8 reg ] @ !iobuf ;
 ;s
 %

@@ -9,7 +9,7 @@ forth
 : x10  1 shl dup 2 shl + ;
 : prnr @ dup 8 ash #xf and over #xf and x10 + ;
 0 hold 65 hold
-openr drop
+openr drop obufset
 cr #x10000 2 +blk buffer
 3 sread drop
 r. r. r. prnr load
