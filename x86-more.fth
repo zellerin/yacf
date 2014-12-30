@@ -42,9 +42,9 @@ dup @ testeax if nip ; ] then - + find ;
 ;s
 % ( Heap )
 % ( compiler table )
-dhere cr
-h, here ( ignore word ) ] drop ; cr
-h, here ( yellow nr ) ] 4 ash next cnr ; cr
+dhere #x20060 base @ - + dup . 3 oreg !
+h, there ( ignore word ) ] drop ; cr
+h, there ( yellow nr ) ] 4 ash next cnr ; cr
 h, ( compile word ) ] cw ;
 cr h, ( define word ) ] dbg
   dhere [ 4 reg ] @ @ - over +
@@ -52,10 +52,11 @@ cr h, ( define word ) ] dbg
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
 cr h, ( yellow word ) ] [ 0 reg ] fexec next cnr ;
+3 oreg !
 : tagidx dup #x7 and 2 shl ;
 : nop ;
-: cword tagidx [ nop ] +l vexec ;
-: compile a@+ @a 23 shl drop
+: cword tagidx #x20060 +l vexec ;
+: compile a@+ dup name flush @a 23 shl drop
   if @a #x200 +l a! then cword compile ;
 ;s
 % ( Compile single word. cr

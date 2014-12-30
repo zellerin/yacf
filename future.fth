@@ -11,6 +11,7 @@ cr #x1a ld ( elf )
 cr #x1c ld ( compiler )
 cr #x1e ld ( compiler )
 : oreg reg ;
+: h, there dup . w, ;
 : reg 2 shl #x30000 +l ;
 : @,+ dup @ , 4 + ;
 : ,16 @,+ @,+ @,+ @,+ ;
@@ -24,7 +25,8 @@ cr edump dump flush
 : cpchars copy character table from master [
 % ( init code )
 cr dhere 4 oreg @ !
-cr 0 , ( last )
+cr 0 , ( last ) 0 , 0 ,
+here 32 + 1 oreg !
 cpchars
 : over dup [ #x08438b 3c, ] ( nop ) ;
 : + over+ nip ;
@@ -33,14 +35,15 @@ cr #x08 ld #x0a ld #x10 ld #x12 ld 54 ld
 cr init
 cr #xbb c, #x30100 ,
 [ cr ] #x30000 dup !iobuf [ 8 reg ] !
-[ cr ] #x20058 nop [ 10 reg ] !
+[ cr ] #x20080 nop [ 10 reg ] !
 [ cr ] #x20054 dup [ 0 reg ] ! [ 7 reg ] !
 #x21000 dup a! [ 9 reg ] ! 
 0 hold 66 hold
-openr drop obufset
-cr #x10000 nop #x21000 nop
-3 sread drop
-36 load
+#x10000 nop #x21000 nop
+openr obufset
+sread drop
+#x21000 a!
+compile
 0 bye ;
 cr 4 oreg @ @ dbase @ + there + base @ - #x20054 + ! ( fix last )
 ;s

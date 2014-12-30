@@ -27,18 +27,19 @@ This is a toy project aimed on exploration.
 - [ ] Make editor to edit blocks :: currently, conversion is done
      externally.
 * Elf binary
-|     VMA | Contains            |
-|---------+---------------------|
-| 0x20000 | Elf header          |
-| 0x20054 | last dictionary VMA |
-|         | words code          |
-|    init | init code           |
-|         | dictionary          |
-|     ... | ...                 |
-|         | output buffer       |
-| 0x30000 | random variables    |
-|         | stack               |
-| 0x30100 | end                 |
+|     VMA | Contains               |
+|---------+------------------------|
+| 0x20000 | Elf header             |
+| 0x20054 | last dictionary VMA    |
+| 0x20060 | addresses of tag words |
+| 0x20080 | words code             |
+|    init | init code              |
+|         | dictionary             |
+|     ... | ...                    |
+|         | output buffer          |
+| 0x30000 | random variables       |
+|         | stack                  |
+| 0x30100 | end                    |
 
 - code starts at 0x20054 (after elf headers)
 * x86 assembler low level words
