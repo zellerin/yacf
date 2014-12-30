@@ -7,7 +7,7 @@
 : 4a+ a@+ drop ;
 : ?compile #x7 and #x2 cmp drop ;
 : ;? next [ a@+ ; ] cmp drop ;
-: imm? 2 reg find ;
+: imm? [ 2 reg ] find ;
 
 ( vocabulary searches )
 : fexec find if drop err ; ] then	
@@ -38,7 +38,7 @@ dup @ testeax if nip ; ] then - + rfloop ;
 : cfa 8 +@ [ base ] @-+ ;
 
 ( compile for target )
-: voc! 4 reg ! ;
+: voc! [ 4 reg ] ! ;
 : target [ 0var dup ] voc! ;
 : known? [ nop ] @ rfloop ;
 : there [ base ] @ here + ;

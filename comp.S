@@ -84,7 +84,7 @@ do_comma:                       # (word)
 do_comma_char_shift:                  # (char)
         movl regs+4, %esi
         movb %al, (%esi)
-        addl $1, %esi
+        incl %esi
         movl %esi, regs+4
         shr $8, %eax
         ret
