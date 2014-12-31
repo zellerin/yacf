@@ -35,9 +35,11 @@ cr #x08 ld #x0a ld #x10 ld #x12 ld 54 ld
 cr init
 cr #xbb c, #x30100 ,
 [ cr ] #x30000 dup !iobuf [ 8 reg ] !
-[ cr ] #x20080 nop [ 10 reg ] !
+[ 10 reg #x20080 ] !!
 [ cr ] #x20054 dup [ 0 reg ] ! [ 7 reg ] !
-#x21000 dup a! [ 9 reg ] ! 
+[ 9 reg #x21000 ] !!
+[ 1 reg #x29000 ] !!
+
 0 hold 66 hold
 #x10000 nop #x21000 nop
 openr obufset
@@ -45,7 +47,7 @@ sread drop
 #x21000 a!
 compile
 0 bye ;
-cr 4 oreg @ @ dbase @ + there + base @ - #x20054 + ! ( fix last )
+cr 4 oreg @ @ dbase @ + there + base @ - #x20054 + !
 ;s
 % ( init code )
 cr ensure last links is 0

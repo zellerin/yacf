@@ -3,6 +3,7 @@ macros
 : tocl #xc189 2c, ;
 nrmacros
 : ,rot 8 shl #xe0d3 +l 2c, ;
+: !! #xb9 c,, #x0d89 2c, , ;
 forth
 ;s
 % ( Better x86 macros )
@@ -72,6 +73,7 @@ all function expect the code on input cr
 : r. [ edx ] pop [ eax ] pop [ edx ] push ;
 : x10  1 shl dup 2 shl + ;
 : prnr @ dup 8 ash #xf and over #xf and x10 + ;
+
 ;s
 % ( comment block )
 : compile ( w- ) compile word and advance
