@@ -1,8 +1,11 @@
 % ( Better x86 macros )
+: dropdup #x038b 2c, ;
 macros
 : tocl #xc189 2c, ;
 nrmacros
 : ,rot 8 shl #xe0d3 +l 2c, ;
+: drop 4 ,+stack dropdup ;
+: ! #xa3 c,, 4 ,+stack dropdup ;
 : !! #xb9 c,, #x0d89 2c, , ;
 forth
 ;s
@@ -16,7 +19,7 @@ forth
   ] 8 ash ;
 : c, dc,s drop ;
 : c,, c, , ;
-: find 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
+: find 2dup 4 + @ xor -8 and drop if nip testeax break ; ] then
 dup @ testeax if nip ; ] then - + find ;
 : cfa 8 +@ ;
 : ffind voc find ;
@@ -30,11 +33,12 @@ dup @ testeax if nip ; ] then - + find ;
 ;s
 % ( foo )
 % ( bar )
-: ,call #xE8 c, cfa raddr -4 + , ;
 : doj cfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
 : call ;? if 4a+ doj ; ] then ,call ;
-: known? [ 7 reg ] find ;
-: cw imm? jne found drop known? jne call drop err ;
+: known? [ 0 reg ] @ find ;
+: cw imm? if drop known?
+  if drop err ] then call ;
+   ] then cfa exec ; 
 : ,lit [ a@+ dup ] cw #xb8 c,, ;
 : ytog next [ 6 reg ] find if 2drop ,lit ; ] then 4a+ found ; 
 : cnr ?compile if ytog then ;
