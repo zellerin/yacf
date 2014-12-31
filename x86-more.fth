@@ -19,7 +19,7 @@ forth
   ] 8 ash ;
 : c, dc,s drop ;
 : c,, c, , ;
-: find 2dup 4 + @ xor -8 and drop if nip testeax break ; ] then
+: find 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
 dup @ testeax if nip ; ] then - + find ;
 : cfa 8 +@ ;
 : ffind voc find ;
@@ -35,7 +35,7 @@ dup @ testeax if nip ; ] then - + find ;
 % ( bar )
 : doj cfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
 : call ;? if 4a+ doj ; ] then ,call ;
-: known? [ 0 reg ] @ find ;
+: known? voc find ;
 : cw imm? if drop known?
   if drop err ] then call ;
    ] then cfa exec ; 
@@ -56,7 +56,7 @@ cr h, ( define word ) ] dbg
   w, [ 4 reg ] @ ! w, here w, ; cr
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
-cr h, ( yellow word ) ] [ 0 reg ] fexec next cnr ;
+cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr ;
 3 oreg !
 : tagidx dup #x7 and 2 shl ;
 : nop ;
