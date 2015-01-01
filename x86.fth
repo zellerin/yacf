@@ -121,7 +121,7 @@ forth
 : !iobuf [ 5 reg ] ! ;
 : hold iobuf 1- dup !iobuf c! ;
 : xor /xor/ nip ;
-: buffer 9 shl [ 9 reg @ ] +l ;
+: buffer 9 shl [ 9 reg ] @ + ;
 ;s
 %
 : cfa ( a-a ) voc entry address to code address ;

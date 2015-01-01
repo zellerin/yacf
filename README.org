@@ -17,15 +17,19 @@ This is a toy project aimed on exploration.
 - tail call optimization :: if semicolon to be compiled follows
      compiled call to word, jump is compiled instead. This allow to
      delay for some time real definition of semicolon.
-* [2/6] Immediate plans
+* [3/6] Immediate plans
 - [X] Compile elf binary
 - [X] Output buffer words
-- [ ] Compile itself as a binary
+- [X] Compile almost itself as a binary
 - [ ] Compile arm binary
 - [ ] Compile pic (Microchip) binary :: it was in place some time ago,
      but got lost.
 - [ ] Make editor to edit blocks :: currently, conversion is done
      externally.
+* Bugs
+- usefulness...
+- semicolon after call to word with a long name is not optimzied to
+  jump
 * Elf binary
 |     VMA | Contains               |
 |---------+------------------------|
@@ -34,7 +38,7 @@ This is a toy project aimed on exploration.
 | 0x20060 | addresses of tag words |
 | 0x20080 | words code             |
 |    init | init code              |
-|         | dictionary             |
+|      x0 | dictionary             |
 |     ... | ...                    |
 |         | output buffer          |
 | 0x30000 | random variables       |

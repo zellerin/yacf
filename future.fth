@@ -40,15 +40,15 @@ cr init
 [ 9 reg #x21000 ] !!
 [ 3 reg #x29000 ] !!
 [ 1 reg #x2c000 ] !!
-#x20054 @ dup [ 7 reg ] ! [ 0 reg ] !
+#x20054 @ dup [ 0 reg ] !
 [ 4 reg 0 reg ] !!
 0 hold 66 hold
 #x10000 nop #x21000 nop
 openr obufset
 sread drop
-#x21000 a!
-compile
-0 bye ;
+0 load
+compile ;
+1 allot
 4 oreg @ @ dbase @ + there + base @ - #x20054 + !
 ;s
 % ( init code )
