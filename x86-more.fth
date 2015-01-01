@@ -70,8 +70,7 @@ cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr ;
 : tagidx dup #x7 and 2 shl ;
 : nop ;
 : cword tagidx #x20060 +l vexec ;
-: compile a@+ flush @a 23 shl drop
-  if @a #x200 +l a! then cword compile ;
+: compile a@+ flush cword compile ;
 ;s
 % ( Compile single word. cr
 the table of functions is patched back after function is created. cr
