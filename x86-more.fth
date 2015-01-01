@@ -19,8 +19,9 @@ forth
   ] 8 ash ;
 : c, dc,s drop ;
 : c,, c, , ;
-: find 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
-dup @ testeax if nip ; ] then - + find ;
+: find testeax if ; ] then
+: floop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
+dup @ testeax if nip ; ] then - + floop ;
 : cfa 8 +@ ;
 : ffind voc find ;
 
@@ -37,10 +38,17 @@ dup @ testeax if nip ; ] then - + find ;
 : call ;? if 4a+ doj ; ] then ,call ;
 : known? voc find ;
 : imm? [ 2 reg ] @ find ;
+: 2c, dc,s c, ;
+: 3c, dc,s 2c, ;
+: 2c,n 2c, c, ;
+: c,, c, , ;
+: ,put #x0389 2c, ;
+: ,+stack #x5b8d 2c,n ;
+
 : cw imm? if drop known?
   if drop err ; ] then call ;
    ] then cfa exec ; 
-: ,lit [ a@+ dup ] cw #xb8 c,, ;
+: ,lit ,put -4 ,+stack #xb8 c,, ;
 : ytog next [ 6 reg ] @ find if 2drop ,lit ; ] then 4a+ found ; 
 : cnr ?compile if ytog then ;
 : dbg dup cr name bl here nrh bl dhere nrh flush ;
@@ -62,7 +70,7 @@ cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr ;
 : tagidx dup #x7 and 2 shl ;
 : nop ;
 : cword tagidx #x20060 +l vexec ;
-: compile a@+ dup name flush @a 23 shl drop
+: compile a@+ flush @a 23 shl drop
   if @a #x200 +l a! then cword compile ;
 ;s
 % ( Compile single word. cr
