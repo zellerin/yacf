@@ -33,14 +33,15 @@ dup @ testeax if nip ; ] then - + find ;
 ;s
 % ( foo )
 % ( bar )
-: doj cfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
+: doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
 : call ;? if 4a+ doj ; ] then ,call ;
 : known? voc find ;
+: imm? [ 2 reg ] @ find ;
 : cw imm? if drop known?
-  if drop err ] then call ;
+  if drop err ; ] then call ;
    ] then cfa exec ; 
 : ,lit [ a@+ dup ] cw #xb8 c,, ;
-: ytog next [ 6 reg ] find if 2drop ,lit ; ] then 4a+ found ; 
+: ytog next [ 6 reg ] @ find if 2drop ,lit ; ] then 4a+ found ; 
 : cnr ?compile if ytog then ;
 : dbg dup cr name bl here nrh bl dhere nrh flush ;
 
@@ -77,7 +78,9 @@ all function expect the code on input cr
 : r. [ edx ] pop [ eax ] pop [ edx ] push ;
 : x10  1 shl dup 2 shl + ;
 : prnr @ dup 8 ash #xf and over #xf and x10 + ;
-
+: nrmacros [ 4 reg 6 reg ] !! ;
+: macros [ 4 reg 2 reg ] !! ;
+: forth [ 4 reg 0 reg ] !! ; 
 ;s
 % ( comment block )
 : compile ( w- ) compile word and advance
