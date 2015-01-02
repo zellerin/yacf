@@ -28,6 +28,10 @@ parse: LDFLAGS=
 A: conditionals.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk editor.blk x86-more.blk
 	cat $^ > $@
 
+B: test.blk conditionals.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk editor.blk x86-more.blk
+	cat $^ > $@
+
+
 simple: code.bin data.bin simple.lnk simple.o
 	ld -T simple.lnk
 
