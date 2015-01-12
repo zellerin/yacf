@@ -28,7 +28,7 @@ parse: LDFLAGS=
 A: conditionals.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk editor.blk x86-more.blk
 	cat $^ > $@
 
-B: test.blk conditionals.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk editor.blk x86-more.blk
+B: test.blk conds.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk editor.blk x86-more.blk
 	cat $^ > $@
 
 

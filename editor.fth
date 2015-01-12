@@ -16,7 +16,7 @@
 a@+ ---- view
 % ( editor )
 % ( editor - ANSI coloured output. ) 
-: hld/ dup #xff and hold 8 ash jne hld/ drop ;
+: hld/ dup #xff and hold 8 ash if drop ; ] then hld/ ;
 : fg 109 hold hold #x1b5b33 hld/ ;
 : top #x1b5b4a hld/ #x3b3166 hld/ #x1b5b31 hld/ ;
 : blue 52 fg ; : green 50 fg ;
@@ -32,7 +32,7 @@ dhere ( address of table ) cr
     h, ( yellow number ) ] 4 ash nr yellow bl ; cr
     h, ( green word ) ] nm green ; cr
     h, ( red word ) ] nm red cr ; cr
-    h, ( blue word ) ] [ 0 reg ] find cfa [ eax ] push drop ;
+    h, ( blue word ) ] ffind cfa [ eax ] push drop ;
     h, ( white word ) ] nm black ; cr
     h, ( blue number ) ] 4 ash nrh blue bl ; cr
     h, ( yellow word ) ] nm yellow ;

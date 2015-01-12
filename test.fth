@@ -28,7 +28,7 @@ macros
 0 dhere : ; [ ! ] #xc3 c, ;
 : over+ #x044303 3c, ;
 : nip 4 ,+stack ;
-cr forth
+forth
 : eax 0 ; : ecx 1 ; : edx 2 ; : ebx 3 ;
 : esp 4 ; : ebp 5 ; : esi 6 ; : edi 7 ; 
 nrmacros 

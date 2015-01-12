@@ -10,7 +10,7 @@
 : imm? [ 2 reg ] find ;
 
 ( vocabulary searches )
-: fexec find if drop err ; ] then	
+: fexec find if drop err ; ] then
 : found cfa exec ;
 
 ( compiling targets )
