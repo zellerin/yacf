@@ -54,14 +54,14 @@ dhere ( address of table ) cr
 : vock [ 0var ] ;
 : map [ 0var ] ; vock map !
 : key 4 here 0 over ! 0 sread drop here @ ;
-: fkey 4 shl map @ find ;
-: defk map @ @ dhere map @ ! w, 4 shl w, here w, ;
+: fkey 4 shl map @ @ find ;
+: defk map @ @ dhere map @ ! - dhere + dup . w, 4 shl w, here w, ;
 : !blk [ 0var dup ] ! ; 24 !blk
 : @blk [ nop ] @ ;
 : err [ 0var dup ] @ exec ;
 : !err [ nop ] ! ;
-: exekey key fkey jne found
-: undef drop 4 ash dup nrh bl hold [ a@+ undef ] name err ;
+: exekey key fkey if
+: undef drop 4 ash dup nrh bl hold [ a@+ undef ] name err ; ] then cfa exec ;
 : .many dup nrh dup bl nr bl nm cr ;
 : state 2dup .many .many [ a@+ stack ] name cr flush ;
 cr here !err 
@@ -80,8 +80,9 @@ cr here !err
 : !err ( a- ) set error routine
 : exekey ( - ) read key and execute associated action
 : view ( - ) display page and read/execute keys. does not return
-% ( editor - simple keys )
-[ cr #x61 defk ( a-bort ) ] cr flush 0 bye ;
+[ % ( editor - simple keys )
+dhere vock !
+cr #x61 defk ( a-bort ) ] cr flush 0 bye ;
 cr #x66 defk ( f-orward ) ] @blk 2 + !blk view ;
 cr #x62 defk ( b-ackward ) ] @blk -2 + !blk view ;
 cr #x63 defk ( c-comment ) ] @blk 1 xor !blk view ;
