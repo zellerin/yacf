@@ -106,7 +106,7 @@ forth
 : r. [ edx ] pop [ eax ] pop [ edx ] push ;
 : x10  1 shl dup 2 shl + ;
 : prnr @ dup 8 ash #xf and over #xf and x10 + ;
-32 load
+36 load
 0 bye
 ;s
 % ( load code from ch4 )

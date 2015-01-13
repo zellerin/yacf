@@ -8,5 +8,5 @@ trap end 0
 
 stty -icanon -echo
 
-make
-./future 36
+make B
+./yacf

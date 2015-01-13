@@ -1,3 +1,8 @@
+all: future
+
+clean:
+	rm -f  *~ *.blk *.o code.bin B
+
 CFL=-fomit-frame-pointer -Os -g
 
 shannon.o: CFLAGS=-mregparm=2 -fcall-saved-ebx -fcall-saved-edi $(CFL)
