@@ -1,11 +1,11 @@
 % ( Boot structure )
-2 load ( nr macros )
-4 load ( macros )
-6 load ( x86 )
-8 load ( words )
-10 load
-12 load
-0 bye
+cr 2 load ( nr macros )
+cr 4 load ( macros )
+cr 6 load ( x86 )
+cr 8 load ( words )
+cr 10 load
+cr 12 load
+cr 0 bye
 % ( Boot structure )
 % ( number macros )
 nrmacros
@@ -106,7 +106,7 @@ forth
 : r. [ edx ] pop [ eax ] pop [ edx ] push ;
 : x10  1 shl dup 2 shl + ;
 : prnr @ dup 8 ash #xf and over #xf and x10 + ;
-36 load
+32 load
 0 bye
 ;s
 % ( load code from ch4 )

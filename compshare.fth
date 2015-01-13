@@ -7,7 +7,7 @@
 : 4a+ a@+ drop ;
 : ?compile #x7 and #x2 cmp drop ;
 : ;? next [ a@+ ; ] cmp drop ;
-: imm? [ 2 reg ] find ;
+: imm? [ 2 reg ] @ find ;
 
 ( vocabulary searches )
 : fexec find if drop err ; ] then
