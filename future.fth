@@ -47,7 +47,7 @@ cr init
 openr obufset
 sread drop
 0 load
-compile ;
+compi ;
 1 allot
 4 oreg @ @ dbase @ + there + base @ - #x20054 + !
 ;s

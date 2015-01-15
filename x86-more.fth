@@ -41,7 +41,7 @@ dup @ testeax if nip ; ] then - + floop ;
 
 : cw imm? if drop known?
   if drop err ; ] then call ;
-   ] then cfa exec ; 
+   ] then cfa exec ;
 : 2c, dc,s c, ;
 : 3c, dc,s 2c, ;
 : 2c,n 2c, c, ;
@@ -55,21 +55,22 @@ dup @ testeax if nip ; ] then - + floop ;
 ;s
 % ( Heap )
 % ( compiler table )
-dhere #x20060 base @ - + dup . 3 oreg !
-h, there ( ignore word ) ] drop ; cr
-h, there ( yellow nr ) ] 4 ash next cnr ; cr
-h, ( compile word ) ] cw ;
-cr h, ( define word ) ] dbg
-  dhere [ 4 reg ] @ @ - over +
-  w, [ 4 reg ] @ ! w, here w, ; cr
-over dup w, w, ( ignore twice )
-cr w, ( yellow nr ) drop
-cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr ;
-3 oreg !
 : tagidx dup #x7 and 2 shl ;
 : nop ;
-: cword tagidx #x20060 +l vexec ;
-: compi a@+ flush cword compi ;
+: compi a@+ flush tagidx #x20060 +l vexec ;
+
+dhere #x20060 base @ - + dup . 3 oreg !
+h, there ( ignore word ) ] drop compi ; cr
+h, there ( yellow nr ) ] 4 ash next cnr compi ; cr
+h, ( compile word ) ] cw compi ;
+cr h, ( define word ) ] dbg
+  dhere [ 4 reg ] @ @ - over +
+  w, [ 4 reg ] @ ! w, here w, compi ; cr
+over dup w, w, ( ignore twice )
+cr w, ( yellow nr ) drop 
+cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
+3 oreg !
+
 ;s
 % ( Compile single word. cr
 the table of functions is patched back after function is created. cr

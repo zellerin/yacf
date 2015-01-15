@@ -104,10 +104,8 @@ Some macros need also counterpart on the interpret side.
 forth
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : r. [ edx ] pop [ eax ] pop [ edx ] push ;
-: x10  1 shl dup 2 shl + ;
-: prnr @ dup 8 ash #xf and over #xf and x10 + ;
-32 load
-0 bye
+: initp r. r. 2 shl 28 + load compile ; ( no parameter - 32, one par - 36 )
+cr dup initp
 ;s
 % ( load code from ch4 )
 : +blk ( -n ) number of code block n blocks forward
