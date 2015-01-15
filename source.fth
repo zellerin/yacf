@@ -574,9 +574,6 @@ all function expect the code on input cr
 : load buffer @a over a! nip ;
 : ;s a! ;
 : openr 0 dup iobuf 5 sys/3 ;
-: r. [ edx ] pop [ eax ] pop [ edx ] push ;
-: x10  1 shl dup 2 shl + ;
-: prnr @ dup 8 ash #xf and over #xf and x10 + ;
 : nrmacros [ 4 reg 6 reg ] !! ;
 : macros [ 4 reg 2 reg ] !! ;
 : forth [ 4 reg 0 reg ] !! ; 
