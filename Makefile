@@ -14,11 +14,8 @@ parse: LDFLAGS=
 .PHONY: clean code
 
 # Compiled source
-%.blk: %.fth parse
+B: source.fth
 	./parse <$< >$@ 
-
-B: test.blk conds.blk numbers.blk compshare.blk elf.blk compiler.blk future.blk editor.blk x86-more.blk
-	cat $^ > $@
 
 future future.asm future.lst: yacf B
 	$(strace) ./yacf 4> future | tee future.lst

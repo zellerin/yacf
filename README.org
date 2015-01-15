@@ -20,7 +20,7 @@ This is a toy project aimed on exploration.
 * [3/6] Immediate plans
 - [X] Compile elf binary
 - [X] Output buffer words
-- [X] Compile almost itself as a binary
+- [X] Compile itself as a binary
 - [ ] Compile arm binary
 - [ ] Compile pic (Microchip) binary :: it was in place some time ago,
      but got lost.
@@ -38,14 +38,13 @@ This is a toy project aimed on exploration.
 | 0x20060 | addresses of tag words |
 | 0x20080 | words code             |
 |    init | init code              |
-|      x0 | dictionary             |
+|     ..0 | dictionary             |
 |     ... | ...                    |
 |         | output buffer          |
 | 0x30000 | random variables       |
 |         | stack                  |
 | 0x30100 | end                    |
 
-- code starts at 0x20054 (after elf headers)
 * x86 assembler low level words
 Legend: ~o~ is signed octet, ~w~ is word
 
