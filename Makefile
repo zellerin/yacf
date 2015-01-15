@@ -24,3 +24,7 @@ future future.asm future.lst: yacf B
 	$(strace) ./yacf 4> future | tee future.lst
 	objdump -D -m  i386 -b binary future | tee future.asm
 	chmod +x $@
+
+check: future
+	./future 4> future2
+	diff future future2

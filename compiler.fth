@@ -4,8 +4,8 @@
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
 : call ;? if 4a+ doj ; ] then ,call ;
 : cw imm? jne found drop known? jne call drop err ;
-: ,lit [ a@+ dup ] cw #xb8 c,, ;
-: ytog next 6 reg @ find if 2drop ,lit ; ] then 4a+ found ; 
+: ,lit ,put -4 ,+stack #xb8 c,, ;
+: ytog next [ 6 reg ] @ find if 2drop ,lit ; ] then 4a+ found ; 
 : cnr ?compile if ytog then ;
 : dbg dup cr name bl there nrh bl dthere nrh flush ;
 ;s

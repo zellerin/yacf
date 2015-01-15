@@ -38,16 +38,15 @@ dup @ testeax if nip ; ] then - + floop ;
 : call ;? if 4a+ doj ; ] then ,call ;
 : known? voc find ;
 : imm? [ 2 reg ] @ find ;
-: 2c, dc,s c, ;
-: 3c, dc,s 2c, ;
-: 2c,n 2c, c, ;
-: c,, c, , ;
-: ,put #x0389 2c, ;
-: ,+stack #x5b8d 2c,n ;
 
 : cw imm? if drop known?
   if drop err ; ] then call ;
    ] then cfa exec ; 
+: 2c, dc,s c, ;
+: 3c, dc,s 2c, ;
+: 2c,n 2c, c, ;
+: ,put #x0389 2c, ;
+: ,+stack #x5b8d 2c,n ;
 : ,lit ,put -4 ,+stack #xb8 c,, ;
 : ytog next [ 6 reg ] @ find if 2drop ,lit ; ] then 4a+ found ; 
 : cnr ?compile if ytog then ;
