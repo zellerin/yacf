@@ -1,13 +1,10 @@
 % ( Boot structure )
 cr ( This page is read after source blocks are loaded )
-cr 2 load ( nr macros )
-cr 4 load ( macros )
-cr 6 load ( x86 )
-cr 8 load ( words )
-cr 10 load
-cr 12 load
+cr 1 load ( nr macros )
+cr 2 load ( macros )
+cr 3 load ( x86 )
+cr 4 load
 cr 0 bye
-% ( Boot structure )
 % ( number macros )
 nrmacros
 0 dhere
@@ -23,7 +20,6 @@ nrmacros
 : / #xbed231 3c, , #xf6f7 2c, ;
 : cmp #x3d c,, ;
 ;s
-% ( number macros )
 % ( x86 )
 macros
 0 dhere : ; [ ! ] #xc3 c, ;
@@ -38,7 +34,6 @@ nrmacros
 : pop #x58 + c, ;
 : push #x50 + c, ;
 ;s
-% ( x86 ... )
 % ( x86 asm )
 macros
 : !cl #x0888 2c, ;
@@ -55,9 +50,18 @@ macros
 forth
 : reg 2 shl #x30000 +l ;
 ;s
-
+% ( init )
+forth
+: r. [ edx ] pop [ eax ] pop [ edx ] push ;
+: initp r. r. 2 shl 28 + load compile ; ( no parameter - 32, one par - 36 )
+cr dup initp
+;s
+% ( number macros )
+% ( number macros )
 % ( asm )
 % ( Basic words )
+: over dup [ #x08438b 3c, ] ( nop ) ;
+: + over+ nip ;
 : dup dup ;
 : drop nip [ eax ] reg! ;
 : 2dup over over ;
@@ -68,11 +72,11 @@ forth
 : @ @ ;
 : - - ;
 : break break ;
-
+;s
+% ( More basic words )
 : voc [ 0 reg ] @ ;
 : here [ 1 reg ] @ ;
 : raddr [ 1 reg ] @-+ ;
-
 : dhere [ 3 reg ] @ ;
 : w, [ 3 reg ] @ ! [ 3 reg ] @ 4 + [ 3 reg ] ! ;
 : h, here w, ;
@@ -83,7 +87,6 @@ forth
 : xor /xor/ nip ;
 : buffer 9 shl [ 9 reg ] @ + ;
 ;s
-% ( Basic words )
 % ( A register and linux interface )
 : a@+ dup da@+ ;
 : a! [ #xc789 2c, ] ( nop ) drop ;
@@ -101,18 +104,9 @@ forth
 : w, ; write word on data stack 
 Some macros need also counterpart on the interpret side.
 : + ; needs a variant that would work on the non-immediate values/stack as well. 
-% % ( load code from ch4 )
-forth
-: +blk @a [ 0 buffer - ] +l 9 lsr + ;
-: r. [ edx ] pop [ eax ] pop [ edx ] push ;
-: initp r. r. 2 shl 28 + load compile ; ( no parameter - 32, one par - 36 )
-cr dup initp
-;s
-% ( load code from ch4 )
-: +blk ( -n ) number of code block n blocks forward
-: sread ( size from fd - ) read data from input
-: load ( n-a ) read source from code block; store return address
-[ % ( Conditionals jumps and find )
+% ( unused )
+% ( unused )
+% ( Conditionals jumps and find )
 cr macros
 : testeax #xc085 2c, ;
 : if #x75 2c, here ;
@@ -307,14 +301,11 @@ all function expect the code on input cr
   if @a #x200 +l a! then cword compi ;
 : wfrom - here + dup - here + ;
 : save wfrom 3 write drop ;
-: +blk @a [ 0 buffer - ] +l 9 lsr + ;
 ;s
 % ( comment block )
 : compile ( w- ) compile word and advance
 : load ( b- ) save address, load block, continue
-: +blk ( -a ) Address of the next block ;
-: ... load next block [
-% 
+[ % 
 % ( rebuild app )
 cr #x0e load ( conditionals )
 cr #x10 load ( numbers )
@@ -346,9 +337,7 @@ cr dhere 4 oreg @ !
 cr 0 , ( last ) 0 , 0 ,
 32 allot
 cpchars
-: over dup [ #x08438b 3c, ] ( nop ) ;
-: + over+ nip ;
-cr #x08 ld #x0a ld #x10 ld #x12 ld 54 ld
+cr #x08 ld 9 ld #x0a ld #x10 ld #x12 ld 54 ld
 #x14 ld 56 ld 58 ld 60 ld
 cr init
 #xbb c, #x30100 ,
@@ -569,7 +558,6 @@ the table of functions is patched back after function is created. cr
 all function expect the code on input cr
 ( define ) load 
 % ( boot block )
-: +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : sread 3 sys/3 ;
 : load buffer @a over a! nip ;
 : ;s a! ;
