@@ -45,6 +45,18 @@ This is a toy project aimed on exploration.
 |         | stack                  |
 | 0x30100 | end                    |
 
+Structure of rebuild (see page 32):
+- page 8 (over, dup, drop, ...)
+- page 9 (more words)
+- page 10 (a-reg, write)
+- page 16 (print numbers)
+- page 54 (heap words, find, exec)
+- page 20 (name, compile helpers)
+- page 56 (x86 code building)
+- 58 compiler table
+- 60 loading, pages, macros/forth
+- init code on page 22
+
 * x86 assembler low level words
 Legend: ~o~ is signed octet, ~w~ is word
 

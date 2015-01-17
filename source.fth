@@ -11,6 +11,7 @@ nrmacros
 : + [ ! ] #xc083 2c,n ;
 : +l #x05 c,, ;
 : +@ #x408b 2c,n ;
+: @+ #x0503 dc,s c,, ;
 : @-+ #x052b dc,s c,, ;
 : @ ,put -4 ,+stack #xa1 c,, ;
 : ash #xf8c1 2c,n ;
@@ -49,6 +50,7 @@ macros
 : da@+ #x78b 2c, #x47f8d 3c, ;
 forth
 : reg 2 shl #x30000 +l ;
+: +blk @a [ 0 buffer - ] +l 9 lsr + ;
 ;s
 % ( init )
 forth
@@ -56,9 +58,9 @@ forth
 : initp r. r. 2 shl 28 + load compile ; ( no parameter - 32, one par - 36 )
 cr dup initp
 ;s
-% ( number macros )
-% ( number macros )
-% ( asm )
+% ( unused )
+% ( unused )
+% ( unused )
 % ( Basic words )
 : over dup [ #x08438b 3c, ] ( nop ) ;
 : + over+ nip ;
@@ -68,7 +70,8 @@ cr dup initp
 : 2drop nip drop ;
 : c! nip [ ecx ] reg! !cl drop ;
 : ! nip [ ecx ] reg! !ecx drop ;
-
+: shl tocl drop 0 ,rot ;
+: ash tocl drop 8 ,rot ; 
 : @ @ ;
 : - - ;
 : break break ;
@@ -85,7 +88,7 @@ cr dup initp
 : !iobuf [ 5 reg ] ! ;
 : hold iobuf 1- dup !iobuf c! ;
 : xor /xor/ nip ;
-: buffer 9 shl [ 9 reg ] @ + ;
+: buffer 9 shl [ 9 reg ] @+ ;
 ;s
 % ( A register and linux interface )
 : a@+ dup da@+ ;
@@ -133,7 +136,7 @@ forth
 cr
 : nop ;
 ;s
-% 
+% ( unused )
 : digit ( n-n ) hold last digit; keep nr/10
 : hdigit ( n-n ) hold last hexa digit, keep nr/0x10
 : nr ( n- ) hold signed decimal number
@@ -141,11 +144,9 @@ cr
 : uu ( n- ) hold unsigned decimal number
 % ( Print names )
 : sizeflag dup 30 ash 3 and ;
-: shl tocl drop 0 ,rot ;
-: ash tocl drop 8 ,rot ; 
 : size #x7050404 over 3 shl ash #x7f and ;
 : offset [ #x161f000 4 shl ] over 3 shl ash #x7f and 3 shl ;
-: uncode #x3f and [ 10 reg ] @ + @ #x7f and hold ;
+: uncode #x3f and [ 10 reg ] @+ @ #x7f and hold ;
 : dname -8 and 
 : decode sizeflag offset
 [ eax ] push drop size nip 2dup - 32 + ash dup [ eax ] pop +
