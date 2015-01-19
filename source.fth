@@ -20,6 +20,8 @@ nrmacros
 : and #xe083 2c,n ;
 : / #xbed231 3c, , #xf6f7 2c, ;
 : cmp #x3d c,, ;
+: nth #x08438b 2c,n ;
+: nop ,lit ;
 ;s
 % ( x86 )
 macros
@@ -48,6 +50,7 @@ macros
       #x045b8b 3c, #x80cd 2c, ;
 : /xor/ #x44333 3c, ;
 : da@+ #x78b 2c, #x47f8d 3c, ;
+: da! #xc789 2c, ; ( dup a! ) 
 forth
 : reg 2 shl #x30000 +l ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
@@ -62,7 +65,7 @@ cr dup initp
 % ( unused )
 % ( unused )
 % ( Basic words )
-: over dup [ #x08438b 3c, ] ( nop ) ;
+: over dup 8 nth ;
 : + over+ nip ;
 : dup dup ;
 : drop nip [ eax ] reg! ;
@@ -92,7 +95,7 @@ cr dup initp
 ;s
 % ( A register and linux interface )
 : a@+ dup da@+ ;
-: a! [ #xc789 2c, ] ( nop ) drop ;
+: a! da! drop ;
 : @a dup [ edi ] ldreg ;
 : sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
 : write 4 sys/3 drop ;
@@ -121,7 +124,7 @@ forth
 : vexec @ : exec [ eax ] push drop ;
 ;s
 % ( lalla )
-: ffind ; ( w-af ) find word in dictionary 
+: ffind ;
 : wjump ; ( wc- ) compile short relative call to passed word
 : jne ; jump to word unless zero flag set. Handles long calls.
 : relcfa ; relative CFA of word on address; set NF if near
@@ -261,8 +264,8 @@ heap! ;
 : ,call #xE8 c, cfa raddr -4 + , ;
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
 : call ;? if 4a+ doj ; ] then ,call ;
-: cw imm? jne found drop known? jne call drop err ;
-: ,lit ,put -4 ,+stack #xb8 c,, ;
+: : cw imm? jne found drop known? jne call drop err ;
+: ,lit ,put -4 ,+stack testeax if drop #xc031 2c, ; ] then #xb8 c,, ;
 : ytog next [ 6 reg ] @ find if 2drop ,lit ; ] then 4a+ found ; 
 : cnr ?compile if ytog then ;
 : dbg dup cr name bl there nrh bl dthere nrh flush ;
@@ -290,7 +293,6 @@ over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
 cr h, ( yellow word ) ] 0 reg @ fexec next cnr ;
 : tagidx dup #x7 and 2 shl ;
-: nop ;
 : cword tagidx [ nop ] +l vexec ;
 ;s
 % ( Compile single word. cr
@@ -350,7 +352,7 @@ cr init
 #x20054 @ dup [ 0 reg ] !
 [ 4 reg 0 reg ] !!
 0 hold 66 hold
-#x10000 nop #x21000 nop
+#x10000 nop #x21000
 openr obufset
 sread drop
 0 load
@@ -454,11 +456,10 @@ cr here !err
 : view ( - ) display page and read/execute keys. does not return
 [ % ( editor - simple keys )
 dhere vock !
-cr #x61 defk ( a-bort ) ] cr flush 0 bye ;
-cr #x66 defk ( f-orward ) ] @blk 2 + !blk view ;
-cr #x62 defk ( b-ackward ) ] @blk -2 + !blk view ;
-cr #x63 defk ( c-comment ) ] @blk 1 xor !blk view ;
-cr #x64 defk ( d-rop ) ] drop view ;
+cr #x1 defk ( a-bort ) ] cr flush 0 bye ;
+cr #x6 defk ( f-orward ) ] @blk 1 + !blk view ;
+cr #x2 defk ( b-ackward ) ] @blk 1- !blk view ;
+cr #x4 defk ( d-rop ) ] drop view ;
 ;s
 % ( editor - simple keys )
 % ( editor - numbers )
@@ -487,6 +488,7 @@ macros
 nrmacros
 : ,rot 8 shl #xe0d3 +l 2c, ;
 : drop 4 ,+stack dropdup ;
+: d! #xa3 c,, ;
 : ! #xa3 c,, 4 ,+stack dropdup ;
 : !! #xb9 c,, #x0d89 2c, , ;
 forth
@@ -501,11 +503,11 @@ forth
   ] 8 ash ;
 : c, dc,s drop ;
 : c,, c, , ;
-: find testeax if ; ] then
+: find ( wv-af ) testeax if ; ( w0 ) ] then
 : floop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
 dup @ testeax if nip ; ] then - + floop ;
 : cfa 8 +@ ;
-: ffind voc find ;
+: ffind  ( w-af ) voc find ; ( find word in dictionary )
 
 : relcfa cfa raddr -126 cmp ;
 : ,call #xe8 c, cfa raddr -4 + , ; 
@@ -538,7 +540,6 @@ dup @ testeax if nip ; ] then - + floop ;
 % ( Heap )
 % ( compiler table )
 : tagidx dup #x7 and 2 shl ;
-: nop ;
 : compi a@+ flush tagidx #x20060 +l vexec ;
 
 dhere #x20060 base @ - + dup . 3 oreg !

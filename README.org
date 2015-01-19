@@ -62,10 +62,11 @@ Legend: ~o~ is signed octet, ~w~ is word
 
 ** Builder words
 These are forth words that put te code
-| forth         | x86               | usage           |
-|---------------+-------------------+-----------------|
-| ~,put~        | mov %eax, (%ebx)  | ~dup~ component |
-| /n/ ~,+stack~ | lea n(%ebx), %ebx | ~nip~, ...      |
+| forth       | x86               | usage                |
+|-------------+-------------------+----------------------|
+| ~,put~      | mov %eax, (%ebx)  | ~dup~ component        |
+| /n/ ~,+stack~ | lea n(%ebx), %ebx | ~nip~, ...             |
+| n ~,lit~    | ~dup~ mov $n,%eax   | yellow to green, ... |
 
 
 ** Number macros
@@ -74,6 +75,7 @@ These are forth words that put te code
 | n +         | add n, %eax                            |
 | w +l        | add w, %eax                            |
 | o +@        | mov n(eax), %eax                       |
+| o nth       | mov o(%ebx), %eax                      |
 | w @-+       | sub w, %eax                            |
 | w @         | <dup>; mov w, %eax                     |
 | o ash       | sar o, %eax                            |
@@ -86,11 +88,12 @@ These are forth words that put te code
 | <reg> ldreg | mov <reg>, %eax                        |
 | <reg> pop   | pop <reg>                              |
 | <reg> push  | push <reg>                             |
-
+| a !         | mov %eax,a ~drop~                        |
+| a w !!      | mov $w,%ecx; mov %ecx, a               |
 
 ** Macros
-| forth   | x86 assembler              |
-|---------+----------------------------|
+| forth | x86 assembler              |
+|-------+----------------------------|
 | ~;~     | ret                        |
 | ~over+~ | add 4(%ebx), %eax          |
 | ~/xor/~ | xor 4(%ebx), %eax          |
@@ -102,13 +105,13 @@ These are forth words that put te code
 | ~1-~    | dec %eax                   |
 | ~/reg/~ | lea 0(%ebp, %eax, 4), %eax |
 | ~/sys/~ | mov 0xc(%ebx), %edx        |
-|         | mov 0x8(%ebx), %ecx        |
-|         | mov 0x4(%ebx), %ebx        |
-|         | int 0x80                   |
+|       | mov 0x8(%ebx), %ecx        |
+|       | mov 0x4(%ebx), %ebx        |
+|       | int 0x80                   |
 | ~da@+~  | mov (%edi), %eax           |
-|         | lea 4(%edi), %edi          |
-| ~a!~    | mov %eax, %edi  ; ~drop~   |
-|         |                            |
+|       | lea 4(%edi), %edi          |
+| ~da!~   | mov %eax, %edi             |
+|       |                            |
 
 Note: ~/reg/~ could be possibly even better defined as an number
 macro. However, it would need to change the stack size.
