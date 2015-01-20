@@ -90,7 +90,7 @@ cr dup initp
 : @a dup [ edi ] ldreg ;
 : sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
 : write 4 sys/3 drop ;
-: bye 2dup 1 sys/3 ;
+: bye 8 [ - ,+stack ] 1 sys/3 ;
 : flush #x30000 nop [ 5 reg ] @-+ [ 5 reg ] @ 1 write
 : obufset [ 5 reg ] #x30000 !! ;
 ;s
@@ -333,7 +333,7 @@ cr init
 [ cr ] 66 here ! ( file name B )
 [ cr ] #x10000 nop #x21000 openr sread 0 nip load 
 [ cr ] compi ;
-3 allot ( align )
+1 allot ( align )
 cr 4 reg @ @ dbase @ + there + base @ - #x20054 + ! ( save last word )
 ;s
 % ( init code )
