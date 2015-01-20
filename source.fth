@@ -91,7 +91,7 @@ cr dup initp
 : !iobuf [ 5 reg ] ! ;
 : hold iobuf 1- dup !iobuf c! ;
 : xor /xor/ nip ;
-: buffer 9 shl [ 9 reg ] @+ ;
+: buffer 9 shl #x21000 +l ;
 ;s
 % ( A register and linux interface )
 : a@+ dup da@+ ;
@@ -149,7 +149,7 @@ cr
 : sizeflag dup 30 ash 3 and ;
 : size #x7050404 over 3 shl ash #x7f and ;
 : offset [ #x161f000 4 shl ] over 3 shl ash #x7f and 3 shl ;
-: uncode #x3f and [ 10 reg ] @+ @ #x7f and hold ;
+: uncode #x3f and #x20080 +l @ #x7f and hold ;
 : dname -8 and 
 : decode sizeflag offset
 [ eax ] push drop size nip 2dup - 32 + ash dup [ eax ] pop +
@@ -329,7 +329,7 @@ cr #x1e ld ( compiler )
 : reg 2 shl #x30000 +l ;
 : @,+ dup @ , 4 + ;
 : ,16 @,+ @,+ @,+ @,+ ;
-: cpchars 10 oreg @ ,16 ,16 ,16 drop ;
+: cpchars #x20080 ,16 ,16 ,16 drop ;
 cr target mark compile
 cr #x22 ld ( generated code )
 cr edump dump flush
@@ -347,11 +347,9 @@ cr #x08 ld 9 ld #x0a ld #x10 ld #x12 ld 54 ld
 cr init
 #xbb c, #x30100 ,
 ] #x30000 dup !iobuf [ 8 reg ] !
-[ 10 reg #x20080 ] !!
-[ 9 reg #x21000 ] !!
-[ 3 reg #x29000 ] !!
-[ 1 reg #x2c000 ] !!
 #x20054 @ dup [ 0 reg ] !
+[ 1 reg #x2c000 ] !!
+[ 3 reg #x29000 ] !!
 [ 4 reg 0 reg ] !!
 0 hold 66 hold
 #x10000 nop #x21000
