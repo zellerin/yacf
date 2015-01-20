@@ -88,8 +88,7 @@ cr dup initp
 : h, here w, ;
 
 : iobuf [ 5 reg ] @ ;
-: !iobuf [ 5 reg ] ! ;
-: hold iobuf 1- dup !iobuf c! ;
+: hold iobuf 1- dup [ 5 reg ] ! c! ;
 : xor /xor/ nip ;
 : buffer 9 shl #x21000 +l ;
 ;s
