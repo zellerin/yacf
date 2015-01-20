@@ -265,10 +265,12 @@ heap! ;
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
 : call ;? if 4a+ doj ; ] then ,call ;
 : : cw imm? jne found drop known? jne call drop err ;
-: ,lit ,put -4 ,+stack testeax if drop #xc031 2c, ; ] then #xb8 c,, ;
+: ,lit ,put -4 ,+stack
+: ,dlit testeax if #xc031 nip 2c, ; ] then #xb8 c,, ;
 : ytog next [ 6 reg ] @ find if 2drop ,lit ; ] then 4a+ found ; 
 : cnr ?compile if ytog then ;
 : dbg dup cr name bl there nrh bl dthere nrh flush ;
+nrmacros : nip ,dlit ; forth
 ;s
 % ( comment block xv )
 : relcfa ( a-o ) relative cfa for short calls ; set flag if small
@@ -427,7 +429,7 @@ dhere ( address of table ) cr
 % ( key driven actions )
 : vock [ 0var ] ;
 : map [ 0var ] ; vock map !
-: key 4 here 0 over ! 0 sread drop here @ ;
+: key 4 here 0 over ! 0 sread here nip @ ;
 : fkey 4 shl map @ @ find ;
 : defk map @ @ dhere map @ ! - dhere + dup . w, 4 shl w, here w, ;
 : !blk [ 0var dup ] ! ; 24 !blk
@@ -488,7 +490,6 @@ macros
 nrmacros
 : ,rot 8 shl #xe0d3 +l 2c, ;
 : drop 4 ,+stack dropdup ;
-: d! #xa3 c,, ;
 : ! #xa3 c,, 4 ,+stack dropdup ;
 : !! #xb9 c,, #x0d89 2c, , ;
 forth

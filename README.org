@@ -67,6 +67,8 @@ These are forth words that put te code
 | ~,put~      | mov %eax, (%ebx)  | ~dup~ component        |
 | /n/ ~,+stack~ | lea n(%ebx), %ebx | ~nip~, ...             |
 | n ~,lit~    | ~dup~ mov $n,%eax   | yellow to green, ... |
+| ~op~ ,rot   | <op> %cl,%eax     | shl, rot, ...        |
+| tocl        | mov %eax,%ecx     |                      |
 
 
 ** Number macros
