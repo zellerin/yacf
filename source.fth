@@ -87,8 +87,7 @@ cr dup initp
 : w, [ 3 reg ] @ ! [ 3 reg ] @ 4 + [ 3 reg ] ! ;
 : h, here w, ;
 
-: iobuf [ 5 reg ] @ ;
-: hold iobuf 1- dup [ 5 reg ] ! c! ;
+: hold [ #xdff 2c, 5 reg , ] ( decl ) [ 5 reg ] @ c! ;
 : xor /xor/ nip ;
 : buffer 9 shl #x21000 +l ;
 ;s
@@ -99,7 +98,7 @@ cr dup initp
 : sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
 : write 4 sys/3 drop ;
 : bye 2dup 1 sys/3 ;
-: flush #x30000 nop [ 5 reg ] @-+ iobuf 1 write
+: flush #x30000 nop [ 5 reg ] @-+ [ 5 reg ] @ 1 write
 : obufset [ 5 reg ] #x30000 !! ;
 ;s
 %
@@ -558,7 +557,7 @@ all function expect the code on input cr
 : sread 3 sys/3 ;
 : load buffer @a over a! nip ;
 : ;s a! ;
-: openr 0 dup iobuf 5 sys/3 ;
+: openr 0 dup [ 5 reg ] @ 5 sys/3 ;
 : nrmacros [ 4 reg 6 reg ] !! ;
 : macros [ 4 reg 2 reg ] !! ;
 : forth [ 4 reg 0 reg ] !! ; 
