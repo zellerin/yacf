@@ -344,16 +344,12 @@ cr init
 [ cr 1 reg #x2c000 ] !!
 [ cr 3 reg #x29000 ] !!
 [ cr 4 reg 0 reg ] !!
-[ cr 5 reg #x30000 ] !!
-
-0 hold 66 hold
-#x10000 nop #x21000
-openr obufset
-sread drop
-0 load
-compi ;
-1 allot
-4 reg @ @ dbase @ + there + base @ - #x20054 + !
+[ cr ] obufset
+[ cr ] 66 here ! ( file name B )
+[ cr ] #x10000 nop #x21000 openr sread 0 nip load 
+[ cr ] compi ;
+3 allot ( align )
+cr 4 reg @ @ dbase @ + there + base @ - #x20054 + ! ( save last word )
 ;s
 % ( init code )
 cr ensure last links is 0
@@ -557,7 +553,7 @@ all function expect the code on input cr
 : sread 3 sys/3 ;
 : load buffer @a over a! nip ;
 : ;s a! ;
-: openr 0 dup [ 5 reg ] @ 5 sys/3 ;
+: openr 0 dup here 5 sys/3 ;
 : nrmacros [ 4 reg 6 reg ] !! ;
 : macros [ 4 reg 2 reg ] !! ;
 : forth [ 4 reg 0 reg ] !! ; 
