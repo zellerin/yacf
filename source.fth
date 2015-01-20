@@ -52,7 +52,6 @@ macros
 : da@+ #x78b 2c, #x47f8d 3c, ;
 : da! #xc789 2c, ; ( dup a! ) 
 forth
-: reg 2 shl #x30000 +l ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 ;s
 % ( init )
@@ -285,11 +284,11 @@ h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
 h, ( compile word ) ] cw ;
 cr h, ( define word ) ] dbg
-  dhere 4 reg @ @ - over +
-  w, 4 reg @ ! w, there w, ; cr
+  dhere [ 4 reg ] @ @ - over +
+  w, [ 4 reg ] @ ! w, there w, ; cr
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
-cr h, ( yellow word ) ] 0 reg @ fexec next cnr ;
+cr h, ( yellow word ) 0 reg ] @ fexec next cnr ;
 : tagidx dup #x7 and 2 shl ;
 : cword tagidx [ nop ] +l vexec ;
 ;s
@@ -308,6 +307,7 @@ all function expect the code on input cr
 : load ( b- ) save address, load block, continue
 [ % 
 % ( rebuild app )
+: reg 2 shl #x30000 +l ;
 cr #x0e load ( conditionals )
 cr #x10 load ( numbers )
 : ld bl #x5d hold dup nr #x5b hold flush load ;
