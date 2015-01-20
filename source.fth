@@ -106,7 +106,14 @@ cr dup initp
 Some macros need also counterpart on the interpret side.
 : + ; needs a variant that would work on the non-immediate values/stack as well. 
 % ( unused )
-% ( unused )
+% ( Miscellaneous compiler stuff )
+: reg 2 shl #x30000 +l ;
+: allot here + [ 1 reg ] ! ;
+: @,+ dup @ , 4 + ; 
+: ,16 @,+ @,+ @,+ @,+ ;
+: cpchars #x20080 ,16 ,16 ,16 drop ;
+: vexec @ : exec [ eax ] push drop ;
+;s
 % ( Conditionals jumps and find )
 cr macros
 : testeax #xc085 2c, ;
@@ -115,31 +122,20 @@ cr macros
 : then dup raddr - over 1- c! drop ; 
 : jne a@+ ffind if 5 bye then relcfa -if
 -2 + #x75  c, c, ; ] then -6 + #x850f 2c, , ;
-forth
-: vexec @ : exec [ eax ] push drop ;
+cr forth
 ;s
-% ( lalla )
-: ffind ;
-: wjump ; ( wc- ) compile short relative call to passed word
-: jne ; jump to word unless zero flag set. Handles long calls.
-: relcfa ; relative CFA of word on address; set NF if near
+% ( unused )
 % ( Print numbers )
-: digit 10 / dup [ edx ] ldreg #x30 + hold ;
-: hdigit dup #xf and 10 cmp -if 7 + then #x30 + hold 4 lsr ;
-: nrh hdigit if drop ; ] then nrh ; 
-: uu digit testeax if drop ; ] then uu ;
-: nr testeax -if uu ; ] then - uu 45 hold ;
+: digit ( n-n ) 10 / dup [ edx ] ldreg #x30 + hold ; ( hold digit, keep /10 )
+: hdigit dup #xf and 10 cmp -if 7 + then #x30 + hold 4 lsr ; ( hold hexa digit, keep /16 )
+: nrh hdigit if drop ; ] then nrh ; (  hold unsigned hexa number )
+: uu digit testeax if drop ; ] then uu ; ( hold unsigned decimal number )
+: nr testeax -if uu ; ] then - uu 45 hold ; ( hold signed decimal number )
 : bl 32 hold ; : cr 10 hold ;
-: . bl nrh flush ;
-cr
+: . bl nrh flush ; ( print hexa unsigned digit )
 : nop ;
 ;s
 % ( unused )
-: digit ( n-n ) hold last digit; keep nr/10
-: hdigit ( n-n ) hold last hexa digit, keep nr/0x10
-: nr ( n- ) hold signed decimal number
-: nrh ( n- ) hold unsigned hexa number
-: uu ( n- ) hold unsigned decimal number
 % ( Print names )
 : sizeflag dup 30 ash 3 and ;
 : size #x7050404 over 3 shl ash #x7f and ;
@@ -200,6 +196,7 @@ dup @ testeax if nip ; ] then - + rfloop ;
 : target [ 0var dup ] voc! ;
 : known? [ nop ] @ rfloop ;
 : there [ base ] @ here + ;
+: h, there dup . w, ;
 
 ( saving heap and data heap )
 : wfrom - here + dup - here + ;
@@ -307,7 +304,7 @@ all function expect the code on input cr
 : load ( b- ) save address, load block, continue
 [ % 
 % ( rebuild app )
-: reg 2 shl #x30000 +l ;
+cr #x0d load
 cr #x0e load ( conditionals )
 cr #x10 load ( numbers )
 : ld bl #x5d hold dup nr #x5b hold flush load ;
@@ -319,12 +316,6 @@ cr #x18 ld ( search )
 cr #x1a ld ( elf )
 cr #x1c ld ( compiler )
 cr #x1e ld ( compiler )
-: allot here + 1 reg ! ;
-: h, there dup . w, ;
-: reg 2 shl #x30000 +l ;
-: @,+ dup @ , 4 + ;
-: ,16 @,+ @,+ @,+ @,+ ;
-: cpchars #x20080 ,16 ,16 ,16 drop ;
 cr target mark compile
 cr #x22 ld ( generated code )
 cr edump dump flush
