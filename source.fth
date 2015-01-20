@@ -1,13 +1,12 @@
-% ( Boot structure )
+% ( boot load page )
 cr ( This page is read after source blocks are loaded )
 cr 1 load ( nr macros )
 cr 2 load ( macros )
 cr 3 load ( x86 )
 cr 4 load
 cr 0 bye
-% ( number macros )
-nrmacros
-0 dhere
+% nrmacros ( x86 boot )
+cr 0 dhere
 : + [ ! ] #xc083 2c,n ;
 : +l #x05 c,, ;
 : +@ #x408b 2c,n ;
@@ -22,23 +21,16 @@ nrmacros
 : cmp #x3d c,, ;
 : nth #x08438b 2c,n ;
 : nop ,lit ;
-;s
-% ( x86 )
-macros
-0 dhere : ; [ ! ] #xc3 c, ;
-: over+ #x044303 3c, ;
-: nip 4 ,+stack ;
-forth
-: eax 0 ; : ecx 1 ; : edx 2 ; : ebx 3 ;
-: esp 4 ; : ebp 5 ; : esi 6 ; : edi 7 ; 
-nrmacros 
 : reg! 11 shl #x038b +l 2c, ;
 : ldreg 11 shl #xc089 +l 2c, ;
 : pop #x58 + c, ;
 : push #x50 + c, ;
 ;s
-% ( x86 asm )
-macros
+% macros ( x86 boot )
+cr 0 dhere
+: ; [ ! ] #xc3 c, ;
+: over+ #x044303 3c, ;
+: nip 4 ,+stack ;
 : !cl #x0888 2c, ;
 : !ecx #x0889 2c, ;
 : break 204 c, ;
@@ -51,19 +43,21 @@ macros
 : /xor/ #x44333 3c, ;
 : da@+ #x78b 2c, #x47f8d 3c, ;
 : da! #xc789 2c, ; ( dup a! ) 
-forth
-: +blk @a [ 0 buffer - ] +l 9 lsr + ;
 ;s
-% ( init )
-forth
+% forth ( x86 boot )
+: eax 0 ; : ecx 1 ; : edx 2 ; : ebx 3 ;
+: esp 4 ; : ebp 5 ; : esi 6 ; : edi 7 ; 
 : r. [ edx ] pop [ eax ] pop [ edx ] push ;
+;s
+% forth ( noarch boot )
+: +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : initp r. r. 2 shl 28 + load compile ; ( no parameter - 32, one par - 36 )
 cr dup initp
 ;s
 % ( unused )
 % ( unused )
 % ( unused )
-% ( Basic words )
+% ( forth x86 core basic words )
 : over dup 8 nth ;
 : + over+ nip ;
 : dup dup ;
@@ -78,7 +72,7 @@ cr dup initp
 : - - ;
 : break break ;
 ;s
-% ( More basic words )
+% ( forth x86 core layout )
 : voc [ 0 reg ] @ ;
 : here [ 1 reg ] @ ;
 : raddr [ 1 reg ] @-+ ;
@@ -90,7 +84,7 @@ cr dup initp
 : xor /xor/ nip ;
 : buffer 9 shl #x21000 +l ;
 ;s
-% ( A register and linux interface )
+% ( forth 86 core a-reg )
 : a@+ dup da@+ ;
 : a! da! drop ;
 : @a dup [ edi ] ldreg ;
