@@ -100,10 +100,8 @@ cr dup initp
 : sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
 : write 4 sys/3 drop ;
 : bye 2dup 1 sys/3 ;
-
-: flush [ 8 reg ] @ [ 5 reg ] @-+ iobuf 1 write
-: obufset
-  [ 8 reg ] @ !iobuf ;
+: flush #x30000 nop [ 5 reg ] @-+ iobuf 1 write
+: obufset [ 5 reg ] #x30000 !! ;
 ;s
 %
 : sys/3 ; unix syscall
@@ -324,7 +322,6 @@ cr #x1a ld ( elf )
 cr #x1c ld ( compiler )
 cr #x1e ld ( compiler )
 : allot here + 1 reg ! ;
-: oreg reg ;
 : h, there dup . w, ;
 : reg 2 shl #x30000 +l ;
 : @,+ dup @ , 4 + ;
@@ -337,20 +334,20 @@ cr edump dump flush
 % ( rebuild app )
 : ld load reporting progress [
 : cpchars copy character table from master [
-% 
-cr dhere 4 oreg @ !
-cr 0 , ( last ) 0 , 0 ,
-32 allot
-cpchars
-cr #x08 ld 9 ld #x0a ld #x10 ld #x12 ld 54 ld
-#x14 ld 56 ld 58 ld 60 ld
+% ( init code )
+cr dhere 4 reg @ !
+cr 0 , ( last ) 0 , 0 , ( align )
+cr 32 allot ( compiler handling table )
+cr cpchars
+cr #x08 ld #x9 ld #x0a ld #x10 ld #x12 ld 54 ld #x14 ld 56 ld 58 ld 60 ld
 cr init
-#xbb c, #x30100 ,
-] #x30000 dup !iobuf [ 8 reg ] !
-#x20054 @ dup [ 0 reg ] !
-[ 1 reg #x2c000 ] !!
-[ 3 reg #x29000 ] !!
-[ 4 reg 0 reg ] !!
+#xbb c, #x30100 , ( stack )
+[ cr ] #x20054 @ dup [ 0 reg ] !
+[ cr 1 reg #x2c000 ] !!
+[ cr 3 reg #x29000 ] !!
+[ cr 4 reg 0 reg ] !!
+[ cr 5 reg #x30000 ] !!
+
 0 hold 66 hold
 #x10000 nop #x21000
 openr obufset
@@ -358,7 +355,7 @@ sread drop
 0 load
 compi ;
 1 allot
-4 oreg @ @ dbase @ + there + base @ - #x20054 + !
+4 reg @ @ dbase @ + there + base @ - #x20054 + !
 ;s
 % ( init code )
 cr ensure last links is 0
@@ -541,7 +538,7 @@ dup @ testeax if nip ; ] then - + floop ;
 : tagidx dup #x7 and 2 shl ;
 : compi a@+ flush tagidx #x20060 +l vexec ;
 
-dhere #x20060 base @ - + dup . 3 oreg !
+dhere #x20060 base @ - + dup . 3 reg !
 h, there ( ignore word ) ] drop compi ; cr
 h, there ( yellow nr ) ] 4 ash next cnr compi ; cr
 h, ( compile word ) ] cw compi ;
@@ -551,7 +548,7 @@ cr h, ( define word ) ] dbg
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop 
 cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
-3 oreg !
+3 reg !
 
 ;s
 % ( Compile single word. cr
