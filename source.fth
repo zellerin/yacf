@@ -45,6 +45,8 @@ cr 0 dhere
 : /sys/ #x0c538b 3c, #x084b8b 3c,
       #x045b8b 3c, #x80cd 2c, ;
 : /xor/ #x44333 3c, ;
+: /and/ #x44323 3c, ;
+: /or/ #x4430b 3c, ;
 : da@+ #x78b 2c, #x47f8d 3c, ;
 : da! #xc789 2c, ; ( dup a! ) 
 ;s
@@ -64,6 +66,9 @@ cr forth
 ;s
 % forth ( noarch boot )
 : 0var dhere 0 w, ;
+: and /and/ nip ;
+: or /or/ nip ;
+: xor /xor/ nip ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : initp r. r. 2 shl 28 + ld compile ; ( no parameter - 32, one par - 36 )
 cr dup initp
@@ -94,7 +99,6 @@ cr dup initp
 : h, here w, ;
 
 : hold [ #xdff 2c, 5 reg , ] ( decl ) [ 5 reg ] @ c! ;
-: xor /xor/ nip ;
 : buffer 9 shl #x21000 +l ;
 ;s
 % ( forth 86 core a-reg )
@@ -137,7 +141,7 @@ uncode shl if drop ; ] then decode ;
 : c, dc,s drop ;
 : c,, c, , ;
 : find ( wv-af ) testeax if ; ( w0 ) ] then
-: floop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
+: floop 2dup 4 + @ /xor/ -8 and 2drop if nip testeax ; ] then
 dup @ testeax if nip ; ] then - + floop ;
 : cfa 8 +@ ;
 : ffind  ( w-af ) voc find ;
@@ -238,7 +242,7 @@ forth
 : dbase [ 0var ] ;
 : dthere [ dbase ] @ dhere + ;
 
-: rfloop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
+: rfloop 2dup 4 + @ /xor/ -8 and 2drop if nip testeax ; ] then
 dup @ testeax if nip ; ] then - + rfloop ;
 : cfa 8 +@ [ base ] @-+ ;
 
@@ -393,6 +397,9 @@ cr set iobuf and its end
 cr print #x12
 cr fixt latest pointer
 % ( editor )
+: tcget here #x5401 nop 0 nop 54 sys/3 drop ;
+: tcset here #x5403 nop 0 nop 54 sys/3 drop ;
+tcget here 12 + @ 11 - and here 12 + ! tcset
 2 +blk load ( ansi color )
 4 +blk load ( editor )
 6 +blk load ( editor 2 )
@@ -468,7 +475,8 @@ cr here !err
 : view ( - ) display page and read/execute keys. does not return
 [ % ( editor - simple keys )
 dhere vock !
-cr #x1 defk ( a-bort ) ] cr flush 0 bye ;
+cr #x1 defk ( a-bort ) ] cr flush
+tcget here 12 + @ 10 or here 12 + ! tcset 0 bye ;
 cr #x6 defk ( f-orward ) ] @blk 1 + !blk view ;
 cr #x2 defk ( b-ackward ) ] @blk 1- !blk view ;
 cr #x4 defk ( d-rop ) ] drop view ;
@@ -492,23 +500,3 @@ here
 cr #x20 defk ( go back ) ] vock map ! view ;
 cr #x27 defk ( single quote ) ] key #x7f and -32 + view ;
 ;s
-% ( editor - symbols )
-% ( unused )
-% ( Better x86 macros )
-% ( Heap )
-% ( foo )
-% ( bar )
-% ( unused )
-% ( unused )
-% ( Compile single word. cr
-the table of functions is patched back after function is created. cr
-all function expect the code on input cr
-( define ) load 
-% (unused )
-% ( comment block )
-: compile ( w- ) compile word and advance
-: load ( b- ) save address, load block, continue
-: +blk ( -a ) Address of the next block ;
-: ... load next block [
-% 
-
