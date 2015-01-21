@@ -49,11 +49,13 @@ cr 0 dhere
 : /or/ #x4430b 3c, ;
 : da@+ #x78b 2c, #x47f8d 3c, ;
 : da! #xc789 2c, ; ( dup a! ) 
+: tocl #xc189 2c, ;
 ;s
 % forth ( x86 boot )
 : eax 0 ; : ecx 1 ; : edx 2 ; : ebx 3 ;
 : esp 4 ; : ebp 5 ; : esi 6 ; : edi 7 ; 
 : r. [ edx ] pop [ eax ] pop [ edx ] push ;
+: dropdup #x038b 2c, ;
 ;s
 % macros ( Conditionals jumps and find )
 : testeax #xc085 2c, ;
@@ -101,7 +103,7 @@ cr dup initp
 : hold [ #xdff 2c, 5 reg , ] ( decl ) [ 5 reg ] @ c! ;
 : buffer 9 shl #x21000 + ;
 ;s
-% ( forth 86 core a-reg )
+% ( forth x86 core a-reg )
 : a@+ dup da@+ ;
 : a! da! drop ;
 : @a dup [ edi ] ldreg ;
@@ -140,7 +142,7 @@ uncode shl if drop ; ] then decode ;
 : c, dc,s drop ;
 : c,, c, , ;
 : find ( wv-af ) testeax if ; ( w0 ) ] then
-: floop 2dup 4 + @ /xor/ -8 and 2drop if nip testeax ; ] then
+: floop 2dup 4 +@ /xor/ -8 and 2drop if nip testeax ; ] then
 dup @ testeax if nip ; ] then - over+ nip floop ;
 : cfa 8 +@ ;
 : ffind  ( w-af ) voc find ;
@@ -225,23 +227,18 @@ cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
 : vexec @ : exec [ eax ] push drop ;
 ;s
 % ( unused )
-% ( Better x86 macros )
-: dropdup #x038b 2c, ;
-macros
-: tocl #xc189 2c, ;
-nrmacros
+% nrmacros ( x86 crosscompiler )
 : ,rot 8 shl #xe0d3 + 2c, ;
 : drop 4 ,+stack dropdup ;
 : ! #xa3 c,, 4 ,+stack dropdup ;
 : !! #xb9 c,, #x0d89 2c, , ;
-forth
 ;s
-% forth ( crosscompiler search )
+% forth ( crosscompiler heaps )
 : base [ 0var ] ;
 : dbase [ 0var ] ;
 : dthere [ dbase ] @ dhere + ;
 
-: rfloop 2dup 4 +s @ /xor/ -8 and 2drop if nip testeax ; ] then
+: rfloop 2dup 4 +@ /xor/ -8 and 2drop if nip testeax ; ] then
 dup @ testeax if nip ; ] then - + rfloop ;
 : cfa 8 +@ [ base ] @-+ ;
 
