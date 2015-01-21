@@ -1,10 +1,13 @@
 % ( boot load page )
 : ld cr #x5d hold dup nr #x5b hold flush load ;
+: ;s a! ;
+
 cr ( This page is read after source blocks are loaded )
-cr 1 ld ( nr macros )
-cr 2 ld ( macros )
-cr 3 ld ( x86 )
-cr 4 ld
+cr #x1 ld ( nr macros )
+cr #x2 ld ( macros )
+cr #x3 ld ( x86 )
+cr #x4 ld ( conditionals )
+cr #x5 ld ( boot )
 cr 0 bye
 % nrmacros ( x86 boot )
 cr 0 dhere
@@ -50,12 +53,21 @@ cr 0 dhere
 : esp 4 ; : ebp 5 ; : esi 6 ; : edi 7 ; 
 : r. [ edx ] pop [ eax ] pop [ edx ] push ;
 ;s
+% macros ( Conditionals jumps and find )
+: testeax #xc085 2c, ;
+: if #x75 2c, here ;
+: -if #x78 2c, here ;
+: then dup raddr - over 1- c! drop ; 
+: jne a@+ ffind if 5 bye then relcfa -if
+-2 + #x75  c, c, ; ] then -6 + #x850f 2c, , ;
+cr forth
+;s
 % forth ( noarch boot )
+: 0var dhere 0 w, ;
 : +blk @a [ 0 buffer - ] +l 9 lsr + ;
 : initp r. r. 2 shl 28 + ld compile ; ( no parameter - 32, one par - 36 )
 cr dup initp
 ;s
-% ( unused )
 % ( unused )
 % ( unused )
 % ( forth x86 core basic words )
@@ -105,37 +117,6 @@ cr dup initp
 : . bl nrh flush ; ( print hexa unsigned digit )
 : nop ;
 ;s
-% ( unused )
-% forth ( noarch compiler )
-: reg 2 shl #x30000 +l ;
-: allot here + [ 1 reg ] ! ;
-: @,+ dup @ , 4 + ; 
-: ,16 @,+ @,+ @,+ @,+ ;
-: cpchars #x20080 ,16 ,16 ,16 drop ;
-: vexec @ : exec [ eax ] push drop ;
-;s
-% macros ( Conditionals jumps and find )
-: testeax #xc085 2c, ;
-: if #x75 2c, here ;
-: -if #x78 2c, here ;
-: then dup raddr - over 1- c! drop ; 
-: jne a@+ ffind if 5 bye then relcfa -if
--2 + #x75  c, c, ; ] then -6 + #x850f 2c, , ;
-cr forth
-;s
-% ( Better x86 macros )
-: dropdup #x038b 2c, ;
-macros
-: tocl #xc189 2c, ;
-nrmacros
-: ,rot 8 shl #xe0d3 +l 2c, ;
-: drop 4 ,+stack dropdup ;
-: ! #xa3 c,, 4 ,+stack dropdup ;
-: !! #xb9 c,, #x0d89 2c, , ;
-forth
-;s
-% ( unused )
-% ( unused )
 % ( forth noarch core printing names )
 : sizeflag dup 30 ash 3 and ;
 : size #x7050404 over 3 shl ash #x7f and ;
@@ -168,7 +149,7 @@ dup @ testeax if nip ; ] then - + floop ;
 
 : vexec @ : exec [ eax ] push drop ;
 ;s
-% ( Output )
+% ( forth core output/finds )
 : name bl dname ;
 : next @a @ ;
 : err cr name [ a@+ error ] name flush ;
@@ -184,10 +165,6 @@ dup @ testeax if nip ; ] then - + floop ;
 : found cfa exec ;
 
 ( compiling targets )
-: 0var dhere 0 w, ;
-: base [ 0var ] ;
-: dbase [ 0var ] ;
-: dthere [ dbase ] @ dhere + ;
 
 ;s
 % ( forth x86 core calls )
@@ -210,20 +187,68 @@ dup @ testeax if nip ; ] then - + floop ;
 : dbg dup cr name bl here nrh bl dhere nrh flush ;
 
 ;s
+% ( forth core compiler )
+: tagidx dup #x7 and 2 shl ;
+: compi a@+ flush tagidx #x20060 +l vexec ;
 
-% ( search in offsetted words )
+cr dhere #x20060 base @ - + 3 reg !
+cr h, there ( ignore word ) ] drop compi ; cr
+h, there ( yellow nr ) ] 4 ash next cnr compi ; cr
+h, ( compile word ) ] cw compi ;
+cr h, ( define word ) ] dbg
+  dhere [ 4 reg ] @ @ - over+
+  w, [ 4 reg ] @ ! w, here w, compi ; cr
+over dup w, w, ( ignore twice )
+cr w, ( yellow nr ) drop 
+cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
+3 reg !
+
+;s
+% ( boot block )
+: sread 3 sys/3 ;
+: load buffer @a over a! nip ;
+: openr 0 dup here 5 sys/3 ;
+: nrmacros [ 4 reg 6 reg ] !! ;
+: macros [ 4 reg 2 reg ] !! ;
+: forth [ 4 reg 0 reg ] !! ; 
+;s
+% ( unused )
+% forth ( noarch compiler )
+: reg 2 shl #x30000 +l ;
+: allot here + [ 1 reg ] ! ;
+: @,+ dup @ , 4 + ; 
+: ,16 @,+ @,+ @,+ @,+ ;
+: cpchars #x20080 ,16 ,16 ,16 drop ;
+: vexec @ : exec [ eax ] push drop ;
+;s
+% ( unused )
+% ( Better x86 macros )
+: dropdup #x038b 2c, ;
+macros
+: tocl #xc189 2c, ;
+nrmacros
+: ,rot 8 shl #xe0d3 +l 2c, ;
+: drop 4 ,+stack dropdup ;
+: ! #xa3 c,, 4 ,+stack dropdup ;
+: !! #xb9 c,, #x0d89 2c, , ;
+forth
+;s
+% forth ( crosscompiler search )
+: base [ 0var ] ;
+: dbase [ 0var ] ;
+: dthere [ dbase ] @ dhere + ;
+
 : rfloop 2dup 4 + @ xor -8 and drop if nip testeax ; ] then
 dup @ testeax if nip ; ] then - + rfloop ;
 : cfa 8 +@ [ base ] @-+ ;
 
-( compile for target )
 : voc! [ 4 reg ] ! ;
 : target [ 0var dup ] voc! ;
 : known? [ nop ] @ rfloop ;
 : there [ base ] @ here + ;
-: h, there w, ;
+: h, there w, ; ;s
+% forth ( croscommpiler saving )
 
-( saving heap and data heap )
 : wfrom - here + dup - here + ;
 : save wfrom 4 write ;
 : dfrom - dhere + dup - dhere + ;
@@ -231,15 +256,6 @@ dup @ testeax if nip ; ] then - + rfloop ;
 : mark here - #x20054 +l base ! dhere - dbase ! dhere here ;
 : dump save dsave ;
 ;s
-%  ( saving heap )
-: rfloop ( wv-a ) return address of word in vocabulary or zero, set flag
-: wfrom ( a-an ) push on stack distance between address and here
-: save ( a- ) write to stream 3 from address to here
-: dfrom 
-: dsave ( a- ) write to stream 5 from address to dhere
-: mark ( -aa ) marks here and dhere as start for dump
-: dump ( aa- ) save heap (from top address) and data heap (from next address)
-: init ( a- ) boot code follows; store its location to address
 
 cr (search in offsetted words )
 ;
@@ -276,7 +292,7 @@ heap! ;
 : ident ( - ) physical header ;
 : filehdr ( a- ) file header. Uses relative offset of start. ;
 : proghdr ( s- ) program header. Takes size. ;
-% % ( redefine function calls, using offset )
+% ( redefine function calls, using offset )
 : relcfa cfa raddr -126 cmp ;
 : ,call #xE8 c, cfa raddr -4 + , ;
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
@@ -300,13 +316,13 @@ nrmacros : nip ,dlit ; forth
 : cnr ( ?-? ) run ytog if green word follows
 : dbg ( w-w ) print current word and position
 [
-% ( compiler table )
+% ( forth noarch core crosscompiler dispatch table )
 dhere cr
 h, here ( ignore word ) ] drop ; cr
 h, here ( yellow nr ) ] 4 ash next cnr ; cr
 h, ( compile word ) ] cw ;
 cr h, ( define word ) ] dbg
-  dhere [ 4 reg ] @ @ - over +
+  dhere [ 4 reg ] @ @ - over+
   w, [ 4 reg ] @ ! w, there w, ; cr
 over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
@@ -318,7 +334,8 @@ cr h, ( yellow word ) 0 reg ] @ fexec next cnr ;
 the table of functions is patched back after function is created. cr
 all function expect the code on input cr
 ( define ) load 
-[ % ( compile block )
+[
+% ( compile block )
 : compi a@+ @a 23 shl drop
   if @a #x200 +l a! then cword compi ;
 : wfrom - here + dup - here + ;
@@ -327,14 +344,12 @@ all function expect the code on input cr
 % ( comment block )
 : compile ( w- ) compile word and advance
 : load ( b- ) save address, load block, continue
-[ % 
-% ( rebuild app )
-cr #x0d ld
-cr #x0e ld ( conditionals )
-cr #x0f ld 
-cr #x12 ld ( names )
-cr #x14 ld ( output )
+[
+% ( load pages to rebuild app )
+cr #x13 ld
+cr #x15 ld
 cr #x16 ld ( search )
+cr #x17 ld ( search )
 cr #x18 ld ( search )
 cr #x1a ld ( elf )
 cr #x1c ld ( compiler )
@@ -351,7 +366,7 @@ cr dhere 4 reg @ !
 cr 0 , ( last ) 0 , 0 , ( align )
 cr 32 allot ( compiler handling table )
 cr cpchars
-cr #x08 ld #x9 ld #x0a ld #x0b ld #x12 ld #x13 ld #x14 ld #x15 ld 58 ld 60 ld
+cr #x8 ld #x9 ld #x0a ld #x0b ld #x0c ld #x0d ld #x0e ld #x0f ld #x10 ld #x11 ld
 cr init
 #xbb c, #x30100 , ( stack )
 [ cr ] #x20054 @ dup [ 0 reg ] !
@@ -378,12 +393,6 @@ cr set iobuf and its end
 cr print #x12
 cr fixt latest pointer
 % ( editor )
-#x0e load ( conditionals )
-#x0f load ( numbers )
-#x12 ld ( names )
-#x14 ld ( output )
-#x16 ld ( search )
-#x18 ld ( search )
 2 +blk load ( ansi color )
 4 +blk load ( editor )
 6 +blk load ( editor 2 )
@@ -489,37 +498,13 @@ cr #x27 defk ( single quote ) ] key #x7f and -32 + view ;
 % ( Heap )
 % ( foo )
 % ( bar )
-% ( Heap )
-% ( compiler table )
-: tagidx dup #x7 and 2 shl ;
-: compi a@+ flush tagidx #x20060 +l vexec ;
-
-dhere #x20060 base @ - + 3 reg !
-h, there ( ignore word ) ] drop compi ; cr
-h, there ( yellow nr ) ] 4 ash next cnr compi ; cr
-h, ( compile word ) ] cw compi ;
-cr h, ( define word ) ] dbg
-  dhere [ 4 reg ] @ @ - over +
-  w, [ 4 reg ] @ ! w, here w, compi ; cr
-over dup w, w, ( ignore twice )
-cr w, ( yellow nr ) drop 
-cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
-3 reg !
-
-;s
+% ( unused )
+% ( unused )
 % ( Compile single word. cr
 the table of functions is patched back after function is created. cr
 all function expect the code on input cr
 ( define ) load 
-% ( boot block )
-: sread 3 sys/3 ;
-: load buffer @a over a! nip ;
-: ;s a! ;
-: openr 0 dup here 5 sys/3 ;
-: nrmacros [ 4 reg 6 reg ] !! ;
-: macros [ 4 reg 2 reg ] !! ;
-: forth [ 4 reg 0 reg ] !! ; 
-;s
+% (unused )
 % ( comment block )
 : compile ( w- ) compile word and advance
 : load ( b- ) save address, load block, continue
