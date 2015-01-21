@@ -11,8 +11,8 @@ cr #x5 ld ( boot )
 cr 0 bye
 % nrmacros ( x86 boot )
 cr 0 dhere
-: + [ ! ] #xc083 2c,n ;
-: +l #x05 c,, ;
+: +s [ ! ] #xc083 2c,n ;
+: + #x05 c,, ;
 : +@ #x408b 2c,n ;
 : @+ #x0503 dc,s c,, ;
 : @-+ #x052b dc,s c,, ;
@@ -25,10 +25,10 @@ cr 0 dhere
 : cmp #x3d c,, ;
 : nth #x08438b 2c,n ;
 : nop ,lit ;
-: reg! 11 shl #x038b +l 2c, ;
-: ldreg 11 shl #xc089 +l 2c, ;
-: pop #x58 + c, ;
-: push #x50 + c, ;
+: reg! 11 shl #x038b + 2c, ;
+: ldreg 11 shl #xc089 + 2c, ;
+: pop #x58 +s c, ;
+: push #x50 +s c, ;
 ;s
 % macros ( x86 boot )
 cr 0 dhere
@@ -61,7 +61,7 @@ cr 0 dhere
 : -if #x78 2c, here ;
 : then dup raddr - over 1- c! drop ; 
 : jne a@+ ffind if 5 bye then relcfa -if
--2 + #x75  c, c, ; ] then -6 + #x850f 2c, , ;
+-2 +s #x75  c, c, ; ] then -6 +s #x850f 2c, , ;
 cr forth
 ;s
 % forth ( noarch boot )
@@ -69,15 +69,15 @@ cr forth
 : and /and/ nip ;
 : or /or/ nip ;
 : xor /xor/ nip ;
-: +blk @a [ 0 buffer - ] +l 9 lsr + ;
-: initp r. r. 2 shl 28 + ld compile ; ( no parameter - 32, one par - 36 )
+: + over+ nip ;
+: +blk @a [ 0 buffer - ] + 9 lsr + ;
+: initp r. r. 2 shl 28 +s ld compile ; ( no parameter - 32, one par - 36 )
 cr dup initp
 ;s
 % ( unused )
 % ( unused )
 % ( forth x86 core basic words )
 : over dup 8 nth ;
-: + over+ nip ;
 : dup dup ;
 : drop nip [ eax ] reg! ;
 : 2dup over over ;
@@ -95,11 +95,11 @@ cr dup initp
 : here [ 1 reg ] @ ;
 : raddr [ 1 reg ] @-+ ;
 : dhere [ 3 reg ] @ ;
-: w, [ 3 reg ] @ ! [ 3 reg ] @ 4 + [ 3 reg ] ! ;
+: w, [ 3 reg ] @ ! [ 3 reg ] @ 4 +s [ 3 reg ] ! ;
 : h, here w, ;
 
 : hold [ #xdff 2c, 5 reg , ] ( decl ) [ 5 reg ] @ c! ;
-: buffer 9 shl #x21000 +l ;
+: buffer 9 shl #x21000 + ;
 ;s
 % ( forth 86 core a-reg )
 : a@+ dup da@+ ;
@@ -112,23 +112,22 @@ cr dup initp
 : obufset [ 5 reg ] #x30000 !! ;
 ;s
 % ( forth x86 core printing numbers )
-: digit ( n-n ) 10 / dup [ edx ] ldreg #x30 + hold ; ( hold digit, keep /10 )
-: hdigit dup #xf and 10 cmp -if 7 + then #x30 + hold 4 lsr ; ( hold hexa digit, keep /16 )
+: digit ( n-n ) 10 / dup [ edx ] ldreg #x30 +s hold ; ( hold digit, keep /10 )
+: hdigit dup #xf and 10 cmp -if 7 + then #x30 +s hold 4 lsr ; ( hold hexa digit, keep /16 )
 : nrh hdigit if drop ; ] then nrh ; (  hold unsigned hexa number )
 : uu digit testeax if drop ; ] then uu ; ( hold unsigned decimal number )
 : nr testeax -if uu ; ] then - uu 45 hold ; ( hold signed decimal number )
 : bl 32 hold ; : cr 10 hold ;
 : . bl nrh flush ; ( print hexa unsigned digit )
-: nop ;
 ;s
 % ( forth noarch core printing names )
 : sizeflag dup 30 ash 3 and ;
 : size #x7050404 over 3 shl ash #x7f and ;
 : offset [ #x161f000 4 shl ] over 3 shl ash #x7f and 3 shl ;
-: uncode #x3f and #x20080 +l @ #x7f and hold ;
+: uncode #x3f and #x20080 + @ #x7f and hold ;
 : dname -8 and 
 : decode sizeflag offset
-[ eax ] push drop size nip 2dup - 32 + ash dup [ eax ] pop +
+[ eax ] push drop size nip 2dup - 32 + ash dup [ eax ] pop over+ nip
 uncode shl if drop ; ] then decode ;
 ;s
 % ( forth x86 core heap )
@@ -142,7 +141,7 @@ uncode shl if drop ; ] then decode ;
 : c,, c, , ;
 : find ( wv-af ) testeax if ; ( w0 ) ] then
 : floop 2dup 4 + @ /xor/ -8 and 2drop if nip testeax ; ] then
-dup @ testeax if nip ; ] then - + floop ;
+dup @ testeax if nip ; ] then - over+ nip floop ;
 : cfa 8 +@ ;
 : ffind  ( w-af ) voc find ;
 
@@ -193,7 +192,7 @@ dup @ testeax if nip ; ] then - + floop ;
 ;s
 % ( forth core compiler )
 : tagidx dup #x7 and 2 shl ;
-: compi a@+ flush tagidx #x20060 +l vexec ;
+: compi a@+ flush tagidx #x20060 + vexec ;
 
 cr dhere #x20060 base @ - + 3 reg !
 cr h, there ( ignore word ) ] drop compi ; cr
@@ -218,9 +217,9 @@ cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
 ;s
 % ( unused )
 % forth ( noarch compiler )
-: reg 2 shl #x30000 +l ;
+: reg 2 shl #x30000 + ;
 : allot here + [ 1 reg ] ! ;
-: @,+ dup @ , 4 + ; 
+: @,+ dup @ , 4 +s ; 
 : ,16 @,+ @,+ @,+ @,+ ;
 : cpchars #x20080 ,16 ,16 ,16 drop ;
 : vexec @ : exec [ eax ] push drop ;
@@ -231,7 +230,7 @@ cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
 macros
 : tocl #xc189 2c, ;
 nrmacros
-: ,rot 8 shl #xe0d3 +l 2c, ;
+: ,rot 8 shl #xe0d3 + 2c, ;
 : drop 4 ,+stack dropdup ;
 : ! #xa3 c,, 4 ,+stack dropdup ;
 : !! #xb9 c,, #x0d89 2c, , ;
@@ -242,7 +241,7 @@ forth
 : dbase [ 0var ] ;
 : dthere [ dbase ] @ dhere + ;
 
-: rfloop 2dup 4 + @ /xor/ -8 and 2drop if nip testeax ; ] then
+: rfloop 2dup 4 +s @ /xor/ -8 and 2drop if nip testeax ; ] then
 dup @ testeax if nip ; ] then - + rfloop ;
 : cfa 8 +@ [ base ] @-+ ;
 
@@ -257,7 +256,7 @@ dup @ testeax if nip ; ] then - + rfloop ;
 : save wfrom 4 write ;
 : dfrom - dhere + dup - dhere + ;
 : dsave dfrom 4 write ;
-: mark here - #x20054 +l base ! dhere - dbase ! dhere here ;
+: mark here - #x20054 + base ! dhere - dbase ! dhere here ;
 : dump save dsave ;
 ;s
 
@@ -265,7 +264,7 @@ cr (search in offsetted words )
 ;
 % 
 % ( elf headers )
-: +base, #x20000 +l , ;
+: +base, #x20000 + , ;
 : ident
 #x4c457f 3c, #x46 c, ( elf )
 #x010101 , 0 , 0 , ;
@@ -287,7 +286,7 @@ cr (search in offsetted words )
 : init here
 there ident dup . filehdr
 : heap! dup save [ 1 reg ] ! ;
-: edump here there dthere + [ #x20054 - ] +l proghdr
+: edump here there dthere + [ #x20054 - ] + proghdr
 heap! ;
 
 ;s
@@ -332,7 +331,7 @@ over dup w, w, ( ignore twice )
 cr w, ( yellow nr ) drop
 cr h, ( yellow word ) 0 reg ] @ fexec next cnr ;
 : tagidx dup #x7 and 2 shl ;
-: cword tagidx [ nop ] +l vexec ;
+: cword tagidx [ nop ] + vexec ;
 ;s
 % ( Compile single word. cr
 the table of functions is patched back after function is created. cr
@@ -341,7 +340,7 @@ all function expect the code on input cr
 [
 % ( compile block )
 : compi a@+ @a 23 shl drop
-  if @a #x200 +l a! then cword compi ;
+  if @a #x200 + a! then cword compi ;
 : wfrom - here + dup - here + ;
 : save wfrom 3 write drop ;
 ;s
@@ -430,7 +429,7 @@ dhere ( address of table ) cr
     h, ( blue number ) ] 4 ash nrh blue bl ; cr
     h, ( yellow word ) ] nm yellow ;
 : tagidx dup #x7 and 2 shl ;
-: .code tagidx [ nop ] +l vexec ;
+: .code tagidx [ nop ] + vexec ;
 ;s
 % ( comment block xxv )
 % ( editor - print code blocks )
@@ -439,7 +438,7 @@ dhere ( address of table ) cr
   : gauge stop if 4 + ; ] then -4 + dup @ testeax drop if gauge ; ] then 4 +
    dup - 2 ash #x7f and [ a@+ free ] dname bl nr black cr ; 
   : show .@-code stop if drop ; ] then show ;
-  : pg cr dup buffer #x1fc +l gauge black show nr bl [ a@+ page ] name top flush ;
+  : pg cr dup buffer #x1fc + gauge black show nr bl [ a@+ page ] name top flush ;
 ;s
 %
 : .@-code ( n-n ) print code, decrease addr )
