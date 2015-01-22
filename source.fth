@@ -7,7 +7,8 @@ cr #x1 ld ( nr macros )
 cr #x2 ld ( macros )
 cr #x3 ld ( x86 )
 cr #x4 ld ( conditionals )
-cr #x5 ld ( boot )
+cr #x5 ld ( constants )
+cr #x6 ld ( boot )
 cr 0 bye
 % nrmacros ( x86 boot )
 cr 0 dhere
@@ -66,8 +67,21 @@ cr 0 dhere
 -2 +s #x75  c, c, ; ] then -6 +s #x850f 2c, , ;
 cr forth
 ;s
-% forth ( noarch boot )
+% forth ( boot constants )
+: reg 2 shl #x30000 + ;
 : 0var dhere 0 w, ;
+0var ( sys vocabulary )
+: sys a@+ [ dup ] @ find if drop err ; ] then cfa exec ;
+dhere over ! 4 reg ! 
+: regs #x30000 ; ( registers start here )
+cr ( syscall index x86 )
+: write 4 ;
+: exit 1 ;
+: read 3 ;
+: open 5 ;
+: ioctl 54 ;
+;s
+% forth ( noarch boot )
 : and /and/ nip ;
 : or /or/ nip ;
 : xor /xor/ nip ;
@@ -76,7 +90,7 @@ cr forth
 : initp r. r. 2 shl 28 +s ld compile ; ( no parameter - 32, one par - 36 )
 cr dup initp
 ;s
-% ( unused )
+
 % ( unused )
 % ( forth x86 core basic words )
 : over dup 8 nth ;
@@ -108,8 +122,8 @@ cr dup initp
 : a! da! drop ;
 : @a dup [ edi ] ldreg ;
 : sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
-: write 4 sys/3 drop ;
-: bye 8 [ - ,+stack ] 1 sys/3 ;
+: write [ sys write ] sys/3 drop ;
+: bye 8 [ - ,+stack ] [ sys exit ] sys/3 ;
 : flush #x30000 nop [ 5 reg ] @-+ [ 5 reg ] @ 1 write
 : obufset [ 5 reg ] #x30000 !! ;
 ;s
@@ -210,16 +224,15 @@ cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
 
 ;s
 % ( boot block )
-: sread 3 sys/3 ;
+: sread [ sys read ] sys/3 ;
 : load buffer @a over a! nip ;
-: openr 0 dup here 5 sys/3 ;
+: openr 0 dup here [ sys open ] sys/3 ;
 : nrmacros [ 4 reg 6 reg ] !! ;
 : macros [ 4 reg 2 reg ] !! ;
 : forth [ 4 reg 0 reg ] !! ; 
 ;s
 % ( unused )
 % forth ( noarch compiler )
-: reg 2 shl #x30000 + ;
 : allot here + [ 1 reg ] ! ;
 : @,+ dup @ , 4 +s ; 
 : ,16 @,+ @,+ @,+ @,+ ;
@@ -393,8 +406,8 @@ cr set iobuf and its end
 cr print #x12
 cr fixt latest pointer
 % ( editor )
-: tcget here #x5401 nop 0 nop 54 sys/3 drop ;
-: tcset here #x5403 nop 0 nop 54 sys/3 drop ;
+: tcget here #x5401 nop 0 nop [ sys ioctl ] sys/3 drop ;
+: tcset here #x5403 nop 0 nop [ sys ioctl ] sys/3 drop ;
 tcget here 12 + @ 11 - and here 12 + ! tcset
 2 +blk load ( ansi color )
 4 +blk load ( editor )
