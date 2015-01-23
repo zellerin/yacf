@@ -389,7 +389,7 @@ cr init
 [ cr ] #x20054 @ dup [ 0 reg ] !
 [ cr 1 reg #x2c000 ] !!
 [ cr 3 reg #x29000 ] !!
-[ cr 4 reg 0 reg ] !!
+forth
 [ cr ] obufset
 [ cr ] 66 here ! ( file name B )
 [ cr ] #x10000 nop #x21000 openr sread 0 nip load 
