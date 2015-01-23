@@ -80,6 +80,9 @@ cr ( syscall index x86 )
 : read 3 ;
 : open 5 ;
 : ioctl 54 ;
+cr 
+: linux 3 ; ( elf cpu )
+: le 1 ; ( elf endian )
 ;s
 % forth ( noarch boot )
 : and /and/ nip ;
@@ -274,25 +277,27 @@ cr (search in offsetted words )
 ;
 % 
 % ( elf headers )
-: +base, #x20000 + , ;
+: elfw, 2c, ;
+: elf, , ; ( save long in elf order )
+: +base, #x20000 + elf, ;
 : ident
 #x4c457f 3c, #x46 c, ( elf )
-#x010101 , 0 , 0 , ;
-: filehdr
-#x30002 , ( et_exec )  1 , ( ev_current )
-, ( start ) #x34 , ( ph-addr )
-0 , ( no sections ) 0 , ( no flags )
-#x200034 , ( header-size phentsize )
-#x280001 , ( e-phnum s-shentsize )
+1 c, [ sys le ] c, #x0301 2c, 0 , 0 , ;
+: filehdr 2 elfw, [ sys linux ] elfw, ( et_exec )  1 elf, ( ev_current )
+elf, ( start ) #x34 elf, ( ph-addr )
+0 elf, ( no sections ) #x1001 elf, ( no flags )
+#x34 elfw, ( hsize ) #x20 elfw, ( phentsize )
+1 elfw, ( phnum ) #x28 elfw, ( shentsize )
 0 , ( sects ) ;
 : proghdr
-1 , ( pt-load ) 
-#x54 dup , dup +base, +base, ( offset p-vaddr p-addr )
-, ( size )
-#x100ac , ( memory size ) 
-7 ,  ( flags rwx )
-#x1000 , ( align )
+1 , ( pload ) 
+#x54 dup elf, dup +base, +base, ( offset p-vaddr p-addr )
+elf, ( size )
+#x100ac elf, ( memory size ) 
+7 elf,  ( flags rwx )
+#x1000 elf, ( align )
 ;
+% 
 : init here
 there ident dup . filehdr
 : heap! dup save [ 1 reg ] ! ;
@@ -300,7 +305,6 @@ there ident dup . filehdr
 heap! ;
 
 ;s
-% ( elf )
 : base ( - ) convert file address to real one
 : ident ( - ) physical header ;
 : filehdr ( a- ) file header. Uses relative offset of start. ;
