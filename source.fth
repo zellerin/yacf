@@ -81,8 +81,8 @@ cr ( syscall index x86 )
 : open 5 ;
 : ioctl 54 ;
 cr 
-: linux 3 ; ( elf cpu )
-: le 1 ; ( elf endian )
+: mips 8 ; ( elf cpu )
+: be 2 ; ( elf endian )
 ;s
 % forth ( noarch boot )
 : and /and/ nip ;
@@ -277,13 +277,13 @@ cr (search in offsetted words )
 ;
 % 
 % ( elf headers )
-: elfw, 2c, ;
-: elf, , ; ( save long in elf order )
+: elfw, dup 8 ash c, c, ;
+: elf, dup 16 ash elfw, elfw, ; ( save long in elf order )
 : +base, #x20000 + elf, ;
 : ident
 #x4c457f 3c, #x46 c, ( elf )
-1 c, [ sys le ] c, #x0301 2c, 0 , 0 , ;
-: filehdr 2 elfw, [ sys linux ] elfw, ( et_exec )  1 elf, ( ev_current )
+1 c, [ sys be ] c, #x0301 2c, 0 , 0 , ;
+: filehdr 2 elfw, [ sys mips ] elfw, ( et_exec )  1 elf, ( ev_current )
 elf, ( start ) #x34 elf, ( ph-addr )
 0 elf, ( no sections ) #x1001 elf, ( no flags )
 #x34 elfw, ( hsize ) #x20 elfw, ( phentsize )
