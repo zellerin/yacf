@@ -51,26 +51,30 @@ cr 0 bye
 : tocl #xc189 2c, ;
 ;s
 % forth ( x86 boot )
+: - - ;
 : eax 0 ; : ecx 1 ; : edx 2 ; : ebx 3 ;
 : esp 4 ; : ebp 5 ; : esi 6 ; : edi 7 ; 
 : r. [ edx ] pop [ eax ] pop [ edx ] push ;
 : dropdup #x038b 2c, ;
+: break break ;
+
 ;s
 % macros ( Conditionals jumps and find )
 : testeax #xc085 2c, ;
 : if #x75 2c, here ;
 : -if #x78 2c, here ;
 : then dup raddr - over 1- c! drop ; 
-: jne a@+ ffind if 5 bye then relcfa -if
+: jne a@+ known? if 5 bye then relcfa -if
 -2 +s #x75  c, c, ; ] then -6 +s #x850f 2c, , ;
 cr forth
 ;s
 % forth ( boot constants )
 : reg 2 shl #x30000 + ;
 : 0var dhere 0 w, ;
+: voc! [ 4 reg ] ! ;
 0var ( sys vocabulary )
 : sys a@+ [ dup ] @ find if drop err ; ] then cfa exec ;
-4 reg ! empty 
+voc! empty 
 : regs #x30000 ; ( registers start here )
 cr ( syscall index x86 )
 : write 4 ;
@@ -104,8 +108,6 @@ cr dup initp
 : shl tocl drop 0 ,rot ;
 : ash tocl drop 8 ,rot ; 
 : @ @ ;
-: - - ;
-: break break ;
 ;s
 % ( forth x86 core layout )
 : voc [ 0 reg ] @ ;
@@ -160,7 +162,7 @@ uncode shl if drop ; ] then decode ;
 : floop 2dup 4 +@ /xor/ -8 and 2drop if nip testeax ; ] then
 dup @ testeax if nip ; ] then - over+ nip floop ;
 : cfa 8 +@ ;
-: ffind  ( w-af ) voc find ;
+: known? voc find ;
 
 : relcfa cfa raddr -126 cmp ;
 : ,call #xe8 c, cfa raddr -4 + , ; 
@@ -190,7 +192,6 @@ dup @ testeax if nip ; ] then - over+ nip floop ;
 % ( forth x86 core calls )
 : doj relcfa -if -2 + #xEB c, c, ; ] then -5 + #xE9 c,, ;
 : call ;? if 4a+ doj ; ] then ,call ;
-: known? voc find ;
 : imm? [ 2 reg ] @ find ;
 
 : cw imm? if drop known?
@@ -256,7 +257,6 @@ cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
 dup @ testeax if nip ; ] then - + rfloop ;
 : cfa 8 +@ [ base ] @-+ ;
 
-: voc! [ 4 reg ] ! ;
 : target [ 0var dup ] voc! ;
 : known? [ nop ] @ rfloop ;
 : there [ base ] @ here + ;
@@ -377,7 +377,7 @@ cr edump dump flush
 : ld load reporting progress [
 : cpchars copy character table from master [
 % ( init code )
-cr dhere 4 reg @ !
+cr empty
 cr 0 , ( last ) 0 , 0 , ( align )
 cr 32 allot ( compiler handling table )
 cr cpchars
@@ -436,7 +436,7 @@ dhere ( address of table ) cr
     h, ( yellow number ) ] 4 ash nr yellow bl ; cr
     h, ( green word ) ] nm green ; cr
     h, ( red word ) ] nm red cr ; cr
-    h, ( blue word ) ] ffind cfa [ eax ] push drop ;
+    h, ( blue word ) ] known? cfa [ eax ] push drop ;
     h, ( white word ) ] nm black ; cr
     h, ( blue number ) ] 4 ash nrh blue bl ; cr
     h, ( yellow word ) ] nm yellow ;
