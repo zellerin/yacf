@@ -1,7 +1,7 @@
 % ( boot load page )
 : ld cr #x5d hold dup nr #x5b hold flush load ;
 : ;s a! ;
-
+: empty dhere [ #x30010 ] @ ! ; ( word is first )
 cr ( This page is read after source blocks are loaded )
 cr #x1 ld ( nr macros )
 cr #x2 ld ( macros )
@@ -10,9 +10,8 @@ cr #x4 ld ( conditionals )
 cr #x5 ld ( constants )
 cr #x6 ld ( boot )
 cr 0 bye
-% nrmacros ( x86 boot )
-cr 0 dhere
-: +s [ ! ] #xc083 2c,n ;
+% nrmacros empty ( x86 boot )
+: +s #xc083 2c,n ;
 : + #x05 c,, ;
 : +@ #x408b 2c,n ;
 : @+ #x0503 dc,s c,, ;
@@ -31,9 +30,8 @@ cr 0 dhere
 : pop #x58 +s c, ;
 : push #x50 +s c, ;
 ;s
-% macros ( x86 boot )
-cr 0 dhere
-: ; [ ! ] #xc3 c, ;
+% macros empty ( x86 boot )
+: ; #xc3 c, ;
 : over+ #x044303 3c, ;
 : nip 4 ,+stack ;
 : !cl #x0888 2c, ;
@@ -72,7 +70,7 @@ cr forth
 : 0var dhere 0 w, ;
 0var ( sys vocabulary )
 : sys a@+ [ dup ] @ find if drop err ; ] then cfa exec ;
-dhere over ! 4 reg ! 
+4 reg ! empty 
 : regs #x30000 ; ( registers start here )
 cr ( syscall index x86 )
 : write 4 ;
