@@ -70,15 +70,18 @@ cr forth
 % forth ( boot constants )
 : reg 2 shl #x30000 + ;
 : 0var dhere 0 w, ;
-0var ( sys vocabulary )
-: sys a@+ [ dup ] @ find if drop err ; ] then cfa exec ;
-dhere over ! 4 reg ! 
 : regs #x30000 ; ( registers start here )
 cr ( syscall index x86 )
-: write 4 ;
-: exit 1 ;
+: bye [ -8 ,+stack 1 ] sys/3 ;
+: fork 2 ;
 : read 3 ;
 : open 5 ;
+: close 6 ;
+: execve 11 ;
+: time 0 2dup 13 sys/3 ;
+: sleep here ! here dup dup 162 sys/3 drop ;
+: brk 2dup 45 sys/3 ;
+: alloc 0 brk #x10000 + brk ;
 : ioctl 54 ;
 cr 
 : linux 3 ; ( elf cpu )
@@ -125,8 +128,7 @@ cr dup initp
 : a! da! drop ;
 : @a dup [ edi ] ldreg ;
 : sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
-: write [ sys write ] sys/3 drop ;
-: bye 8 [ - ,+stack ] [ sys exit ] sys/3 ;
+: write 4 sys/3 drop ;
 : flush #x30000 nop [ 5 reg ] @-+ [ 5 reg ] @ 1 write
 : obufset [ 5 reg ] #x30000 !! ;
 ;s
@@ -205,7 +207,7 @@ dup @ testeax if nip ; ] then - over+ nip floop ;
 : ,+stack #x5b8d 2c,n ;
 : ,lit ,put -4 ,+stack #xb8 c,, ;
 : ytog next [ 6 reg ] @ find if 2drop ,lit ; ] then 4a+ found ; 
-: cnr ?compile if ytog then ;
+: cnr ?compile if ytog ; ] then ;
 : dbg dup cr name bl here nrh bl dhere nrh flush ;
 
 ;s
@@ -227,9 +229,9 @@ cr h, ( yellow word ) ] [ 0 reg ] @ fexec next cnr compi ;
 
 ;s
 % ( boot block )
-: sread [ sys read ] sys/3 ;
+: sread [ read ] sys/3 ;
 : load buffer @a over a! nip ;
-: openr 0 dup here [ sys open ] sys/3 ;
+: openr 0 dup here [ open ] sys/3 ;
 : nrmacros [ 4 reg 6 reg ] !! ;
 : macros [ 4 reg 2 reg ] !! ;
 : forth [ 4 reg 0 reg ] !! ; 
@@ -282,8 +284,8 @@ cr (search in offsetted words )
 : +base, #x20000 + elf, ;
 : ident
 #x4c457f 3c, #x46 c, ( elf )
-1 c, [ sys le ] c, #x0301 2c, 0 , 0 , ;
-: filehdr 2 elfw, [ sys linux ] elfw, ( et_exec )  1 elf, ( ev_current )
+1 c, [ le ] c, #x0301 2c, 0 , 0 , ;
+: filehdr 2 elfw, [ linux ] elfw, ( et_exec )  1 elf, ( ev_current )
 elf, ( start ) #x34 elf, ( ph-addr )
 0 elf, ( no sections ) #x1001 elf, ( no flags )
 #x34 elfw, ( hsize ) #x20 elfw, ( phentsize )
@@ -318,7 +320,7 @@ heap! ;
 : ,lit ,put -4 ,+stack
 : ,dlit testeax if #xc031 nip 2c, ; ] then #xb8 c,, ;
 : ytog next [ 6 reg ] @ find if 2drop ,lit ; ] then 4a+ found ; 
-: cnr ?compile if ytog then ;
+: cnr ?compile if ytog ; ] then ;
 : dbg dup cr name bl there nrh bl dthere nrh flush ;
 nrmacros : nip ,dlit ; forth
 ;s
@@ -410,8 +412,8 @@ cr set iobuf and its end
 cr print #x12
 cr fixt latest pointer
 % ( editor )
-: tcget here #x5401 nop 0 nop [ sys ioctl ] sys/3 drop ;
-: tcset here #x5403 nop 0 nop [ sys ioctl ] sys/3 drop ;
+: tcget here #x5401 nop 0 nop [ ioctl ] sys/3 drop ;
+: tcset here #x5403 nop 0 nop [ ioctl ] sys/3 drop ;
 tcget here 12 + @ 11 - and here 12 + ! tcset
 2 +blk load ( ansi color )
 4 +blk load ( editor )
