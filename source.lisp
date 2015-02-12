@@ -2,6 +2,10 @@
   (:nicknames #:fs)
   (:use #:cl))
 
+(defpackage forth-expanders
+  (:nicknames #:fe)
+  (:use))
+
 (in-package forth-source)
 
 (deftype word ()
@@ -46,20 +50,23 @@
 (defun compile-symbol (output symbol)
   (encode-word output symbol 7))
 
+(defun fe::defun (output word &rest code)
+  (encode-word output word 3)
+  (loop for i in code
+     do (etypecase i
+	  ((integer * -1) (compile-number output i 1))
+	  ((integer 0) (compile-number output i))
+	  (symbol (encode-word output i 2))
+	  (cons (compile-cons output i))))
+  (encode-word output '|;| 2))
+
 (defun compile-cons (output item)
-  (ecase (car item)
+  (case (car item)
     (dec (compile-number output (second item) 1))
     (cmt (mapcar (lambda (a) (compile-comment output a))
 		 (cdr item)))
-    (defun
-	(encode-word output (cadr item) 3)
-	(loop for i in (cddr item)
-	   do (etypecase i
-		((integer * -1) (compile-number output i 1))
-		((integer 0) (compile-number output i))
-		(symbol (encode-word output i 2))
-		(cons (compile-cons output i))))
-      (encode-word output '|;| 2))))
+    (t (apply (find-symbol (symbol-name (car item)) 'fe)
+		output (cdr item)))))
 
 (defmacro with-page (name options &body body)
   (declare (ignorable options name))
