@@ -70,6 +70,9 @@
   (declare (ignorable asm))
   (fe::defun output word code '|2c,n|))
 
+(defun fe::-if-exit (output &rest if)
+  (compile-list output 2 `(-if ,@if |;| then)))
+
 (defun compile-cons (output item)
   (case (car item)
     (dec (compile-number output (second item) 1))
@@ -160,10 +163,52 @@
 
   (forth (cmt x86 boot )
 	 (defun - - )
-	 (defun eax (dec 0) ) (defun ecx (dec 1) ) (defun edx (dec 2)) (defun ebx (dec 3))
-	 (defun esp (dec 4) ) (defun ebp (dec 5) ) (defun esi (dec 6) ) (defun edi (dec 7))
+	 (defun eax (dec 0))
+	 (defun ecx (dec 1))
+	 (defun edx (dec 2))
+	 (defun ebx (dec 3))
+	 (defun esp (dec 4))
+	 (defun ebp (dec 5))
+	 (defun esi (dec 6))
+	 (defun edi (dec 7))
 	 (defun r. [ edx ] pop [ eax ] pop [ edx ] push)
 	 (defun dropdup #x038b |2c,|)
 	 (defun break break)
 	 |;s|)
+
+  (macros (cmt conditionals jumps and find )
+	  (defun testeax #xc085 |2c,|)
+	  (defun if #x75 |2c,| here)
+	  (defun -if #x78 |2c,| here)
+	  (defun then dup raddr - over 1- c! drop)
+	  (defun jne a@+ known? if (dec 5) bye then relcfa
+		 (-if-exit -2 +s #x75 |c,| |c,|)
+		 -6 +s #x850f |2c,| |,|)
+	  cr forth
+	  |;s|
+	  )
+  (forth (cmt boot constants )
+	 (defun reg (dec 2) shl #x30000 +)
+	 (defun 0var dhere (dec 0) |w,|)
+	 (defun voc! [ (dec 4) reg ] !)
+	 0var (cmt sys vocabulary )
+	 (defun sys a@+ [ dup ] @ find if drop err |;| then cfa exec)
+	 voc! empty 
+	 (defun regs #x30000) (cmt registers start here )
+	 cr (cmt syscall index x86 )
+	 (defun write (dec 4))
+	 (defun exit (dec 1))
+	 (defun read (dec 3))
+	 (defun open (dec 5))
+	 (defun ioctl (dec 54))
+	 cr 
+	 (defun linux (dec 3)) (cmt elf cpu )
+	 (defun le (dec 1)) (cmt elf endian )
+	 |;s|
+
+
+
+
+   )
+  
   )
