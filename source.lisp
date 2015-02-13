@@ -346,11 +346,54 @@ CR is treated specifically for compatibility purposes
   
   (defun relcfa cfa raddr -126 cmp )
   (defun |,call| #xe8 |c,| cfa raddr -4 + |,| ) 
-  (defun doj relcfa -if -2 + #xeb |c,| |c,| |;|
-	 ] then -5 + #xe9 |c,,| )
+  (defun doj relcfa (-if-exit -2 + #xeb |c,| |c,|)
+	 -5 + #xe9 |c,,| )
   
   (defun vexec @ (exit))
   (defun exec [ eax ] push drop)
   [ |;s|) ; why [?
-  )
 
+ (
+  (cmt forth core output/finds )
+  (defun name bl dname )
+  (defun next @a @ )
+  (defun err cr name [ a@+ error ] name flush )
+  
+  (cmt source reading )
+  (defun 4a+ a@+ drop )
+  (defun ?compile #x7 and #x2 cmp drop )
+  (defun |;?| next [ a@+ ] |;| cmp drop)
+  (defun imm? [ (dec 2) reg ] @ find )
+  
+  (cmt vocabulary searches )
+  (defun fexec find if drop err |;| ] then (exit))
+  (defun found cfa exec )
+  
+  (cmt compiling targets )
+  
+  |;s|)
+
+ (
+  (cmt forth x86 core calls)
+  (defun doj relcfa (-if-exit -2 + #xEB |c,| |c,|) -5 + #xE9 |c,,|)
+  (defun call |;?| if 4a+ doj |;| then |,call|)
+  (defun imm? [ (dec 2) reg ] @ find )
+  
+  (defun cw imm? if drop known?
+	 if drop err |;| then call |;|
+	 then cfa exec )
+  (defun |2c,| |dc,s| |c,| )
+  (defun |3c,| |dc,s| |2c,| )
+  (defun |2c,n| |2c,| |c,| )
+  (defun |,put| #x0389 |2c,| )
+  (defun |,+stack| #x5b8d |2c,n| )
+  (defun |,lit| |,put| -4 |,+stack| #xb8 |c,,| )
+  (defun ytog next [ (dec 6) reg ] @ find if 2drop |,lit| |;| then 4a+ found )
+  (defun cnr ?compile if ytog then )
+  (defun dbg dup cr name bl here nrh bl dhere nrh flush )
+  
+  |;s|)
+ 
+ )
+
+7797
