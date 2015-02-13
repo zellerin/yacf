@@ -92,6 +92,7 @@ Numbers are encoded as hexa if positive, decimal if negative.
 Conses call function in FE package named by their cons, if available.
 [ ] change encoding of following symbols.
 CR is treated specifically for compatibility purposes
+(exit) causes return with T
 "
   (loop for i in list
      do (etypecase i
@@ -100,6 +101,7 @@ CR is treated specifically for compatibility purposes
 				     default-symbol 4)))
 	  ((eql [) (setq default-symbol 7))
 	  ((eql ]) (setq default-symbol 2))
+	  ((cons (eql exit)) (return-from encode-list t))
 	  ((integer * -1) (encode-number output i 1))
 	  ((integer 0) (encode-number output i))
 	  (symbol (encode-word output i default-symbol))
@@ -108,8 +110,8 @@ CR is treated specifically for compatibility purposes
 (defun fe::defun (output word &rest code)
   "Define word as sequence of code, terminate by |;|."
   (encode-word output word 3)
-  (encode-list output 2 code)
-  (encode-word output '|;| 2))
+  (unless (encode-list output 2 code)
+    (encode-word output '|;| 2)))
 
 (defun fe::def-top-op (output word code &optional asm)
   "Define word that makes an 2byte operation followed by number"
@@ -291,8 +293,24 @@ CR is treated specifically for compatibility purposes
 
    (defun  hold [ #xdff |2c,| (dec 5) reg |,| ] (cmt decl ) [ (dec 5) reg ] @ c! )
    (defun  buffer (dec 9) shl #x21000 + )
+   |;s|)
+
+  (
+   (cmt forth x86 core a-reg )
+   (defun a@+ dup da@+ )
+   (defun a! da! drop )
+   (defun @a dup [ edi ] ldreg )
+   (defun sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ |,+stack| ] (cmt nop ) )
+   (defun write [ sys write ] sys/3 drop )
+   (defun bye (dec 8) [ - |,+stack| ] [ sys exit ] sys/3 )
+   (defun flush #x30000 nop [ (dec 5) reg ] @-+ [ (dec 5) reg ] @ (dec 1) write (exit))
+   (defun obufset [ (dec 5) reg ] #x30000 !! )
    |;s|
 
+
+   )
+
+  (
    )
 
   )
