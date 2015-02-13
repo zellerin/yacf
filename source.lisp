@@ -255,8 +255,7 @@ CR is treated specifically for compatibility purposes
 	 (defun le (dec 1)) (cmt elf endian )
 	 |;s|)
 
-  (
-   forth (cmt noarch boot )
+  (forth (cmt noarch boot )
 	 (defun and /and/ nip)
 	 (defun or /or/ nip)
 	 (defun xor /xor/ nip)
@@ -267,8 +266,7 @@ CR is treated specifically for compatibility purposes
 	 cr dup initp
 	 |;s|)
   ((cmt unused))
-  (
-   (cmt forth x86 core basic words )
+  ((cmt forth x86 core basic words )
    (defun  over dup (dec 8) nth)
    (defun  dup dup)
    (defun  drop nip [ eax ] reg!)
@@ -279,11 +277,9 @@ CR is treated specifically for compatibility purposes
    (defun  shl tocl drop (dec 0) |,rot|)
    (defun  ash tocl drop (dec 8) |,rot|)
    (defun  @ @)
-   |;s|
-   )
+   |;s|)
 
-  (
-   (cmt forth x86 core layout)
+  ((cmt forth x86 core layout)
    (defun  voc [ (dec 0) reg ] @ )
    (defun  here [ (dec 1) reg ] @ )
    (defun  raddr [ (dec 1) reg ] @-+ )
@@ -295,8 +291,7 @@ CR is treated specifically for compatibility purposes
    (defun  buffer (dec 9) shl #x21000 + )
    |;s|)
 
-  (
-   (cmt forth x86 core a-reg )
+ ((cmt forth x86 core a-reg )
    (defun a@+ dup da@+ )
    (defun a! da! drop )
    (defun @a dup [ edi ] ldreg )
@@ -305,12 +300,57 @@ CR is treated specifically for compatibility purposes
    (defun bye (dec 8) [ - |,+stack| ] [ sys exit ] sys/3 )
    (defun flush #x30000 nop [ (dec 5) reg ] @-+ [ (dec 5) reg ] @ (dec 1) write (exit))
    (defun obufset [ (dec 5) reg ] #x30000 !! )
-   |;s|
+   |;s|)
+ 
+ ((cmt forth x86 core printing numbers )
+   (defun digit (cmt n-n ) (dec 10) / dup [ edx ] ldreg #x30 +s hold )
+    (cmt hold |digit,| keep /10 )
+   (defun hdigit dup #xf and (dec 10) cmp -if (dec 7) + then #x30 +s hold (dec 4) lsr )
+   (cmt hold hexa |digit,| keep /16 )
+   (defun nrh hdigit if drop |;| ] then nrh ) (cmt  hold unsigned hexa number )
+   (defun uu digit testeax if drop |;| ] then uu ) (cmt hold unsigned decimal number )
+   (defun nr testeax -if uu |;| ] then - uu (dec 45) hold ) (cmt hold signed decimal number )
+   (defun bl (dec 32) hold )
+   (defun cr (dec 10) hold )
+   (defun |.| bl nrh flush )
+   (cmt print hexa unsigned digit)
+  |;s|)
 
+ (
+  (cmt forth noarch core printing names )
+  (defun sizeflag dup (dec 30) ash (dec 3) and )
+  (defun size #x7050404 over (dec 3) shl ash #x7f and )
+  (defun offset [ #x161f000 (dec 4) shl ] over (dec 3) shl ash #x7f and (dec 3) shl )
+  (defun uncode #x3f and #x20080 + @ #x7f and hold )
+  (defun dname -8 and (exit))
+  (defun decode sizeflag offset
+	 [ eax ] push drop size nip 2dup - (dec 32) + ash dup [ eax ] pop over+ nip
+	 uncode shl if drop |;| ] then decode )
+  |;s|)
 
-   )
-
-  (
-   )
-
+ (
+  (cmt forth x86 core heap )
+  (defun |,| [ (dec 1) reg ] @ !
+	 [ (dec 1) reg ] @ (dec 4) + [ (dec 1) reg ] ! )
+  (defun |dc,s| [ #x358b |2c,|
+	 (dec 1) reg |,| #x0688 |2c,|
+	 #x46 |c,| #x3589 |2c,| (dec 1) reg |,|
+	 ] (dec 8) ash )
+  (defun |c,| |dc,s| drop )
+  (defun |c,,| |c,| |,| )
+  (defun find (cmt wv-af ) testeax if ) (cmt w0 ) ] then
+  (defun floop 2dup (dec 4) +@ /xor/ -8 and 2drop if nip testeax |;| ] then
+	 dup @ testeax if nip |;| ] then - over+ nip floop )
+  (defun cfa (dec 8) +@ )
+  (defun known? voc find )
+  
+  (defun relcfa cfa raddr -126 cmp )
+  (defun |,call| #xe8 |c,| cfa raddr -4 + |,| ) 
+  (defun doj relcfa -if -2 + #xeb |c,| |c,| |;|
+	 ] then -5 + #xe9 |c,,| )
+  
+  (defun vexec @ (exit))
+  (defun exec [ eax ] push drop)
+  [ |;s|) ; why [?
   )
+
