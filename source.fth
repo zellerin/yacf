@@ -92,7 +92,7 @@ cr
 : xor /xor/ nip ;
 : + over+ nip ;
 : +blk @a [ 0 buffer - ] + 9 lsr + ;
-: initp r. r. 2 shl 28 +s ld compile ; ( no parameter - 32, one par - 36 )
+: initp r. r. 2 shl 28 +s ld compile ; ( no parameter - x32, one par - x36 )
 cr dup initp
 ;s
 

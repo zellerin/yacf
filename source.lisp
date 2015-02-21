@@ -169,46 +169,46 @@ CR is treated specifically for compatibility purposes
    cr (dec 0) bye)
 
   (nrmacros empty (cmt x86 boot)
-   (defun +s #xc083 |2c,n|)
-   (defun + #x05 |c,,|)
-   (defun +@ #x408b |2c,n|)
-   (defun @+ #x0503 |dc,s| |c,,|)
-   (defun @-+ #x052b |dc,s| |c,,|)
-   (defun @ |,put| -4 |,+stack| #xa1 |c,,|)
-   (def-top-op ash #xf8c1)
-   (def-top-op lsr #xe8c1)
-   (def-top-op shl #xe0c1)
-   (def-top-op and #xe083)
-   (defun / #xbed231 |3c,| |,| #xf6f7 |2c,|)
-   (defun cmp #x3d |c,,|)
-   (def-top-op nth #x08438b)
-   (defun nop |,lit|)
-   (defun reg! (dec 11) shl #x038b + |2c,|)
-   (defun ldreg (dec 11) shl #xc089 + |2c,|)
-   (defun pop #x58 +s |c,|)
-   (defun push #x50 +s |c,|)
-   |;s|)
+	    (defun +s #xc083 |2c,n|)
+	    (defun + #x05 |c,,|)
+	    (defun +@ #x408b |2c,n|)
+	    (defun @+ #x0503 |dc,s| |c,,|)
+	    (defun @-+ #x052b |dc,s| |c,,|)
+	    (defun @ |,put| -4 |,+stack| #xa1 |c,,|)
+	    (def-top-op ash #xf8c1)
+	    (def-top-op lsr #xe8c1)
+	    (def-top-op shl #xe0c1)
+	    (def-top-op and #xe083)
+	    (defun / #xbed231 |3c,| |,| #xf6f7 |2c,|)
+	    (defun cmp #x3d |c,,|)
+	    (def-top-op nth #x08438b)
+	    (defun nop |,lit|)
+	    (defun reg! (dec 11) shl #x038b + |2c,|)
+	    (defun ldreg (dec 11) shl #xc089 + |2c,|)
+	    (defun pop #x58 +s |c,|)
+	    (defun push #x50 +s |c,|)
+	    |;s|)
 
   (macros empty (cmt x86 boot )
-   (defun |;| #xc3 |c,|)
-   (defun over+ #x044303 |3c,|)
-   (defun nip (dec 4) |,+stack|)
-   (defun !cl #x0888 |2c,|)
-   (defun !ecx #x0889 |2c,|)
-   (defun break (dec 204) |c,|)
-   (defun @ #x8b |2c,|)
-   (defun - #xd8f7 |2c,|)
-   (defun 1- (dec 72) |c,|)
-   (defun dup |,put| -4 |,+stack|)
-   (defun /sys/ #x0c538b |3c,| #x084b8b |3c,|
-	  #x045b8b |3c,| #x80cd |2c,|)
-   (defun /xor/ #x44333 |3c,|)
-   (defun /and/ #x44323 |3c,|)
-   (defun /or/ #x4430b |3c,|)
-   (defun da@+ #x78b |2c,| #x47f8d |3c,|)
-   (defun da! #xc789 |2c,|) (cmt dup a!)
-   (defun tocl #xc189 |2c,|)
-   |;s|)
+	  (defun |;| #xc3 |c,|)
+	  (defun over+ #x044303 |3c,|)
+	  (defun nip (dec 4) |,+stack|)
+	  (defun !cl #x0888 |2c,|)
+	  (defun !ecx #x0889 |2c,|)
+	  (defun break (dec 204) |c,|)
+	  (defun @ #x8b |2c,|)
+	  (defun - #xd8f7 |2c,|)
+	  (defun 1- (dec 72) |c,|)
+	  (defun dup |,put| -4 |,+stack|)
+	  (defun /sys/ #x0c538b |3c,| #x084b8b |3c,|
+		 #x045b8b |3c,| #x80cd |2c,|)
+	  (defun /xor/ #x44333 |3c,|)
+	  (defun /and/ #x44323 |3c,|)
+	  (defun /or/ #x4430b |3c,|)
+	  (defun da@+ #x78b |2c,| #x47f8d |3c,|)
+	  (defun da! #xc789 |2c,|) (cmt dup a!)
+	  (defun tocl #xc189 |2c,|)
+	  |;s|)
 
   (forth (cmt x86 boot )
 	 (defun - - )
@@ -291,7 +291,7 @@ CR is treated specifically for compatibility purposes
    (defun  buffer (dec 9) shl #x21000 + )
    |;s|)
 
- ((cmt forth x86 core a-reg )
+  ((cmt forth x86 core a-reg )
    (defun a@+ dup da@+ )
    (defun a! da! drop )
    (defun @a dup [ edi ] ldreg )
@@ -302,9 +302,9 @@ CR is treated specifically for compatibility purposes
    (defun obufset [ (dec 5) reg ] #x30000 !! )
    |;s|)
  
- ((cmt forth x86 core printing numbers )
+  ((cmt forth x86 core printing numbers )
    (defun digit (cmt n-n ) (dec 10) / dup [ edx ] ldreg #x30 +s hold )
-    (cmt hold |digit,| keep /10 )
+   (cmt hold |digit,| keep /10 )
    (defun hdigit dup #xf and (dec 10) cmp -if (dec 7) + then #x30 +s hold (dec 4) lsr )
    (cmt hold hexa |digit,| keep /16 )
    (defun nrh hdigit if drop |;| ] then nrh ) (cmt  hold unsigned hexa number )
@@ -314,85 +314,108 @@ CR is treated specifically for compatibility purposes
    (defun cr (dec 10) hold )
    (defun |.| bl nrh flush )
    (cmt print hexa unsigned digit)
-  |;s|)
+   |;s|)
 
- (
-  (cmt forth noarch core printing names )
-  (defun sizeflag dup (dec 30) ash (dec 3) and )
-  (defun size #x7050404 over (dec 3) shl ash #x7f and )
-  (defun offset [ #x161f000 (dec 4) shl ] over (dec 3) shl ash #x7f and (dec 3) shl )
-  (defun uncode #x3f and #x20080 + @ #x7f and hold )
-  (defun dname -8 and (exit))
-  (defun decode sizeflag offset
-	 [ eax ] push drop size nip 2dup - (dec 32) + ash dup [ eax ] pop over+ nip
-	 uncode shl if drop |;| ] then decode )
-  |;s|)
+  (
+   (cmt forth noarch core printing names )
+   (defun sizeflag dup (dec 30) ash (dec 3) and )
+   (defun size #x7050404 over (dec 3) shl ash #x7f and )
+   (defun offset [ #x161f000 (dec 4) shl ] over (dec 3) shl ash #x7f and (dec 3) shl )
+   (defun uncode #x3f and #x20080 + @ #x7f and hold )
+   (defun dname -8 and (exit))
+   (defun decode sizeflag offset
+	  [ eax ] push drop size nip 2dup - (dec 32) + ash dup [ eax ] pop over+ nip
+	  uncode shl if drop |;| ] then decode )
+   |;s|)
 
- (
-  (cmt forth x86 core heap )
-  (defun |,| [ (dec 1) reg ] @ !
-	 [ (dec 1) reg ] @ (dec 4) + [ (dec 1) reg ] ! )
-  (defun |dc,s| [ #x358b |2c,|
-	 (dec 1) reg |,| #x0688 |2c,|
-	 #x46 |c,| #x3589 |2c,| (dec 1) reg |,|
-	 ] (dec 8) ash )
-  (defun |c,| |dc,s| drop )
-  (defun |c,,| |c,| |,| )
-  (defun find (cmt wv-af ) testeax if ) (cmt w0 ) ] then
-  (defun floop 2dup (dec 4) +@ /xor/ -8 and 2drop if nip testeax |;| ] then
-	 dup @ testeax if nip |;| ] then - over+ nip floop )
-  (defun cfa (dec 8) +@ )
-  (defun known? voc find )
+  (
+   (cmt forth x86 core heap )
+   (defun |,| [ (dec 1) reg ] @ !
+	  [ (dec 1) reg ] @ (dec 4) + [ (dec 1) reg ] ! )
+   (defun |dc,s| [ #x358b |2c,|
+	  (dec 1) reg |,| #x0688 |2c,|
+	  #x46 |c,| #x3589 |2c,| (dec 1) reg |,|
+	  ] (dec 8) ash )
+   (defun |c,| |dc,s| drop )
+   (defun |c,,| |c,| |,| )
+   (defun find (cmt wv-af ) testeax if ) (cmt w0 ) ] then
+   (defun floop 2dup (dec 4) +@ /xor/ -8 and 2drop if nip testeax |;| ] then
+	  dup @ testeax if nip |;| ] then - over+ nip floop )
+   (defun cfa (dec 8) +@ )
+   (defun known? voc find )
   
-  (defun relcfa cfa raddr -126 cmp )
-  (defun |,call| #xe8 |c,| cfa raddr -4 + |,| ) 
-  (defun doj relcfa (-if-exit -2 + #xeb |c,| |c,|)
-	 -5 + #xe9 |c,,| )
+   (defun relcfa cfa raddr -126 cmp )
+   (defun |,call| #xe8 |c,| cfa raddr -4 + |,| ) 
+   (defun doj relcfa (-if-exit -2 + #xeb |c,| |c,|)
+	  -5 + #xe9 |c,,| )
   
-  (defun vexec @ (exit))
-  (defun exec [ eax ] push drop)
-  [ |;s|) ; why [?
+   (defun vexec @ (exit))
+   (defun exec [ eax ] push drop)
+   [ |;s|)				; why [?
 
- (
-  (cmt forth core output/finds )
-  (defun name bl dname )
-  (defun next @a @ )
-  (defun err cr name [ a@+ error ] name flush )
+  (
+   (cmt forth core output/finds )
+   (defun name bl dname )
+   (defun next @a @ )
+   (defun err cr name [ a@+ error ] name flush )
   
-  (cmt source reading )
-  (defun 4a+ a@+ drop )
-  (defun ?compile #x7 and #x2 cmp drop )
-  (defun |;?| next [ a@+ ] |;| cmp drop)
-  (defun imm? [ (dec 2) reg ] @ find )
+   (cmt source reading )
+   (defun 4a+ a@+ drop )
+   (defun ?compile #x7 and #x2 cmp drop )
+   (defun |;?| next [ a@+ ] |;| cmp drop)
+   (defun imm? [ (dec 2) reg ] @ find )
   
-  (cmt vocabulary searches )
-  (defun fexec find if drop err |;| ] then (exit))
-  (defun found cfa exec )
+   (cmt vocabulary searches )
+   (defun fexec find if drop err |;| ] then (exit))
+   (defun found cfa exec )
   
-  (cmt compiling targets )
+   (cmt compiling targets )
   
-  |;s|)
+   |;s|)
 
- (
-  (cmt forth x86 core calls)
-  (defun doj relcfa (-if-exit -2 + #xEB |c,| |c,|) -5 + #xE9 |c,,|)
-  (defun call |;?| if 4a+ doj |;| then |,call|)
-  (defun imm? [ (dec 2) reg ] @ find )
+  (
+   (cmt forth x86 core calls)
+   (defun doj relcfa (-if-exit -2 + #xEB |c,| |c,|) -5 + #xE9 |c,,|)
+   (defun call |;?| if 4a+ doj |;| then |,call|)
+   (defun imm? [ (dec 2) reg ] @ find )
   
-  (defun cw imm? if drop known?
-	 if drop err |;| then call |;|
-	 then cfa exec )
-  (defun |2c,| |dc,s| |c,| )
-  (defun |3c,| |dc,s| |2c,| )
-  (defun |2c,n| |2c,| |c,| )
-  (defun |,put| #x0389 |2c,| )
-  (defun |,+stack| #x5b8d |2c,n| )
-  (defun |,lit| |,put| -4 |,+stack| #xb8 |c,,| )
-  (defun ytog next [ (dec 6) reg ] @ find if 2drop |,lit| |;| then 4a+ found )
-  (defun cnr ?compile if ytog then )
-  (defun dbg dup cr name bl here nrh bl dhere nrh flush )
+   (defun cw imm? if drop known?
+	  if drop err |;| then call |;|
+	  then cfa exec )
+   (defun |2c,| |dc,s| |c,| )
+   (defun |3c,| |dc,s| |2c,| )
+   (defun |2c,n| |2c,| |c,| )
+   (defun |,put| #x0389 |2c,| )
+   (defun |,+stack| #x5b8d |2c,n| )
+   (defun |,lit| |,put| -4 |,+stack| #xb8 |c,,| )
+   (defun ytog next [ (dec 6) reg ] @ find if 2drop |,lit| |;| then 4a+ found )
+   (defun cnr ?compile if ytog then )
+   (defun dbg dup cr name bl here nrh bl dhere nrh flush )
   
-  |;s|)
+   |;s|)
+
+  (
+   (cmt forth core compiler )
+   (defun tagidx dup #x7 and (dec 2) shl )
+   (defun compi a@+ flush tagidx #x20060 + vexec )
+   
+   cr dhere #x20060 base @ - + (dec 3) reg !
+   cr |h,| there (cmt ignore word ) ] drop compi ) cr
+   |h,| there (cmt yellow nr ) ] (dec 4) ash next cnr compi |;| [ cr
+   |h,| (cmt compile word ) ] cw compi |;| [
+   cr |h,| (cmt define word ) ] dbg
+   dhere [ (dec 4) reg ] @ @ - over+
+   |w,| [ (dec 4) reg ] @ ! |w,| here |w,| compi |;| [ cr
+   over dup |w,| |w,|
+   (cmt ignore twice )
+   cr |w,| ( yellow nr ) drop 
+   cr |h,| ( yellow word ) ] [ (dec 0) reg ] @ fexec next cnr compi |;| [
+   3 reg !
+   
+   |;s|
+
+
+  )
  
  )
 
