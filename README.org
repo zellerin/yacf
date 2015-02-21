@@ -3,33 +3,65 @@
 This is a toy project aimed on exploration.
 
 * Features
+- source in tagged ("coloured") words :: 32 bit words contain 3-bit
+     tag and 29 bit name
+  + limited set of characters
+  + source can be edited directly in emacs =yacf-mode=
+  + alternatively, it can be compiled from text from similar to normal
+    forth, using : [ ] ( ) ; to switch modes
 - stack based (forth...) :: system stack for control stack, other
      register stack index for data stack
 - two heaps (or more) :: separate data heap and code heap
-- compiles tagged ("coloured") words :: 32 bit words contain 3-bit tag
-     and 29 bit name
 - x86 as build host :: actually, x86 means Intel Atom™ processor.
-- machine code with Linux as target :: the interface to target
+- machine code with Linux elf as target :: the interface to target
      hardware are syscalls. No library expected nor used.
 - no BASE :: numbers are explicitly decimal or hexadecimal, both on
              input (different color) and output (different words).
-- no STATE :: green words mean we are compiling, yellow we are executing.
+- no STATE :: green words are compiled, yellow are executed
 - tail call optimization :: if semicolon to be compiled follows
-     compiled call to word, jump is compiled instead. This allow to
-     delay for some time real definition of semicolon.
+     compiled call to word, jump is compiled instead. This allows to
+     delay for some time real definition of semicolon in
+     bootstrapping.
 * [3/6] Immediate plans
 - [X] Compile elf binary
 - [X] Output buffer words
 - [X] Compile itself as a binary
 - [ ] Compile arm binary
-- [ ] Compile pic (Microchip) binary :: it was in place some time ago,
+- [ ] Compile pic (Microchip) binary - it was working some time ago,
      but got lost.
-- [ ] Make editor to edit blocks :: currently, conversion is done
-     externally.
+* Not planned for now
+- Make editor to edit blocks :: emacs mode will do.
 * Bugs
 - usefulness...
 - semicolon after call to word with a long name is not optimzied to
   jump
+* Tagging
+Tag is in lower 3 bits of the word (or, assuming small endiannes, of
+the first octet of the word. It is interpreted as:
+
+| Tag | Color             | Interpretation       |
+|-----+-------------------+----------------------|
+|   0 | same as preceding | continuation of word |
+|   1 | yellow            | decimal number       |
+|   2 | green             | [[id:eb311d0c-1626-4b1a-bb16-5500ffac4d40][compiled word]]        |
+|   3 | black bold        | defined word         |
+|   4 | black             | editor word          |
+|   5 | black             | comment              |
+|   6 | yellow            | hexadecimal number   |
+|   7 | yellow            | word to execute      |
+
+** Green words
+   :PROPERTIES:
+   :ID:       eb311d0c-1626-4b1a-bb16-5500ffac4d40
+   :END:
+The green words are searched for in several dictionaries:
+- if it follows a yellow word, ~nrmacros~ dictionary is searched
+  - if the word is found there, the word is executed
+  - otherwise, the code to push number on stack is compiled, and green
+    word is handled as if it would not follow yellow word, that is,
+- if the word is found in macros dictionary, execute it;
+- if not, find it in normal ("forth") vocabulary and compile a call to it
+- or fail, preferabl loudly
 * Elf binary
 |     VMA | Contains               |
 |---------+------------------------|
@@ -69,7 +101,6 @@ These are forth words that put te code
 | n ~,lit~    | ~dup~ mov $n,%eax   | yellow to green, ... |
 | ~op~ ,rot   | <op> %cl,%eax     | shl, rot, ...        |
 | tocl        | mov %eax,%ecx     |                      |
-
 
 ** Number macros
 | forth       | x86 assembler                          |
