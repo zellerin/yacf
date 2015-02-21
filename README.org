@@ -5,11 +5,17 @@ This is a toy project aimed on exploration.
 * Features
 - source in tagged ("coloured") words :: 32 bit words contain 3-bit
      tag and 29 bit name
-  + limited set of characters
+  + limited set of characters that can be 4,5, or 7 bits long (very
+    similar to what Moore used)
   + source can be edited directly in emacs =yacf-mode=
   + alternatively, it can be compiled from text from similar to normal
     forth, using : [ ] ( ) ; to switch modes
-- stack based (forth...) :: system stack for control stack, other
+  + currently, source is organized in 512 bytes (128 words) long
+    pages that can be loaded; this can change
+- self compiling :: Able to compile itself from the source
+  + bootstrapping was done originally in assembler, but this
+    scaffolding was already removed
+- stack based :: system stack for control stack, other
      register stack index for data stack
 - two heaps (or more) :: separate data heap and code heap
 - x86 as build host :: actually, x86 means Intel Atom™ processor.
@@ -29,10 +35,12 @@ This is a toy project aimed on exploration.
 - [ ] Compile arm binary
 - [ ] Compile pic (Microchip) binary - it was working some time ago,
      but got lost.
-* Not planned for now
+** Not planned for now
 - Make editor to edit blocks :: emacs mode will do.
+- section headers for elf :: they are not used for execution of
+     file. Objdump complains, so what?
 * Bugs
-- usefulness...
+- not clean usefulness. Did I say toy project?
 - semicolon after call to word with a long name is not optimzied to
   jump
 * Tagging
@@ -59,9 +67,9 @@ The green words are searched for in several dictionaries:
   - if the word is found there, the word is executed
   - otherwise, the code to push number on stack is compiled, and green
     word is handled as if it would not follow yellow word, that is,
-- if the word is found in macros dictionary, execute it;
-- if not, find it in normal ("forth") vocabulary and compile a call to it
-- or fail, preferabl loudly
+- if the word is found in ~macros~ dictionary, execute it;
+- if not, find it in ~forth~ vocabulary and compile a call to it
+- or fail, preferably loudly
 * Elf binary
 |     VMA | Contains               |
 |---------+------------------------|
@@ -91,6 +99,14 @@ Structure of rebuild (see page 32):
 
 * x86 assembler low level words
 Legend: ~o~ is signed octet, ~w~ is word
+** x86 registers
+| reg | use                           |
+|-----+-------------------------------|
+| eax | TOP of data stack             |
+| esp | pointer below bottom stack    |
+| ebx | pointer below data stack      |
+| esi | A register - address to read  |
+| edi | B register - address to write |
 
 ** Builder words
 These are forth words that put te code
@@ -115,7 +131,7 @@ These are forth words that put te code
 | o lsr       | shr o, %eax                            |
 | o shl       | shl o, %eax                            |
 | o and       | and o, %eax                            |
-| w /         | xor %edx, %edx; mov $w, %esi; div %esi |
+| w /         | xor %edx, %edx; mov $w, %ecx; div %ecx |
 | w cmp       | cmp $w, %eax                           |
 | <reg> reg!  | mov (%ebx), <reg>                      |
 | <reg> ldreg | mov <reg>, %eax                        |
@@ -149,7 +165,7 @@ These are forth words that put te code
 Note: ~/reg/~ could be possibly even better defined as an number
 macro. However, it would need to change the stack size.
 
-* Registers
+* Forth registers
 Words starting at #x30000
 |  0 | Vocabulary index                 |
 |  1 | Top of heap                      |

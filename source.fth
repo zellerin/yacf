@@ -21,7 +21,6 @@ cr 0 bye
 : lsr #xe8c1 2c,n ;
 : shl #xe0c1 2c,n ;
 : and #xe083 2c,n ;
-: / #xbed231 3c, , #xf6f7 2c, ;
 : cmp #x3d c,, ;
 : nth #x08438b 2c,n ;
 : nop ,lit ;
@@ -29,6 +28,7 @@ cr 0 bye
 : ldreg 11 shl #xc089 + 2c, ;
 : pop #x58 +s c, ;
 : push #x50 +s c, ;
+: / #xb9d231 3c, , #xf1f7 2c, ;
 ;s
 % macros empty ( x86 boot )
 : ; #xc3 c, ;
@@ -46,8 +46,8 @@ cr 0 bye
 : /xor/ #x44333 3c, ;
 : /and/ #x44323 3c, ;
 : /or/ #x4430b 3c, ;
-: da@+ #x78b 2c, #x47f8d 3c, ;
-: da! #xc789 2c, ; ( dup a! ) 
+: da@+ #xad c, ;
+: da! #xc689 2c, ; ( dup a! ) 
 : tocl #xc189 2c, ;
 ;s
 % forth ( x86 boot )
@@ -121,7 +121,7 @@ cr dup initp
 % ( forth x86 core a-reg )
 : a@+ dup da@+ ;
 : a! da! drop ;
-: @a dup [ edi ] ldreg ;
+: @a dup [ esi ] ldreg ;
 : sys/3 [ ebx ] push /sys/ [ ebx ] pop #xc [ ,+stack ] ( nop ) ;
 : write [ sys write ] sys/3 drop ;
 : bye 8 [ - ,+stack ] [ sys exit ] sys/3 ;
@@ -150,9 +150,9 @@ uncode shl if drop ; ] then decode ;
 % ( forth x86 core heap )
 : , [ 1 reg ] @ !
   [ 1 reg ] @ 4 + [ 1 reg ] ! ;
-: dc,s [ #x358b 2c,
-  1 reg , #x0688 2c,
-  #x46 c, #x3589 2c, 1 reg ,
+: dc,s [ #x3d8b 2c,
+  1 reg ,
+  #xaa c, #x3d89 2c, 1 reg ,
   ] 8 ash ;
 : c, dc,s drop ;
 : c,, c, , ;
