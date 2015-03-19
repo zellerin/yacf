@@ -1,0 +1,25 @@
+* Quick start
+: ./yacf 4>new-yacf
+regenerates the yacf file from the source (=B=).
+
+: ./yacf whatever
+runs a source code viewer, with interactive commands:
+- C-f :: page forwards,
+- C-b :: page backward
+- <nr> p :: jump to page number
+- C-a :: abort
+
+* Emacs mode
+Run =yacf-load= and give it the souce file (=B=).
+
+#+BEGIN_SRC elisp
+(define-key yacf-mode-map (kbd "C-x n p") #'yacf-narrow-to-page)
+(define-key yacf-mode-map (kbd "C-x [") #'yacf-backward-page)
+(define-key yacf-mode-map (kbd "C-x ]") #'yacf-forward-page)
+(define-key yacf-mode-map (kbd "SPC") #'yacf-change-type)
+(define-key yacf-mode-map (kbd "<delete>") #'yacf-delete)
+(define-key yacf-mode-map (kbd "<insert>") #'yacf-insert-cell)
+#+END_SRC
+
+Also provides, unbound:
+: yacf-redisplay
