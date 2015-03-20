@@ -1,9 +1,6 @@
 ;;;; -*- mode: emacs-lisp; lexical-binding:t -*-
 
 ;;;; TODO:
-;;;; - faces for numbers
-;;;; - cl-case on 0123 to vectors
-;;;; - flagging as not modified
 ;;;; - limit what is redisplayed
 
 (eval-when-compile
@@ -139,7 +136,9 @@ With prefix, search for definitions only."
 				 (add-text-properties beg end `(face ,face))))
 	  (cl-ecase type
 	    (0 (text-and-face (yacf-nr-to-string nr)
-			      (get-text-property (1- beg) 'face)))
+			      (if (= (point-min) beg)
+				  'yacf-gray
+				  (get-text-property (1- beg) 'face))))
 	    (1 (when (cl-plusp (logand nr #x8000000))
 		 (setq nr (- (logand (- nr) #x7ffffff))))
 	       (text-and-face (format " %d" nr) 'yacf-blue))
@@ -230,3 +229,12 @@ With prefix, search for definitions only."
 (dotimes (i 32)
   (define-key yacf-mode-map (kbd (string (aref "dvpbhxuqkzj34567891-0.2/;:!+@*,?" i)))
     (yacf-insert-nbit-letter (+ i #x60) 7 #x7f)))
+
+(defun yacf-string-to-nr (word)
+  (with-temp-buffer
+    (insert-char 0 4)
+    (goto-char 1)
+    (use-local-map yacf-mode-map)
+    (mapc (lambda (c) (funcall (key-binding (vector c))))
+	  word)
+    (yacf-get-nr (point))))
