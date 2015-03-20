@@ -138,7 +138,7 @@ These are forth words that put te code
 | <reg> pop   | pop <reg>                              |
 | <reg> push  | push <reg>                             |
 | a !         | mov %eax,a ~drop~                        |
-| a w !!      | mov $w,%ecx; mov %ecx, a               |
+| a w !!      | mov $w,  a                             |
 
 ** Macros
 | forth | x86 assembler              |
