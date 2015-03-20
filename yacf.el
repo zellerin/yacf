@@ -134,21 +134,24 @@ With prefix, search for definitions only."
 	(cl-flet ((text-and-face (text face)
 				 (put-text-property beg end 'display text)
 				 (add-text-properties beg end `(face ,face))))
-	  (cl-ecase type
-	    (0 (text-and-face (yacf-nr-to-string nr)
-			      (if (= (point-min) beg)
-				  'yacf-gray
+	  (let ((maybe-page (if (= 1 (logand beg 511))
+				(format "\n--- %d ---\n" (floor beg 512))
+			      " ")))
+	    (cl-ecase type
+	      (0 (text-and-face (yacf-nr-to-string nr)
+				(if (= (point-min) beg)
+				    'yacf-gray
 				  (get-text-property (1- beg) 'face))))
-	    (1 (when (cl-plusp (logand nr #x8000000))
-		 (setq nr (- (logand (- nr) #x7ffffff))))
-	       (text-and-face (format " %d" nr) 'yacf-blue))
-	    (2 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-green))
-	    (3 (text-and-face (concat "\n" (yacf-nr-to-string nr)) 'bold))
-	    (4 (text-and-face (concat " " (yacf-nr-to-string nr) "\n") 'yacf-blue))
-	    (5 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-gray))
-	    (6 (text-and-face (format " %x" nr) 'yacf-green))
-	    (7 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-yellow))
-))))
+	      (1 (when (cl-plusp (logand nr #x8000000))
+		   (setq nr (- (logand (- nr) #x7ffffff))))
+		 (text-and-face (format " %d" nr) 'yacf-blue))
+	      (2 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-green))
+	      (3 (text-and-face (concat "\n" (yacf-nr-to-string nr)) 'bold))
+	      (4 (text-and-face (concat " " (yacf-nr-to-string nr) "\n") 'yacf-blue))
+	      (5 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'yacf-gray))
+	      (6 (text-and-face (format " %x" nr) 'yacf-green))
+	      (7 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'yacf-yellow))
+	      )))))
     (set-buffer-modified-p mod)))
 
 (defcustom yacf-space-order
