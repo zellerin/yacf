@@ -34,6 +34,21 @@
    (* #x10 (char-after (+ 1 pos)))
    (floor (char-after pos) #x10)))
 
+(defun yacf-find-forward (definition)
+  (interactive "p")
+  "Search for next occurance of the word at point.
+With prefix, search for definitions only."
+  (let ((nr (yacf-get-nr (point)))
+	(point (point)))
+    (forward-char 4)
+    (while (or
+	    (/= (yacf-get-nr (point)) nr)
+	    (and (= 4 definition) (/= 3 (and #xf (char-after)))))
+      (forward-char 4)
+      (if (= (point) point) (error "Not found"))
+      (if (= (point) (point-max))
+	  (goto-char (point-min))))))
+
 (defun yacf-nr-to-string (nr)
   "Convert number to shannon encoded string"
   (let* ((sizeflag (logand 3 (lsh nr -26)))
@@ -60,14 +75,16 @@
     (if (zerop nr) size
       (+ (yacf-string-used-bits nr) size))))
 
-(defun yacf-replace-nr (nr type)
+(defun yacf-replace-nr (nr &optional type)
+  (interactive "nNumber: ")
+  (unless type
+    (setq type 1))
   (delete-char 4)
   (insert (+ type (logand #xf0 (lsh nr 4))))
   (insert (logand #xff (lsh nr -4)))
   (insert (logand #xff (lsh nr -12)))
   (insert (logand #xff (lsh nr -20)))
   (forward-char -4))
-
 
 (defun yacf-insert-nbit-letter (l n mask)
   (lambda ()
@@ -127,7 +144,7 @@
 		 (setq nr (- (logand (- nr) #x7ffffff))))
 	       (text-and-face (format " %d" nr) 'yacf-blue))
 	    (2 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-green))
-	    (3 (text-and-face  (concat "\n" (yacf-nr-to-string nr)) 'bold))
+	    (3 (text-and-face (concat "\n" (yacf-nr-to-string nr)) 'bold))
 	    (4 (text-and-face (concat " " (yacf-nr-to-string nr) "\n") 'yacf-blue))
 	    (5 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-gray))
 	    (6 (text-and-face (format " %x" nr) 'yacf-green))
@@ -196,6 +213,7 @@
 (define-key yacf-mode-map (kbd "C-x n p") #'yacf-narrow-to-page)
 (define-key yacf-mode-map (kbd "C-x [") #'yacf-backward-page)
 (define-key yacf-mode-map (kbd "C-x ]") #'yacf-forward-page)
+(define-key yacf-mode-map (kbd "C-s") #'yacf-find-forward)
 (define-key yacf-mode-map (kbd "SPC") #'yacf-change-type)
 (define-key yacf-mode-map (kbd "<delete>") #'yacf-delete)
 (define-key yacf-mode-map (kbd "<insert>") #'yacf-insert-cell)
