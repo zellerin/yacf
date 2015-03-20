@@ -209,10 +209,18 @@ With prefix, search for definitions only."
 (define-derived-mode yacf-mode fundamental-mode "colforth"
   "Edit tagged Shannon-encoded words.")
 
+(defun yacf-beginning-of-line ()
+  (interactive)
+  (while (not (or
+	       (= 3 (logand 7 (char-after (point))))
+	       (= (point) (point-min))))
+    (forward-char -4)))
+
 (define-key yacf-mode-map (kbd "C-x n p") #'yacf-narrow-to-page)
 (define-key yacf-mode-map (kbd "C-x [") #'yacf-backward-page)
 (define-key yacf-mode-map (kbd "C-x ]") #'yacf-forward-page)
 (define-key yacf-mode-map (kbd "C-s") #'yacf-find-forward)
+(define-key yacf-mode-map (kbd "C-a") #'yacf-beginning-of-line)
 (define-key yacf-mode-map (kbd "SPC") #'yacf-change-type)
 (define-key yacf-mode-map (kbd "<delete>") #'yacf-delete)
 (define-key yacf-mode-map (kbd "<insert>") #'yacf-insert-cell)
