@@ -8,8 +8,6 @@ This is a toy project aimed on exploration.
   + limited set of characters that can be 4,5, or 7 bits long (very
     similar to what Moore used)
   + source can be edited directly in emacs =yacf-mode=
-  + alternatively, it can be compiled from text from similar to normal
-    forth, using : [ ] ( ) ; to switch modes
   + currently, source is organized in 512 bytes (128 words) long
     pages that can be loaded; this can change
 - self compiling :: Able to compile itself from the source

@@ -1,13 +1,6 @@
 * Quick start
-: ./yacf 4>new-yacf
-regenerates the yacf file from the source (=B=).
-
-: ./yacf whatever
-runs a source code viewer, with interactive commands:
-- C-f :: page forwards,
-- C-b :: page backward
-- <nr> p :: jump to page number
-- C-a :: abort
+: ./yacf yacf.blk 4>new-yacf
+regenerates the yacf file from the source (=yacf.blk=).
 
 * Emacs mode
 Run =yacf-load= and give it the souce file (=B=).
