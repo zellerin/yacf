@@ -177,11 +177,11 @@ Words starting at #x30000
 
 * Code pages index
 
-- 0 and referred  (1 to 4 ) is read after boot
-- 0x0d words for compiler
-- 0x0e conditional macros
-- 0x10 numbers printing
-- 0x12 names printing
-- 0x20 and referred (  ) compiler
-- 0x24 and referred ( ) loaded with one parameter
+- 0 to 3 :: is read after boot
+  + ends with jump to compiler
+- 8 to 12 :: crosscompiler
+  + creates an elf file
+- 14 to 20 :: core words for new binary
+  + includes compiler
+
   
