@@ -31,20 +31,27 @@
    (* #x10 (char-after (+ 1 pos)))
    (floor (char-after pos) #x10)))
 
-(defun yacf-find-forward (definition)
-  (interactive "p")
+(defun yacf-find-code (nr definition)
+  (interactive (list (yacf-string-to-nr
+		      (read-string "Search: "))
+		     current-prefix-arg))
   "Search for next occurance of the word at point.
 With prefix, search for definitions only."
-  (let ((nr (yacf-get-nr (point)))
-	(point (point)))
+  (let ((point (point)))
     (forward-char 4)
     (while (or
 	    (/= (yacf-get-nr (point)) nr)
-	    (and (= 4 definition) (/= 3 (and #xf (char-after)))))
+	    (and definition (/= 3 (and #xf (char-after)))))
       (forward-char 4)
       (if (= (point) point) (error "Not found"))
       (if (= (point) (point-max))
 	  (goto-char (point-min))))))
+
+(defun yacf-find-forward (definition)
+  (interactive "P")
+  "Search for next occurance of the word at point.
+With prefix, search for definitions only."
+  (yacf-find-code  (yacf-get-nr (point)) definition))
 
 (defun yacf-nr-to-string (nr)
   "Convert number to shannon encoded string"
@@ -134,20 +141,24 @@ With prefix, search for definitions only."
 	(cl-flet ((text-and-face (text face)
 				 (put-text-property beg end 'display text)
 				 (add-text-properties beg end `(face ,face))))
-	  (let ((maybe-page (if (= 1 (logand beg 511))
-				(format "\n--- %d ---\n" (floor beg 512))
-			      " ")))
+	  (let ((maybe-page
+		 (cond ((= 1 (logand beg 511))
+			(format "\n--- %d ---\n" (floor beg 512)))
+		       ((= type 0) "")
+		       ((= type 3) "\n")
+		       (t " "))))
 	    (cl-ecase type
-	      (0 (text-and-face (yacf-nr-to-string nr)
+	      (0 (text-and-face (concat maybe-page
+					(yacf-nr-to-string nr))
 				(if (= (point-min) beg)
 				    'yacf-gray
 				  (get-text-property (1- beg) 'face))))
 	      (1 (when (cl-plusp (logand nr #x8000000))
 		   (setq nr (- (logand (- nr) #x7ffffff))))
 		 (text-and-face (format " %d" nr) 'yacf-blue))
-	      (2 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-green))
-	      (3 (text-and-face (concat "\n" (yacf-nr-to-string nr)) 'bold))
-	      (4 (text-and-face (concat " " (yacf-nr-to-string nr) "\n") 'yacf-blue))
+	      (2 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'yacf-green))
+	      (3 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'bold))
+	      (4 (text-and-face (concat maybe-page (yacf-nr-to-string nr) "\n") 'yacf-blue))
 	      (5 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'yacf-gray))
 	      (6 (text-and-face (format " %x" nr) 'yacf-green))
 	      (7 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'yacf-yellow))
@@ -171,7 +182,8 @@ With prefix, search for definitions only."
     (error "No space at the end"))
   (insert-char 0 4)
   (forward-char -4)
-  (delete-region (- (point-max) 4) (point-max)))
+  (delete-region (- (point-max) 4) (point-max))
+  (yacf-redisplay))
 
 (defun yacf-insert-nr (nr)
   (interactive "N")
@@ -218,6 +230,12 @@ With prefix, search for definitions only."
 	       (= 3 (logand 7 (char-after (point))))
 	       (= (point) (point-min))))
     (forward-char -4)))
+
+(defun yacf-narrow-to-pages (from to)
+  (interactive "nFrom: \nnTo: " )
+  (narrow-to-region (+ 1 (* from 512))
+		    (+ 1 (* to 512)))
+  (yacf-redisplay))
 
 (define-key yacf-mode-map (kbd "C-x n p") #'yacf-narrow-to-page)
 (define-key yacf-mode-map (kbd "C-x [") #'yacf-backward-page)
