@@ -8,8 +8,8 @@ This is a toy project aimed on exploration.
   + limited set of characters that can be 4,5, or 7 bits long (very
     similar to what Moore used)
   + source can be edited directly in emacs =yacf-mode=
-  + currently, source is organized in 512 bytes (128 words) long
-    pages that can be loaded; this can change
+  + source used to be and to some extent still is organized in 512
+    bytes (128 words) long pages that can be loaded;
 - self compiling :: Able to compile itself from the source
   + bootstrapping was done originally in assembler, but this
     scaffolding was already removed
@@ -27,7 +27,7 @@ This is a toy project aimed on exploration.
      delay for some time real definition of semicolon in
      bootstrapping.
 * Quick start
-- =yacf yacf.blk 4> yacf-copy= :: rebuilds yacf (possibly modified if yacf.blk changed)
+- =yacf compile.blk yacf.blk 4> yacf-copy= :: rebuilds yacf (possibly modified if yacf.blk changed)
 - =yacf list.blk <something>.blk= :: prints the file in human readable form, with ansi colors
 - loading =yacf.el= :: in emacs allows =yacf-load= a .blk file and edit it
   somehow (this has rough edges still).
@@ -40,6 +40,7 @@ This is a toy project aimed on exploration.
 - [ ] Compile arm binary
 - [ ] Compile pic (Microchip) binary - it was working some time ago,
      but got lost.
+- [ ] Ensure alignment
 ** Not planned for now
 - Make editor to edit blocks :: emacs mode will do.
 - section headers for elf :: they are not used for execution of
@@ -85,22 +86,11 @@ The green words are searched for in several dictionaries:
 |    init | init code              |
 |     ..0 | dictionary             |
 |     ... | ...                    |
+| 0x21000 | pages area
 |         | output buffer          |
 | 0x30000 | random variables       |
 |         | stack                  |
 | 0x30100 | end                    |
-
-Structure of rebuild (see page 32):
-- page 8 (over, dup, drop, ...)
-- page 9 (more words)
-- page 10 (a-reg, write)
-- page 16 (print numbers)
-- page 54 (heap words, find, exec)
-- page 20 (name, compile helpers)
-- page 56 (x86 code building)
-- 58 compiler table
-- 60 loading, pages, macros/forth
-- init code on page 22
 
 * x86 assembler low level words
 Legend: ~o~ is signed octet, ~w~ is word
@@ -180,13 +170,5 @@ Words starting at #x30000
 |  5 | Output buffer bottom             |
 |  6 | Number macros vocabulary         |
 
-* Code pages index
-
-- 0 to 3 :: is read after boot
-  + ends with jump to compiler
-- 8 to 12 :: crosscompiler
-  + creates an elf file
-- 14 to 20 :: core words for new binary
-  + includes compiler
 
   
