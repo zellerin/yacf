@@ -26,6 +26,13 @@ This is a toy project aimed on exploration.
      compiled call to word, jump is compiled instead. This allows to
      delay for some time real definition of semicolon in
      bootstrapping.
+* Quick start
+- =yacf yacf.blk 4> yacf-copy= :: rebuilds yacf (possibly modified if yacf.blk changed)
+- =yacf list.blk <something>.blk= :: prints the file in human readable form, with ansi colors
+- loading =yacf.el= :: in emacs allows =yacf-load= a .blk file and edit it
+  somehow (this has rough edges still).
+- git config diff.blk.textconv "./yacf list.blk" :: allows git diff to
+     work on the block files.
 * [3/6] Immediate plans
 - [X] Compile elf binary
 - [X] Output buffer words
