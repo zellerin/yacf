@@ -27,12 +27,20 @@ This is a toy project aimed on exploration.
      delay for some time real definition of semicolon in
      bootstrapping.
 * Quick start
-- =yacf compile.blk yacf.blk 4> yacf-copy= :: rebuilds yacf (possibly modified if yacf.blk changed)
-- =yacf list.blk <something>.blk= :: prints the file in human readable form, with ansi colors
-- loading =yacf.el= :: in emacs allows =yacf-load= a .blk file and edit it
-  somehow (this has rough edges still).
-- git config diff.blk.textconv "./yacf list.blk" :: allows git diff to
-     work on the block files.
+- To rebuild the =yacf= binary (possibly after changes to =yacf.blk=), do 
+  : ./yacf compile.blk yacf.blk 4> yacf-copy
+- To view the source file content in human readable form (with ansi colors), do
+  : ./yacf list.blk <something>.blk
+- The ANSI sequenced text can be viewed in emacs with 
+  : (ansi-color-apply-on-region (point-min) (point-max))
+- To edit source files in emacs, load =yacf.el= and =yacf-load= the source
+  file (this has rough edges still). Normal opening and setting
+  =yacf-mode= later had some problems due to character set.
+- To allow git diff to work on the block files, do 
+  : git config diff.blk.textconv "./yacf list.blk".
+- To ensure that the bootstraping works, do =make check=. It will
+  rebuild new =yacf= under name =future=, and then tries to use the =future=
+  to build it again and compare results. They should be same.
 * [3/6] Immediate plans
 - [X] Compile elf binary
 - [X] Output buffer words
@@ -172,3 +180,12 @@ Words starting at #x30000
 
 
   
+* Notes
+** Notes on some words
+- 
+- empty :: First word in given vocabulary needs to have its own
+           address in the word link. This takes care of it.
+** Elementary macros
+- +s and + :: Two bytes can be saved if short form of addition is
+              used. Not sure if it is worthy doing, though.
+
