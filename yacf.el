@@ -106,15 +106,6 @@ With prefix, search for definitions only."
   (interactive "G")
   (find-file-literally file)
   (yacf-mode)
-  (yacf-narrow-to-page))
-
-(defun yacf-narrow-to-page ()
-  (interactive)
-  (let* ((page (logand (point) -512))
-	 (end (+ 513 page)))
-    (while (< 0 (yacf-get-nr (- end 4)))
-      (cl-incf end 512))
-    (narrow-to-region (1+ page) end))
   (yacf-redisplay))
 
 (defun yacf-forward-page ()
@@ -141,14 +132,8 @@ With prefix, search for definitions only."
 	(cl-flet ((text-and-face (text face)
 				 (put-text-property beg end 'display text)
 				 (add-text-properties beg end `(face ,face))))
-	  (let ((maybe-page
-		 (cond ((= 1 (logand beg 511))
-			(format "\n--- %d ---\n" (floor beg 512)))
-		       ((= type 0) "")
-		       ((= type 3) "\n")
-		       (t " "))))
 	    (cl-ecase type
-	      (0 (text-and-face (concat maybe-page
+	      (0 (text-and-face (concat ""
 					(yacf-nr-to-string nr))
 				(if (= (point-min) beg)
 				    'yacf-gray
@@ -156,13 +141,12 @@ With prefix, search for definitions only."
 	      (1 (when (cl-plusp (logand nr #x8000000))
 		   (setq nr (- (logand (- nr) #x7ffffff))))
 		 (text-and-face (format " %d" nr) 'yacf-blue))
-	      (2 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'yacf-green))
-	      (3 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'bold))
-	      (4 (text-and-face (concat maybe-page (yacf-nr-to-string nr) "\n") 'yacf-blue))
-	      (5 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'yacf-gray))
+	      (2 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-green))
+	      (3 (text-and-face (concat "\n" (yacf-nr-to-string nr)) 'bold))
+	      (4 (text-and-face (concat " " (yacf-nr-to-string nr) "\n") 'yacf-blue))
+	      (5 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-gray))
 	      (6 (text-and-face (format " %x" nr) 'yacf-green))
-	      (7 (text-and-face (concat maybe-page (yacf-nr-to-string nr)) 'yacf-yellow))
-	      )))))
+	      (7 (text-and-face (concat " " (yacf-nr-to-string nr)) 'yacf-yellow))))))
     (set-buffer-modified-p mod)))
 
 (defcustom yacf-space-order
@@ -170,19 +154,12 @@ With prefix, search for definitions only."
   "Order of cycling type"
   :group 'yacf)
 
-(defun yacf-align ()
-  (interactive)
-  "Align to 512 bytes page boundary"
-  (insert-char 0 (- 513 (logand (point) 511))))
-
 (defun yacf-insert-cell ()
   (interactive)
   "Insert N empty words"
-  (unless (= 0 (yacf-get-nr (- (point-max) 4)))
-    (error "No space at the end"))
+
   (insert-char 0 4)
   (forward-char -4)
-  (delete-region (- (point-max) 4) (point-max))
   (yacf-redisplay))
 
 (defun yacf-insert-nr (nr)
@@ -198,13 +175,9 @@ With prefix, search for definitions only."
     (dotimes (pos (/ (- (point-max) (point-min)) 4))
       (let* ((beg (- (point-max) (* pos 4) 4))
 	     (end (+ 4 beg))
-	     (nr (yacf-get-nr beg))
-	     (count 0))
+	     (nr (yacf-get-nr beg)))
 	(when (and (= 0 (char-after beg) nr))
-	  (delete-region beg end)
-	  (cl-incf count 4))
-	(goto-char (point-max))
-	(insert-char 0 count))))
+	  (delete-region beg end)))))
 
 (defun yacf-change-type ()
   (interactive)
@@ -223,7 +196,8 @@ With prefix, search for definitions only."
   (yacf-redisplay))
 
 (define-derived-mode yacf-mode fundamental-mode "colforth"
-  "Edit tagged Shannon-encoded words.")
+  "Edit tagged Shannon-encoded words."
+  (setq page-delimiter (string 4 32 174 74)))	; blue page
 
 (defun yacf-beginning-of-line ()
   (interactive)
@@ -243,7 +217,6 @@ With prefix, search for definitions only."
   (insert 4 0 0 25)
   (yacf-redisplay))
 
-(define-key yacf-mode-map (kbd "C-x n p") #'yacf-narrow-to-page)
 (define-key yacf-mode-map (kbd "C-x [") #'yacf-backward-page)
 (define-key yacf-mode-map (kbd "C-x ]") #'yacf-forward-page)
 (define-key yacf-mode-map (kbd "C-s") #'yacf-find-forward)
