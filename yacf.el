@@ -189,7 +189,8 @@ With prefix, search for definitions only."
   (interactive "N")
   "Insert N"
   (yacf-insert-cell)
-  (yacf-replace-nr nr 1))
+  (yacf-replace-nr nr 1)
+  (yacf-redisplay))
 
 (defun yacf-sweep ()
   (interactive)
@@ -237,14 +238,23 @@ With prefix, search for definitions only."
 		    (+ 1 (* to 512)))
   (yacf-redisplay))
 
+(defun yacf-insert-cr ()
+  (interactive)
+  (insert 4 0 0 25)
+  (yacf-redisplay))
+
 (define-key yacf-mode-map (kbd "C-x n p") #'yacf-narrow-to-page)
 (define-key yacf-mode-map (kbd "C-x [") #'yacf-backward-page)
 (define-key yacf-mode-map (kbd "C-x ]") #'yacf-forward-page)
 (define-key yacf-mode-map (kbd "C-s") #'yacf-find-forward)
 (define-key yacf-mode-map (kbd "C-a") #'yacf-beginning-of-line)
+(define-key yacf-mode-map (kbd "C-l") #'yacf-redisplay)
 (define-key yacf-mode-map (kbd "SPC") #'yacf-change-type)
+(define-key yacf-mode-map (kbd "RET") #'yacf-insert-cr)
+(define-key yacf-mode-map (kbd "#") #'yacf-insert-nr)
 (define-key yacf-mode-map (kbd "<delete>") #'yacf-delete)
 (define-key yacf-mode-map (kbd "<insert>") #'yacf-insert-cell)
+(define-key yacf-mode-map (kbd "<insertchar>") #'yacf-insert-cell)
 
 ;; Letter inserts
 (dotimes (i 8)
