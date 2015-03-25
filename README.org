@@ -122,27 +122,27 @@ These are forth words that put te code
 | tocl        | mov %eax,%ecx     |                      |
 
 ** Number macros
-| forth       | x86 assembler                          |
-|-------------+----------------------------------------|
-| n +         | add n, %eax                            |
-| w +l        | add w, %eax                            |
-| o +@        | mov n(eax), %eax                       |
-| o nth       | mov o(%ebx), %eax                      |
-| w @-+       | sub w, %eax                            |
-| w @         | <dup>; mov w, %eax                     |
-| o ash       | sar o, %eax                            |
-| o lsr       | shr o, %eax                            |
-| o shl       | shl o, %eax                            |
-| o and       | and o, %eax                            |
-| w /         | xor %edx, %edx; mov $w, %ecx; div %ecx |
-| w cmp       | cmp $w, %eax                           |
-| <reg> reg!  | mov (%ebx), <reg>                      |
-| <reg> ldreg | mov <reg>, %eax                        |
-| <reg> pop   | pop <reg>                              |
-| <reg> push  | push <reg>                             |
-| a !         | mov %eax,a ~drop~                        |
-| a w !!      | mov $w,  a                             |
-
+| forth          | x86 assembler                          |
+|----------------+----------------------------------------|
+| n +            | add n, %eax                            |
+| w +l           | add w, %eax                            |
+| o +@           | mov n(eax), %eax                       |
+| o nth          | mov o(%ebx), %eax                      |
+| w @-+          | sub w, %eax                            |
+| w @            | <dup>; mov w, %eax                     |
+| o ash          | sar o, %eax                            |
+| o lsr          | shr o, %eax                            |
+| o shl          | shl o, %eax                            |
+| o and          | and o, %eax                            |
+| w /            | xor %edx, %edx; mov $w, %ecx; div %ecx |
+| w cmp          | cmp $w, %eax                           |
+| <reg> reg!     | mov (%ebx), <reg>                      |
+| <reg> ldreg    | mov <reg>, %eax                        |
+| <reg> pop      | pop <reg>                              |
+| <reg> push     | push <reg>                             |
+| a !            | mov %eax,a ~drop~                        |
+| a w !!         | mov $w,  a                             |
+| a ::b ... b::  | mov a, %edi ... mov %edi, a            |
 ** Macros
 | forth | x86 assembler              |
 |-------+----------------------------|
@@ -163,7 +163,8 @@ These are forth words that put te code
 | ~da@+~  | mov (%edi), %eax           |
 |       | lea 4(%edi), %edi          |
 | ~da!~   | mov %eax, %edi             |
-|       |                            |
+| b,+   | stosl                      |
+| bc,+  | stosb                      |
 
 Note: ~/reg/~ could be possibly even better defined as an number
 macro. However, it would need to change the stack size.
