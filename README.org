@@ -171,13 +171,13 @@ macro. However, it would need to change the stack size.
 
 * Forth registers
 Words starting at #x30000
-|  0 | Vocabulary index                 |
-|  1 | Top of heap                      |
-|  2 | Immediate words                  |
-|  3 | Top of data heap                 |
-|  4 | Link to vocabulary for new words |
-|  5 | Output buffer bottom             |
-|  6 | Number macros vocabulary         |
+| 0 | unused                           |
+| 1 | Top of heap                      |
+| 2 | Immediate words                  |
+| 3 | Top of data heap                 |
+| 4 | Link to vocabulary for new words |
+| 5 | Output buffer bottom             |
+| 6 | Number macros vocabulary         |
 
 
   
