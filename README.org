@@ -89,6 +89,8 @@ The green words are searched for in several dictionaries:
 |---------+------------------------|
 | 0x20000 | Elf header             |
 | 0x20054 | last dictionary VMA    |
+| 0x20058 | last macro VMA         |
+| 0x2005c | last nr macro VMA      |
 | 0x20060 | addresses of tag words |
 | 0x20080 | words code             |
 |    init | init code              |
@@ -186,6 +188,12 @@ Words starting at #x30000
 - 
 - empty :: First word in given vocabulary needs to have its own
            address in the word link. This takes care of it.
+** Dumper
+- init :: ( -- here there )
+- ;s :: ( here there -- ) 
+  + set here to old beginning (here)
+  + get address of last word (reg 4 @ @), adjust for new image (dbase
+    @ + there +), and store it to future 20054 (base @ - 20054 +)
 ** Elementary macros
 - +s and + :: Two bytes can be saved if short form of addition is
               used. Not sure if it is worthy doing, though.
