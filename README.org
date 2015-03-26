@@ -189,7 +189,7 @@ Words starting at #x30000
 - empty :: First word in given vocabulary needs to have its own
            address in the word link. This takes care of it.
 ** Dumper
-- mark :: sets ~base~ to 20054-here, ~dbase~ to - ~dthere,~ puts ~dhere~ ~here~ on stack
+- mark :: ~( -- dhere here )~ sets ~base~ to 20054-here, ~dbase~ to - ~dthere,~ puts ~dhere~ ~here~ on stack
 - init :: ( -- here there )
 - ;s :: ( here there -- ) 
   + set here to old beginning (here)
