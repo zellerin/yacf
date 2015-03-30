@@ -191,12 +191,21 @@ some of them moved away since.
 - empty :: First word in given vocabulary needs to have its own
            address in the word link. This takes care of it.
 ** Dumper
-- mark :: ~( -- dhere here )~ sets ~base~ to 20054-here, ~dbase~ to - ~dthere,~ puts ~dhere~ ~here~ on stack
-- init :: ( -- here there )
+- save :: ~( from -- )~ Dump stack from ~TOP~ to current ~here~.
+- mark :: ~( -- dhere here )~ sets ~base~ to 20054-here, ~dbase~ to - ~dthere~
+- init :: ~( -- here )~ save elf header - magic and init part (not sections)
+- edump :: ~( -- )~ Save program headers, using heap as temporary
+           storage (but cleaning it up afterwards)
+- dump :: ~( dhere here )~ 
 - ;s :: ( here there -- ) 
   + set here to old beginning (here)
   + get address of last word (reg 4 @ @), adjust for new image (dbase
     @ + there +), and store it to future 20054 (base @ - 20054 +)
+** Elf words
+- ident :: ~( -- )~ Elf header (magic etc)
+- filehdr :: ~( start -- )~ Store 
+- proghdr :: ~( size -- )~ Store section headers
+
 ** Elementary macros
 - +s and + :: Two bytes can be saved if short form of addition is
               used. Not sure if it is worthy doing, though.
