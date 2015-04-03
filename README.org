@@ -41,14 +41,15 @@ This is a toy project aimed on exploration.
 - To ensure that the bootstraping works, do =make check=. It will
   rebuild new =yacf= under name =future=, and then tries to use the =future=
   to build it again and compare results. They should be same.
-* [3/6] Immediate plans
+* [5/6] Immediate plans
 - [X] Compile elf binary
 - [X] Output buffer words
 - [X] Compile itself as a binary
+- [ ] Make universal crosscompiler
 - [ ] Compile arm binary
-- [ ] Compile pic (Microchip) binary - it was working some time ago,
-     but got lost.
-- [ ] Ensure alignment
+- [X] Compile pic (Microchip) binary
+- [ ] ... in Intel HEX format
+- [X] Ensure alignment
 ** Not planned for now
 - Make editor to edit blocks :: emacs mode will do.
 - section headers for elf :: they are not used for execution of
@@ -184,7 +185,17 @@ some of them moved away since.
 | 6 | unused                           |
 
 
+* Crosscompiler
+The =crosscompile.blk= allows to compile to variety of formats, starting
+with microchip pic.
 
+It is good idea to define following number macros:
+- nop :: to compile a number (probably some combination of dup and
+         load)
+- ,call :: to compile a call
+- ,jmp :: to compile a jump (call followed by semicolon).
+
+A macro for semicolon is handy as well, of course.
 * Notes
 ** Notes on some words
 - 
