@@ -199,12 +199,17 @@ With prefix, search for definitions only."
   "Edit tagged Shannon-encoded words."
   (setq page-delimiter (string 4 32 174 74)))	; blue page
 
-(defun yacf-beginning-of-line ()
-  (interactive)
+(defun yacf-beginning-of-line (count)
+  (interactive "p")
+  "Move `count' definitions back."
+  (message "%d" count)
   (while (not (or
 	       (= 3 (logand 7 (char-after (point))))
 	       (= (point) (point-min))))
-    (forward-char -4)))
+    (forward-char -4))
+  (when (> count 1)
+    (forward-char -4)
+    (yacf-beginning-of-line (1- count))))
 
 (defun yacf-narrow-to-pages (from to)
   (interactive "nFrom: \nnTo: " )
@@ -226,6 +231,7 @@ With prefix, search for definitions only."
 (define-key yacf-mode-map (kbd "RET") #'yacf-insert-cr)
 (define-key yacf-mode-map (kbd "#") #'yacf-insert-nr)
 (define-key yacf-mode-map (kbd "<delete>") #'yacf-delete)
+(define-key yacf-mode-map (kbd "<deletechar>") #'yacf-delete)
 (define-key yacf-mode-map (kbd "<insert>") #'yacf-insert-cell)
 (define-key yacf-mode-map (kbd "<insertchar>") #'yacf-insert-cell)
 
