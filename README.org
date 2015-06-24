@@ -5,11 +5,9 @@ This is a toy project aimed on exploration.
 * Features
 - source in tagged ("coloured") words :: 32 bit words contain 3-bit
      tag and 29 bit name
-  + limited set of characters that can be 4,5, or 7 bits long (very
+  + limited set of characters, each taking 4,5, or 7 bits long (very
     similar to what Moore used)
   + source can be edited directly in emacs =yacf-mode=
-  + source used to be and to some extent still is organized in 512
-    bytes (128 words) long pages that can be loaded;
 - self compiling :: Able to compile itself from the source
   + bootstrapping was done originally in assembler, but this
     scaffolding was already removed
@@ -20,12 +18,17 @@ This is a toy project aimed on exploration.
 - machine code with Linux elf as target :: the interface to target
      hardware are syscalls. No library expected nor used.
 - no BASE :: numbers are explicitly decimal or hexadecimal, both on
-             input (different color) and output (different words).
+             input (different color, and value, not representation is
+             stored) and output (different words).
 - no STATE :: green words are compiled, yellow are executed
 - tail call optimization :: if semicolon to be compiled follows
      compiled call to word, jump is compiled instead. This allows to
      delay for some time real definition of semicolon in
      bootstrapping.
+- implicit value compilation :: when green (compiled) word follows the
+     number or yellow (interpreted) word, code to load the
+     compile-time top of stack is emitted. (again, same as in Moore's
+     colorfoth). Useful, but some care needs to be taken.
 * Quick start
 - To rebuild the =yacf= binary (possibly after changes to =yacf.blk=), do 
   : ./yacf compile.blk yacf.blk 4> yacf-copy
@@ -41,12 +44,12 @@ This is a toy project aimed on exploration.
 - To ensure that the bootstraping works, do =make check=. It will
   rebuild new =yacf= under name =future=, and then tries to use the =future=
   to build it again and compare results. They should be same.
-* [5/6] Immediate plans
+* [7/8] Immediate plans
 - [X] Compile elf binary
 - [X] Output buffer words
 - [X] Compile itself as a binary
-- [ ] Make universal crosscompiler
-- [ ] Compile arm binary
+- [X] Make universal crosscompiler
+- [X] Compile arm binary
 - [X] Compile pic (Microchip) binary
 - [ ] ... in Intel HEX format
 - [X] Ensure alignment
@@ -85,7 +88,8 @@ The green words are searched for in several dictionaries:
 - if the word is found in ~macros~ dictionary, execute it;
 - if not, find it in ~forth~ vocabulary and compile a call to it
 - or fail, preferably loudly
-* Elf binary
+* x86 main code
+** x86 elf binary
 |     VMA | Contains               |
 |---------+------------------------|
 | 0x20000 | Elf header             |
@@ -103,9 +107,9 @@ The green words are searched for in several dictionaries:
 |         | stack                  |
 | 0x30100 | end                    |
 
-* x86 assembler low level words
+** x86 assembler low level words
 Legend: ~o~ is signed octet, ~w~ is word
-** x86 registers
+*** x86 registers
 | reg | use                           |
 |-----+-------------------------------|
 | eax | TOP of data stack             |
@@ -114,7 +118,7 @@ Legend: ~o~ is signed octet, ~w~ is word
 | esi | A register - address to read  |
 | edi | B register - address to write |
 
-** Builder words
+*** Builder words
 These are forth words that put te code
 | forth       | x86               | usage                |
 |-------------+-------------------+----------------------|
@@ -124,7 +128,7 @@ These are forth words that put te code
 | ~op~ ,rot   | <op> %cl,%eax     | shl, rot, ...        |
 | tocl        | mov %eax,%ecx     |                      |
 
-** Number macros
+*** Number macros
 | forth          | x86 assembler                          |
 |----------------+----------------------------------------|
 | n +            | add n, %eax                            |
@@ -146,7 +150,7 @@ These are forth words that put te code
 | a !            | mov %eax,a ~drop~                        |
 | a w !!         | mov $w,  a                             |
 | a ::b ... b::  | mov a, %edi ... mov %edi, a            |
-** Macros
+*** Macros
 | forth | x86 assembler              |
 |-------+----------------------------|
 | ~;~     | ret                        |
@@ -172,7 +176,7 @@ These are forth words that put te code
 Note: ~/reg/~ could be possibly even better defined as an number
 macro. However, it would need to change the stack size.
 
-* Forth registers
+** x86 forth registers
 Words starting at #x30000. I used to use them for some registers, but
 some of them moved away since.
 
@@ -186,6 +190,7 @@ some of them moved away since.
 
 
 * Crosscompiler
+** Crosscompiler itself
 The =crosscompile.blk= allows to compile to variety of formats, starting
 with microchip pic.
 
@@ -244,6 +249,7 @@ The two usages of ~do~ - to start crosscompile and as a macro to put
 current heap place to stack - are unambigous, but possibly confusing
 (FIXME).
 
+** Microchip code compiler
 * Notes
 ** Notes on some words
 - 
