@@ -216,12 +216,16 @@ turn it into srec file
 and ~loads~ it to the cubox using custom Emacs command, then go to address.
 
 #+CAPTION: Registers
-| r0  | top of stack |
-| r1  | addresses    |
-| r2  | data stack   |
-| ... |              |
-| lr  | code link    |
-| pc  | address      | 
+| Register | Usage         |
+|----------+---------------|
+| r0       | top of stack  |
+| r1       | addresses     |
+| r2       | data stack    |
+| r3       | scratch       |
+| ...      |               |
+| sp       | control stack |
+| lr       | code link     |
+| pc       | address       |
 
 The challenge is to ensure that ~lr~ is preserved when
 needed. Currently, I do it manually, where ~/--~ saves it and ~--/~
@@ -229,11 +233,16 @@ restores that (and ~--/;~ is a shortcat to restore it and return).
 
 Other challenge is that only some numbers can be used as
 immediates. Two approaches:
-- ~immed~ host word converts number to immediate form for, e.g., ~mov~
+- ~immed~ host word converts number to immediate form for, e.g., ~mov~, or
+  prints an error.
 - ~here~ … ~rdata~ macro loads word after here (within limits)
 
 Idiom =do= /addr/ =d@+= /mask/ =and until= busy waits checks word /offset/ after
 r1 has non-zero on masked bits.
+
+The two usages of ~do~ - to start crosscompile and as a macro to put
+current heap place to stack - are unambigous, but possibly confusing
+(FIXME).
 
 * Notes
 ** Notes on some words
