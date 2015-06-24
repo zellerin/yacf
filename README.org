@@ -196,6 +196,25 @@ It is good idea to define following number macros:
 - ,jmp :: to compile a jump (call followed by semicolon).
 
 A macro for semicolon is handy as well, of course.
+** Arm compiler
+Simple Arm compiler tried on /cubox/ without any operating system. The
+way I use it is to generate the target code
+: ./yacf crosscompile.blk arm.blk > code
+turn it into srec file
+: objcopy code -I binary -O srec --change-addresses=0x20000 srec
+and ~loads~ it to the cubox using custom Emacs command, then go to address.
+
+#+CAPTION: Registers
+| r0  | top of stack |
+| r1  | addresses    |
+| r2  | data stack   |
+| ... |              |
+| lr  | code link    |
+| pc  | address      | 
+
+The challenge is to ensure that lr is preserved when
+needed. Currently, I do it manually, where ~/--~ saves it and ~--/~
+restores that (and ~--/;~ is a shortcat to restore it and return).
 * Notes
 ** Notes on some words
 - 
