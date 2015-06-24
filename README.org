@@ -196,6 +196,17 @@ It is good idea to define following number macros:
 - ,jmp :: to compile a jump (call followed by semicolon).
 
 A macro for semicolon is handy as well, of course.
+
+Phrases in comments:
+- pointed word :: parameter is a compile-time address of a word
+                  structure.
+- word :: parameter is word encoded as 32 bits.
+
+Currently, on failure the compilation is exited (FIXME)
+| Code | Meaning                |
+|------+------------------------|
+|    7 | Number macro not found |
+|    5 | Bad target for jne     |
 ** Arm compiler
 Simple Arm compiler tried on /cubox/ without any operating system. The
 way I use it is to generate the target code
@@ -212,9 +223,18 @@ and ~loads~ it to the cubox using custom Emacs command, then go to address.
 | lr  | code link    |
 | pc  | address      | 
 
-The challenge is to ensure that lr is preserved when
+The challenge is to ensure that ~lr~ is preserved when
 needed. Currently, I do it manually, where ~/--~ saves it and ~--/~
 restores that (and ~--/;~ is a shortcat to restore it and return).
+
+Other challenge is that only some numbers can be used as
+immediates. Two approaches:
+- ~immed~ host word converts number to immediate form for, e.g., ~mov~
+- ~here~ … ~rdata~ macro loads word after here (within limits)
+
+Idiom =do= /addr/ =d@+= /mask/ =and until= busy waits checks word /offset/ after
+r1 has non-zero on masked bits.
+
 * Notes
 ** Notes on some words
 - 
